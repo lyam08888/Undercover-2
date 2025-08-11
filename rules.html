@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Règles du Jeu - Undercover Ultimate</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ===== VARIABLES CSS ===== */
+        :root {
+            --bg-primary: #0A0A0F;
+            --bg-secondary: #1A1A25;
+            --bg-tertiary: #2A2A35;
+            --text-primary: #FFFFFF;
+            --text-secondary: #A1A1AA;
+            --text-muted: #6B7280;
+            --accent-primary: #6366F1;
+            --accent-secondary: #8B5CF6;
+            --accent-tertiary: #EC4899;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --border: rgba(255, 255, 255, 0.1);
+            --glass: rgba(255, 255, 255, 0.05);
+            --shadow: rgba(0, 0, 0, 0.3);
+            --glow: rgba(99, 102, 241, 0.3);
+        }
+
+        /* ===== RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* ===== BACKGROUND ===== */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            position: sticky;
+            top: 0;
+            background: rgba(10, 10, 15, 0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .back-btn {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.5rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-btn:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .header-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--accent-primary);
+        }
+
+        .progress-indicator {
+            background: var(--accent-primary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* ===== NAVIGATION ===== */
+        .nav-tabs {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 0.5rem;
+            margin: 2rem auto;
+            max-width: 800px;
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .nav-tab:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .nav-tab.active {
+            background: var(--accent-primary);
+            color: white;
+        }
+
+        /* ===== CONTAINER ===== */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 1rem 2rem 1rem;
+        }
+
+        /* ===== SECTIONS ===== */
+        .section {
+            display: none;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== CARDS ===== */
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .card-subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        /* ===== GAME FLOW ===== */
+        .game-flow {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .flow-step {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .flow-step:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+        }
+
+        .step-number {
+            position: absolute;
+            top: -12px;
+            left: 1.5rem;
+            background: var(--accent-primary);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .step-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--accent-primary);
+        }
+
+        .step-description {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .step-details {
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            padding: 1rem;
+            font-size: 0.9rem;
+        }
+
+        /* ===== ROLES GRID ===== */
+        .roles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+
+        .role-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .role-card:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-4px);
+        }
+
+        .role-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .role-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .role-description {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .role-power {
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            padding: 0.75rem;
+            font-size: 0.8rem;
+            color: var(--accent-primary);
+            font-weight: 600;
+        }
+
+        /* ===== TIPS SECTION ===== */
+        .tips-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .tip-card {
+            background: var(--bg-secondary);
+            border-left: 4px solid var(--accent-primary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .tip-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .tip-content h4 {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--accent-primary);
+        }
+
+        .tip-content p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* ===== INTERACTIVE DEMO ===== */
+        .demo-container {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .demo-players {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .demo-player {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .demo-player:hover {
+            border-color: var(--accent-primary);
+        }
+
+        .demo-player.revealed {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .demo-player.undercover {
+            border-color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .player-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-primary);
+            border-radius: 50%;
+            margin: 0 auto 0.5rem auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: white;
+        }
+
+        .player-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .player-word {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+
+        /* ===== FAQ ===== */
+        .faq-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            overflow: hidden;
+        }
+
+        .faq-question {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .faq-question:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .faq-answer {
+            padding: 0 1.5rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            color: var(--text-secondary);
+        }
+
+        .faq-item.active .faq-answer {
+            padding: 1rem 1.5rem;
+            max-height: 200px;
+        }
+
+        .faq-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .faq-item.active .faq-icon {
+            transform: rotate(180deg);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem 2rem 1rem;
+            }
+            
+            .nav-tabs {
+                margin: 1rem;
+            }
+            
+            .roles-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .demo-players {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background animé -->
+    <div class="animated-bg"></div>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <a href="index-ultimate.html" class="back-btn">
+                <span>←</span>
+                <span>Retour</span>
+            </a>
+            <div class="header-title">Règles du Jeu</div>
+            <div class="progress-indicator" id="progressIndicator">
+                1/6
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation par onglets -->
+    <div class="nav-tabs">
+        <button class="nav-tab active" onclick="showSection('basics')" data-section="basics">
+            <span>📖</span>
+            <span>Bases</span>
+        </button>
+        <button class="nav-tab" onclick="showSection('flow')" data-section="flow">
+            <span>🔄</span>
+            <span>Déroulement</span>
+        </button>
+        <button class="nav-tab" onclick="showSection('roles')" data-section="roles">
+            <span>🎭</span>
+            <span>Rôles</span>
+        </button>
+        <button class="nav-tab" onclick="showSection('strategies')" data-section="strategies">
+            <span>🧠</span>
+            <span>Stratégies</span>
+        </button>
+        <button class="nav-tab" onclick="showSection('demo')" data-section="demo">
+            <span>🎮</span>
+            <span>Démo</span>
+        </button>
+        <button class="nav-tab" onclick="showSection('faq')" data-section="faq">
+            <span>❓</span>
+            <span>FAQ</span>
+        </button>
+    </div>
+
+    <!-- Container principal -->
+    <div class="container">
+        <!-- Section: Bases du jeu -->
+        <div class="section active" id="section-basics">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">🎯</div>
+                    <div>
+                        <div class="card-title">Objectif du jeu</div>
+                        <div class="card-subtitle">Démasquez les espions ou survivez en tant qu'Undercover</div>
+                    </div>
+                </div>
+                
+                <p style="margin-bottom: 1.5rem;">
+                    <strong>Undercover</strong> est un jeu de déduction sociale où les joueurs sont divisés en deux camps : 
+                    les <strong style="color: var(--success);">Civils</strong> et les <strong style="color: var(--danger);">Undercover</strong>.
+                </p>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                    <div style="background: var(--bg-secondary); padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--success);">
+                        <h4 style="color: var(--success); margin-bottom: 0.5rem;">👥 Civils</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                            Reçoivent le même mot. Doivent identifier et éliminer tous les Undercover.
+                        </p>
+                    </div>
+                    
+                    <div style="background: var(--bg-secondary); padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--danger);">
+                        <h4 style="color: var(--danger); margin-bottom: 0.5rem;">🎭 Undercover</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                            Reçoivent un mot différent. Doivent se faire passer pour des Civils et survivre.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">⚙️</div>
+                    <div>
+                        <div class="card-title">Configuration</div>
+                        <div class="card-subtitle">Nombre de joueurs et répartition</div>
+                    </div>
+                </div>
+
+                <div style="display: grid; gap: 1rem;">
+                    <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 8px;">
+                        <strong>3-4 joueurs :</strong> 1 Undercover
+                    </div>
+                    <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 8px;">
+                        <strong>5-6 joueurs :</strong> 1-2 Undercover
+                    </div>
+                    <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 8px;">
+                        <strong>7-8 joueurs :</strong> 2 Undercover
+                    </div>
+                    <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 8px;">
+                        <strong>9+ joueurs :</strong> 2-3 Undercover
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section: Déroulement -->
+        <div class="section" id="section-flow">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">🔄</div>
+                    <div>
+                        <div class="card-title">Déroulement d'une partie</div>
+                        <div class="card-subtitle">Les différentes phases du jeu</div>
+                    </div>
+                </div>
+
+                <div class="game-flow">
+                    <div class="flow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-title">Distribution des rôles</div>
+                        <div class="step-description">
+                            Chaque joueur reçoit secrètement son rôle et son mot.
+                        </div>
+                        <div class="step-details">
+                            <strong>Important :</strong> Ne montrez votre carte à personne ! 
+                            Les Civils ont le même mot, les Undercover ont un mot similaire mais différent.
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-title">Phase de discussion</div>
+                        <div class="step-description">
+                            Chaque joueur donne un indice sur son mot, à tour de rôle.
+                        </div>
+                        <div class="step-details">
+                            <strong>Conseil :</strong> Donnez des indices assez précis pour prouver que vous êtes un Civil, 
+                            mais pas trop pour ne pas aider les Undercover.
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-title">Phase de vote</div>
+                        <div class="step-description">
+                            Tous les joueurs votent simultanément pour éliminer un suspect.
+                        </div>
+                        <div class="step-details">
+                            <strong>Règle :</strong> Le joueur avec le plus de votes est éliminé. 
+                            En cas d'égalité, personne n'est éliminé ce tour.
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-title">Révélation et vérification</div>
+                        <div class="step-description">
+                            Le joueur éliminé révèle son rôle et son mot.
+                        </div>
+                        <div class="step-details">
+                            <strong>Vérification des conditions de victoire :</strong>
+                            <br>• Si tous les Undercover sont éliminés → Victoire des Civils
+                            <br>• Si les Undercover sont majoritaires → Victoire des Undercover
+                            <br>• Sinon, nouveau tour de discussion
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section: Rôles -->
+        <div class="section" id="section-roles">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">🎭</div>
+                    <div>
+                        <div class="card-title">Rôles disponibles</div>
+                        <div class="card-subtitle">Rôles de base et rôles spéciaux</div>
+                    </div>
+                </div>
+
+                <div class="roles-grid">
+                    <div class="role-card">
+                        <div class="role-icon">👥</div>
+                        <div class="role-name" style="color: var(--success);">Civil</div>
+                        <div class="role-description">
+                            Rôle de base. Connaît le vrai mot et doit identifier les Undercover.
+                        </div>
+                        <div class="role-power">
+                            Pouvoir : Aucun pouvoir spécial, mais forme la majorité
+                        </div>
+                    </div>
+
+                    <div class="role-card">
+                        <div class="role-icon">🎭</div>
+                        <div class="role-name" style="color: var(--danger);">Undercover</div>
+                        <div class="role-description">
+                            Rôle de base. A un mot différent et doit se faire passer pour un Civil.
+                        </div>
+                        <div class="role-power">
+                            Pouvoir : Peut tromper les autres sur son identité
+                        </div>
+                    </div>
+
+                    <div class="role-card">
+                        <div class="role-icon">🔮</div>
+                        <div class="role-name" style="color: var(--accent-primary);">Oracle</div>
+                        <div class="role-description">
+                            Rôle spécial. Civil qui connaît un indice supplémentaire.
+                        </div>
+                        <div class="role-power">
+                            Pouvoir : Connaît une information bonus sur le mot
+                        </div>
+                    </div>
+
+                    <div class="role-card">
+                        <div class="role-icon">🛡️</div>
+                        <div class="role-name" style="color: var(--success);">Gardien</div>
+                        <div class="role-description">
+                            Rôle spécial. Peut protéger un joueur de l'élimination.
+                        </div>
+                        <div class="role-power">
+                            Pouvoir : Une fois par partie, peut sauver un joueur
+                        </div>
+                    </div>
+
+                    <div class="role-card">
+                        <div class="role-icon">💣</div>
+                        <div class="role-name" style="color: var(--warning);">Saboteur</div>
+                        <div class="role-description">
+                            Rôle spécial. Peut éliminer secrètement un joueur.
+                        </div>
+                        <div class="role-power">
+                            Pouvoir : Une fois par partie, peut éliminer quelqu'un
+                        </div>
+                    </div>
+
+                    <div class="role-card">
+                        <div class="role-icon">🦎</div>
+                        <div class="role-name" style="color: var(--accent-tertiary);">Caméléon</div>
+                        <div class="role-description">
+                            Rôle spécial. Change de camp en cours de partie.
+                        </div>
+                        <div class="role-power">
+                            Pouvoir : Peut changer d'équipe une fois
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section: Stratégies -->
+        <div class="section" id="section-strategies">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">🧠</div>
+                    <div>
+                        <div class="card-title">Conseils stratégiques</div>
+                        <div class="card-subtitle">Astuces pour maîtriser le jeu</div>
+                    </div>
+                </div>
+
+                <div class="tips-grid">
+                    <div class="tip-card">
+                        <div class="tip-icon">👥</div>
+                        <div class="tip-content">
+                            <h4>Pour les Civils</h4>
+                            <p>Donnez des indices précis mais pas trop évidents. Observez qui donne des indices vagues ou décalés. Coordonnez-vous discrètement avec les autres Civils.</p>
+                        </div>
+                    </div>
+
+                    <div class="tip-card">
+                        <div class="tip-icon">🎭</div>
+                        <div class="tip-content">
+                            <h4>Pour les Undercover</h4>
+                            <p>Écoutez attentivement les premiers indices pour comprendre le vrai mot. Donnez des indices génériques qui pourraient s'appliquer aux deux mots. Semez le doute sur les autres.</p>
+                        </div>
+                    </div>
+
+                    <div class="tip-card">
+                        <div class="tip-icon">🕵️</div>
+                        <div class="tip-content">
+                            <h4>Observation</h4>
+                            <p>Regardez les réactions des joueurs quand quelqu'un donne un indice. Les micro-expressions peuvent trahir la surprise ou la confusion.</p>
+                        </div>
+                    </div>
+
+                    <div class="tip-card">
+                        <div class="tip-icon">🎯</div>
+                        <div class="tip-content">
+                            <h4>Timing</h4>
+                            <p>Les premiers tours sont cruciaux pour les Undercover. Plus la partie avance, plus il devient difficile de se cacher.</p>
+                        </div>
+                    </div>
+
+                    <div class="tip-card">
+                        <div class="tip-icon">🤝</div>
+                        <div class="tip-content">
+                            <h4>Psychologie</h4>
+                        <p>Utilisez la pression sociale. Accusez avec confiance, mais sachez aussi défendre les innocents pour gagner leur confiance.</p>
+                        </div>
+                    </div>
+
+                    <div class="tip-card">
+                        <div class="tip-icon">⚖️</div>
+                        <div class="tip-content">
+                            <h4>Équilibre</h4>
+                            <p>Ne soyez ni trop discret (suspect) ni trop bavard (révélateur). Trouvez le juste milieu selon votre rôle.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section: Démo interactive -->
+        <div class="section" id="section-demo">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">🎮</div>
+                    <div>
+                        <div class="card-title">Démo interactive</div>
+                        <div class="card-subtitle">Exemple de partie avec 6 joueurs</div>
+                    </div>
+                </div>
+
+                <div class="demo-container">
+                    <p style="margin-bottom: 1rem; color: var(--text-secondary);">
+                        Cliquez sur les joueurs pour révéler leurs rôles et mots
+                    </p>
+
+                    <div class="demo-players" id="demoPlayers">
+                        <!-- Sera rempli dynamiquement -->
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn btn-secondary" onclick="resetDemo()">
+                            <span>🔄</span>
+                            <span>Réinitialiser</span>
+                        </button>
+                        <button class="btn btn-primary" onclick="revealAll()">
+                            <span>👁️</span>
+                            <span>Tout révéler</span>
+                        </button>
+                    </div>
+
+                    <div id="demoExplanation" style="margin-top: 1.5rem; padding: 1rem; background: var(--bg-tertiary); border-radius: 8px; display: none;">
+                        <h4 style="color: var(--accent-primary); margin-bottom: 0.5rem;">Analyse de la partie</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;" id="demoAnalysis"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section: FAQ -->
+        <div class="section" id="section-faq">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">❓</div>
+                    <div>
+                        <div class="card-title">Questions fréquentes</div>
+                        <div class="card-subtitle">Réponses aux questions les plus courantes</div>
+                    </div>
+                </div>
+
+                <div class="faq-list">
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>Que se passe-t-il en cas d'égalité lors du vote ?</span>
+                            <span class="faq-icon">▼</span>
+                        </div>
+                        <div class="faq-answer">
+                            En cas d'égalité, personne n'est éliminé ce tour. On passe directement à un nouveau tour de discussion. Cela peut créer des situations tendues !
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>Peut-on mentir sur son indice ?</span>
+                            <span class="faq-icon">▼</span>
+                        </div>
+                        <div class="faq-answer">
+                            Oui ! C'est même encouragé pour les Undercover. Les Civils peuvent aussi mentir stratégiquement, mais c'est risqué car cela peut les faire passer pour des Undercover.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>Combien de temps pour donner un indice ?</span>
+                            <span class="faq-icon">▼</span>
+                        </div>
+                        <div class="faq-answer">
+                            Par défaut, chaque joueur a 30 secondes pour donner son indice. Ce temps peut être ajusté dans les paramètres de partie selon vos préférences.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>Peut-on jouer avec moins de 3 joueurs ?</span>
+                            <span class="faq-icon">▼</span>
+                        </div>
+                        <div class="faq-answer">
+                            Non, il faut minimum 3 joueurs pour que le jeu fonctionne. L'idéal est entre 5 et 8 joueurs pour des parties équilibrées et amusantes.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>Comment sont choisis les mots ?</span>
+                            <span class="faq-icon">▼</span>
+                        </div>
+                        <div class="faq-answer">
+                            Les mots sont sélectionnés aléatoirement dans une base de données de paires de mots similaires. Par exemple : "Chat" et "Chien", "Pizza" et "Burger", etc.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>Que faire si quelqu'un triche ?</span>
+                            <span class="faq-icon">▼</span>
+                        </div>
+                        <div class="faq-answer">
+                            Le jeu repose sur la confiance mutuelle. Si quelqu'un regarde les cartes des autres ou communique secrètement, rappelez les règles ou excluez temporairement le joueur.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== GESTION DES SECTIONS =====
+        let currentSection = 'basics';
+        const sections = ['basics', 'flow', 'roles', 'strategies', 'demo', 'faq'];
+
+        function showSection(sectionName) {
+            // Masquer toutes les sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Afficher la section demandée
+            document.getElementById(`section-${sectionName}`).classList.add('active');
+
+            // Mettre à jour les onglets
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`[data-section="${sectionName}"]`).classList.add('active');
+
+            // Mettre à jour l'indicateur de progression
+            const sectionIndex = sections.indexOf(sectionName) + 1;
+            document.getElementById('progressIndicator').textContent = `${sectionIndex}/${sections.length}`;
+
+            currentSection = sectionName;
+
+            // Initialiser la démo si nécessaire
+            if (sectionName === 'demo') {
+                initDemo();
+            }
+        }
+
+        // ===== GESTION DE LA FAQ =====
+        function toggleFaq(element) {
+            const faqItem = element.parentElement;
+            const isActive = faqItem.classList.contains('active');
+
+            // Fermer tous les autres items
+            document.querySelectorAll('.faq-item').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            // Ouvrir/fermer l'item cliqué
+            if (!isActive) {
+                faqItem.classList.add('active');
+            }
+        }
+
+        // ===== DÉMO INTERACTIVE =====
+        const demoData = {
+            players: [
+                { name: 'Alice', role: 'civil', word: 'Chat', avatar: 'A' },
+                { name: 'Bob', role: 'undercover', word: 'Chien', avatar: 'B' },
+                { name: 'Charlie', role: 'civil', word: 'Chat', avatar: 'C' },
+                { name: 'Diana', role: 'civil', word: 'Chat', avatar: 'D' },
+                { name: 'Eve', role: 'civil', word: 'Chat', avatar: 'E' },
+                { name: 'Frank', role: 'undercover', word: 'Chien', avatar: 'F' }
+            ]
+        };
+
+        function initDemo() {
+            const container = document.getElementById('demoPlayers');
+            container.innerHTML = demoData.players.map((player, index) => `
+                <div class="demo-player" onclick="revealPlayer(${index})" data-index="${index}">
+                    <div class="player-avatar">${player.avatar}</div>
+                    <div class="player-name">${player.name}</div>
+                    <div class="player-word" style="display: none;">${player.word}</div>
+                </div>
+            `).join('');
+
+            document.getElementById('demoExplanation').style.display = 'none';
+        }
+
+        function revealPlayer(index) {
+            const player = demoData.players[index];
+            const playerElement = document.querySelector(`[data-index="${index}"]`);
+            
+            if (playerElement.classList.contains('revealed')) return;
+
+            playerElement.classList.add('revealed');
+            if (player.role === 'undercover') {
+                playerElement.classList.add('undercover');
+            }
+
+            const wordElement = playerElement.querySelector('.player-word');
+            wordElement.style.display = 'block';
+            wordElement.textContent = `"${player.word}" (${player.role === 'civil' ? 'Civil' : 'Undercover'})`;
+
+            // Vérifier si tous les joueurs sont révélés
+            const revealedCount = document.querySelectorAll('.demo-player.revealed').length;
+            if (revealedCount === demoData.players.length) {
+                showDemoAnalysis();
+            }
+        }
+
+        function revealAll() {
+            demoData.players.forEach((player, index) => {
+                revealPlayer(index);
+            });
+        }
+
+        function resetDemo() {
+            initDemo();
+        }
+
+        function showDemoAnalysis() {
+            const explanation = document.getElementById('demoExplanation');
+            const analysis = document.getElementById('demoAnalysis');
+            
+            analysis.textContent = `
+                Dans cet exemple, Bob et Frank sont les Undercover avec le mot "Chien" 
+                tandis que les autres ont "Chat". Les Undercover doivent donner des indices 
+                qui pourraient s'appliquer aux deux mots (ex: "animal domestique", "à quatre pattes"). 
+                Les Civils doivent être assez précis pour se reconnaître entre eux 
+                (ex: "miaule", "ronronne") sans trop aider les Undercover.
+            `;
+            
+            explanation.style.display = 'block';
+        }
+
+        // ===== NAVIGATION AU CLAVIER =====
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                const currentIndex = sections.indexOf(currentSection);
+                if (currentIndex > 0) {
+                    showSection(sections[currentIndex - 1]);
+                }
+            } else if (e.key === 'ArrowRight') {
+                const currentIndex = sections.indexOf(currentSection);
+                if (currentIndex < sections.length - 1) {
+                    showSection(sections[currentIndex + 1]);
+                }
+            }
+        });
+
+        // ===== INITIALISATION =====
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('📖 Guide des règles initialisé');
+            
+            // Ajouter des raccourcis clavier
+            const helpText = document.createElement('div');
+            helpText.style.cssText = `
+                position: fixed;
+                bottom: 1rem;
+                right: 1rem;
+                background: var(--bg-secondary);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
+                color: var(--text-muted);
+                z-index: 50;
+            `;
+            helpText.textContent = '← → pour naviguer';
+            document.body.appendChild(helpText);
+
+            // Masquer après 3 secondes
+            setTimeout(() => {
+                helpText.style.opacity = '0';
+                helpText.style.transition = 'opacity 0.5s ease';
+                setTimeout(() => helpText.remove(), 500);
+            }, 3000);
+        });
+    </script>
+</body>
+</html>

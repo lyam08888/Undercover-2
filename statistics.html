@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistiques - Undercover Ultimate</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ===== VARIABLES CSS ===== */
+        :root {
+            --bg-primary: #0A0A0F;
+            --bg-secondary: #1A1A25;
+            --bg-tertiary: #2A2A35;
+            --text-primary: #FFFFFF;
+            --text-secondary: #A1A1AA;
+            --text-muted: #6B7280;
+            --accent-primary: #6366F1;
+            --accent-secondary: #8B5CF6;
+            --accent-tertiary: #EC4899;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --border: rgba(255, 255, 255, 0.1);
+            --glass: rgba(255, 255, 255, 0.05);
+            --shadow: rgba(0, 0, 0, 0.3);
+            --glow: rgba(99, 102, 241, 0.3);
+        }
+
+        /* ===== RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* ===== BACKGROUND ===== */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            position: sticky;
+            top: 0;
+            background: rgba(10, 10, 15, 0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .back-btn {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.5rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-btn:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .header-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--accent-primary);
+        }
+
+        .stats-summary {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.8rem;
+        }
+
+        .stat-item {
+            background: var(--glass);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+        }
+
+        /* ===== CONTAINER ===== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        /* ===== OVERVIEW CARDS ===== */
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .overview-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .overview-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-primary);
+        }
+
+        .overview-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 1rem auto;
+        }
+
+        .overview-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--accent-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .overview-label {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .overview-change {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .overview-change.positive {
+            color: var(--success);
+        }
+
+        .overview-change.negative {
+            color: var(--danger);
+        }
+
+        /* ===== CHARTS SECTION ===== */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+
+        .chart-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .chart-period {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .chart-container {
+            height: 300px;
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        /* ===== CUSTOM CHARTS ===== */
+        .bar-chart {
+            display: flex;
+            align-items: end;
+            height: 100%;
+            gap: 0.5rem;
+            padding: 1rem 0;
+        }
+
+        .bar {
+            flex: 1;
+            background: linear-gradient(to top, var(--accent-primary), var(--accent-secondary));
+            border-radius: 4px 4px 0 0;
+            min-height: 20px;
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .bar:hover {
+            filter: brightness(1.2);
+            transform: scaleY(1.05);
+        }
+
+        .bar-label {
+            position: absolute;
+            bottom: -1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        .bar-value {
+            position: absolute;
+            top: -1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .bar:hover .bar-value {
+            opacity: 1;
+        }
+
+        .pie-chart {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .pie-slice {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 100%, 50% 100%);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .pie-slice:hover {
+            transform: scale(1.05);
+        }
+
+        .pie-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+
+        .line-chart {
+            height: 100%;
+            position: relative;
+            padding: 1rem;
+        }
+
+        .line-chart svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .line-path {
+            fill: none;
+            stroke: var(--accent-primary);
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .line-point {
+            fill: var(--accent-primary);
+            stroke: var(--bg-primary);
+            stroke-width: 2;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .line-point:hover {
+            r: 6;
+            fill: var(--accent-secondary);
+        }
+
+        /* ===== ACHIEVEMENTS ===== */
+        .achievements-section {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .achievements-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .achievements-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--warning), #F59E0B);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .achievement-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .achievement-card.unlocked {
+            border-color: var(--warning);
+            background: rgba(245, 158, 11, 0.1);
+        }
+
+        .achievement-card.unlocked::after {
+            content: '✓';
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            width: 24px;
+            height: 24px;
+            background: var(--warning);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .achievement-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: block;
+            filter: grayscale(100%);
+            transition: filter 0.3s ease;
+        }
+
+        .achievement-card.unlocked .achievement-icon {
+            filter: none;
+        }
+
+        .achievement-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            font-size: 0.9rem;
+        }
+
+        .achievement-description {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .achievement-progress {
+            width: 100%;
+            height: 4px;
+            background: var(--bg-tertiary);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .achievement-progress-bar {
+            height: 100%;
+            background: var(--warning);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        /* ===== RECENT GAMES ===== */
+        .recent-games {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+
+        .recent-games-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .recent-games-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .view-all-btn {
+            background: var(--accent-primary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .view-all-btn:hover {
+            background: var(--accent-secondary);
+            transform: translateY(-1px);
+        }
+
+        .games-list {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .game-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .game-item:hover {
+            border-color: var(--accent-primary);
+            transform: translateX(4px);
+        }
+
+        .game-result {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .game-result.win {
+            background: var(--success);
+            color: white;
+        }
+
+        .game-result.loss {
+            background: var(--danger);
+            color: white;
+        }
+
+        .game-info {
+            flex: 1;
+        }
+
+        .game-mode {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .game-details {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .game-date {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .overview-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-summary {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .overview-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background animé -->
+    <div class="animated-bg"></div>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <a href="index-ultimate.html" class="back-btn">
+                <span>←</span>
+                <span>Retour</span>
+            </a>
+            <div class="header-title">Statistiques</div>
+            <div class="stats-summary">
+                <div class="stat-item">
+                    <span>Niveau: </span>
+                    <span style="color: var(--accent-primary); font-weight: 600;">Expert</span>
+                </div>
+                <div class="stat-item">
+                    <span>Rang: </span>
+                    <span style="color: var(--warning); font-weight: 600;">#42</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Container principal -->
+    <div class="container">
+        <!-- Vue d'ensemble -->
+        <div class="overview-grid">
+            <div class="overview-card">
+                <div class="overview-icon">🎮</div>
+                <div class="overview-value" id="totalGames">127</div>
+                <div class="overview-label">Parties jouées</div>
+                <div class="overview-change positive">+12 cette semaine</div>
+            </div>
+
+            <div class="overview-card">
+                <div class="overview-icon">🏆</div>
+                <div class="overview-value" id="winRate">68%</div>
+                <div class="overview-label">Taux de victoire</div>
+                <div class="overview-change positive">+3% ce mois</div>
+            </div>
+
+            <div class="overview-card">
+                <div class="overview-icon">🔥</div>
+                <div class="overview-value" id="winStreak">7</div>
+                <div class="overview-label">Série actuelle</div>
+                <div class="overview-change positive">Record: 12</div>
+            </div>
+
+            <div class="overview-card">
+                <div class="overview-icon">⏱️</div>
+                <div class="overview-value" id="avgDuration">8m</div>
+                <div class="overview-label">Durée moyenne</div>
+                <div class="overview-change">Par partie</div>
+            </div>
+        </div>
+
+        <!-- Graphiques -->
+        <div class="charts-grid">
+            <!-- Graphique en barres - Victoires par rôle -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">Victoires par rôle</div>
+                    <div class="chart-period">30 derniers jours</div>
+                </div>
+                <div class="chart-container">
+                    <div class="bar-chart" id="roleWinsChart">
+                        <!-- Sera généré dynamiquement -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Graphique circulaire - Répartition des rôles -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">Répartition des rôles</div>
+                    <div class="chart-period">Toutes les parties</div>
+                </div>
+                <div class="chart-container">
+                    <div class="pie-chart" id="roleDistributionChart">
+                        <!-- Sera généré dynamiquement -->
+                    </div>
+                    <div class="pie-legend" id="roleLegend">
+                        <!-- Sera généré dynamiquement -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Graphique linéaire - Évolution du taux de victoire -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">Évolution du taux de victoire</div>
+                    <div class="chart-period">6 derniers mois</div>
+                </div>
+                <div class="chart-container">
+                    <div class="line-chart" id="winRateEvolution">
+                        <svg viewBox="0 0 400 200">
+                            <!-- Sera généré dynamiquement -->
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Graphique en barres - Parties par mode -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">Parties par mode de jeu</div>
+                    <div class="chart-period">Toutes les parties</div>
+                </div>
+                <div class="chart-container">
+                    <div class="bar-chart" id="gameModeChart">
+                        <!-- Sera généré dynamiquement -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Succès -->
+        <div class="achievements-section">
+            <div class="achievements-header">
+                <div class="achievements-icon">🏅</div>
+                <div>
+                    <div class="chart-title">Succès</div>
+                    <div style="color: var(--text-secondary); font-size: 0.9rem;">12/24 débloqués</div>
+                </div>
+            </div>
+
+            <div class="achievements-grid" id="achievementsGrid">
+                <!-- Sera généré dynamiquement -->
+            </div>
+        </div>
+
+        <!-- Parties récentes -->
+        <div class="recent-games">
+            <div class="recent-games-header">
+                <div class="recent-games-title">Parties récentes</div>
+                <a href="#" class="view-all-btn">Voir tout</a>
+            </div>
+
+            <div class="games-list" id="recentGamesList">
+                <!-- Sera généré dynamiquement -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== DONNÉES SIMULÉES =====
+        const statsData = {
+            overview: {
+                totalGames: 127,
+                wins: 86,
+                winRate: 68,
+                currentStreak: 7,
+                bestStreak: 12,
+                avgDuration: 8
+            },
+            roleWins: {
+                'Civil': 45,
+                'Undercover': 28,
+                'Oracle': 8,
+                'Gardien': 3,
+                'Saboteur': 2
+            },
+            roleDistribution: {
+                'Civil': 65,
+                'Undercover': 25,
+                'Oracle': 6,
+                'Gardien': 2,
+                'Saboteur': 2
+            },
+            winRateEvolution: [
+                { month: 'Jan', rate: 45 },
+                { month: 'Fév', rate: 52 },
+                { month: 'Mar', rate: 48 },
+                { month: 'Avr', rate: 61 },
+                { month: 'Mai', rate: 65 },
+                { month: 'Jun', rate: 68 }
+            ],
+            gameModes: {
+                'Classique': 78,
+                'Avancé': 32,
+                'Blitz': 12,
+                'Personnalisé': 5
+            },
+            achievements: [
+                { id: 'first_win', name: 'Première victoire', description: 'Gagner votre première partie', icon: '🎉', unlocked: true, progress: 100 },
+                { id: 'undercover_master', name: 'Maître Undercover', description: 'Gagner 10 parties en tant qu\'Undercover', icon: '🎭', unlocked: true, progress: 100 },
+                { id: 'detective', name: 'Détective', description: 'Identifier correctement 5 Undercover', icon: '🕵️', unlocked: true, progress: 100 },
+                { id: 'social_butterfly', name: 'Papillon social', description: 'Jouer avec 20 joueurs différents', icon: '🦋', unlocked: false, progress: 75 },
+                { id: 'speed_demon', name: 'Démon de vitesse', description: 'Gagner une partie en moins de 5 minutes', icon: '⚡', unlocked: false, progress: 0 },
+                { id: 'survivor', name: 'Survivant', description: 'Survivre 3 tours en tant qu\'Undercover', icon: '🛡️', unlocked: true, progress: 100 },
+                { id: 'streak_master', name: 'Série de victoires', description: 'Gagner 10 parties d\'affilée', icon: '🔥', unlocked: false, progress: 70 },
+                { id: 'role_master', name: 'Maître des rôles', description: 'Gagner avec chaque rôle spécial', icon: '🎪', unlocked: false, progress: 40 }
+            ],
+            recentGames: [
+                { mode: 'Classique', result: 'win', role: 'Civil', players: 6, duration: '7m 32s', date: '2024-01-15 14:30' },
+                { mode: 'Avancé', result: 'win', role: 'Oracle', players: 8, duration: '12m 15s', date: '2024-01-15 13:45' },
+                { mode: 'Blitz', result: 'loss', role: 'Undercover', players: 5, duration: '4m 22s', date: '2024-01-15 13:20' },
+                { mode: 'Classique', result: 'win', role: 'Civil', players: 7, duration: '9m 08s', date: '2024-01-15 12:55' },
+                { mode: 'Classique', result: 'win', role: 'Undercover', players: 6, duration: '8m 44s', date: '2024-01-15 12:30' }
+            ]
+        };
+
+        // ===== GÉNÉRATION DES GRAPHIQUES =====
+        function generateRoleWinsChart() {
+            const container = document.getElementById('roleWinsChart');
+            const maxValue = Math.max(...Object.values(statsData.roleWins));
+            
+            container.innerHTML = Object.entries(statsData.roleWins).map(([role, wins]) => {
+                const height = (wins / maxValue) * 100;
+                return `
+                    <div class="bar" style="height: ${height}%;" title="${role}: ${wins} victoires">
+                        <div class="bar-value">${wins}</div>
+                        <div class="bar-label">${role}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function generateRoleDistributionChart() {
+            const container = document.getElementById('roleDistributionChart');
+            const legend = document.getElementById('roleLegend');
+            const total = Object.values(statsData.roleDistribution).reduce((sum, val) => sum + val, 0);
+            
+            const colors = ['#6366F1', '#8B5CF6', '#EC4899', '#10B981', '#F59E0B'];
+            let currentAngle = 0;
+            
+            const slices = Object.entries(statsData.roleDistribution).map(([role, count], index) => {
+                const percentage = (count / total) * 100;
+                const angle = (count / total) * 360;
+                const color = colors[index % colors.length];
+                
+                const slice = document.createElement('div');
+                slice.className = 'pie-slice';
+                slice.style.background = `conic-gradient(${color} 0deg ${angle}deg, transparent ${angle}deg 360deg)`;
+                slice.style.transform = `rotate(${currentAngle}deg)`;
+                slice.title = `${role}: ${percentage.toFixed(1)}%`;
+                
+                currentAngle += angle;
+                return { element: slice, role, count, percentage: percentage.toFixed(1), color };
+            });
+            
+            container.innerHTML = '';
+            slices.forEach(slice => container.appendChild(slice.element));
+            
+            legend.innerHTML = slices.map(slice => `
+                <div class="legend-item">
+                    <div class="legend-color" style="background: ${slice.color}"></div>
+                    <span>${slice.role} (${slice.percentage}%)</span>
+                </div>
+            `).join('');
+        }
+
+        function generateWinRateEvolution() {
+            const svg = document.querySelector('#winRateEvolution svg');
+            const data = statsData.winRateEvolution;
+            const width = 400;
+            const height = 200;
+            const padding = 40;
+            
+            // Calculer les points
+            const points = data.map((item, index) => {
+                const x = padding + (index / (data.length - 1)) * (width - 2 * padding);
+                const y = height - padding - ((item.rate - 40) / 30) * (height - 2 * padding);
+                return { x, y, rate: item.rate, month: item.month };
+            });
+            
+            // Créer le chemin de la ligne
+            const pathData = points.map((point, index) => 
+                `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`
+            ).join(' ');
+            
+            svg.innerHTML = `
+                <!-- Grille -->
+                <defs>
+                    <pattern id="grid" width="40" height="20" patternUnits="userSpaceOnUse">
+                        <path d="M 40 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+                    </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#grid)" />
+                
+                <!-- Ligne -->
+                <path d="${pathData}" class="line-path" />
+                
+                <!-- Points -->
+                ${points.map(point => `
+                    <circle cx="${point.x}" cy="${point.y}" r="4" class="line-point">
+                        <title>${point.month}: ${point.rate}%</title>
+                    </circle>
+                `).join('')}
+                
+                <!-- Labels des mois -->
+                ${points.map(point => `
+                    <text x="${point.x}" y="${height - 10}" text-anchor="middle" fill="var(--text-muted)" font-size="10">
+                        ${point.month}
+                    </text>
+                `).join('')}
+            `;
+        }
+
+        function generateGameModeChart() {
+            const container = document.getElementById('gameModeChart');
+            const maxValue = Math.max(...Object.values(statsData.gameModes));
+            
+            container.innerHTML = Object.entries(statsData.gameModes).map(([mode, count]) => {
+                const height = (count / maxValue) * 100;
+                return `
+                    <div class="bar" style="height: ${height}%;" title="${mode}: ${count} parties">
+                        <div class="bar-value">${count}</div>
+                        <div class="bar-label">${mode}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function generateAchievements() {
+            const container = document.getElementById('achievementsGrid');
+            
+            container.innerHTML = statsData.achievements.map(achievement => `
+                <div class="achievement-card ${achievement.unlocked ? 'unlocked' : ''}">
+                    <div class="achievement-icon">${achievement.icon}</div>
+                    <div class="achievement-name">${achievement.name}</div>
+                    <div class="achievement-description">${achievement.description}</div>
+                    <div class="achievement-progress">
+                        <div class="achievement-progress-bar" style="width: ${achievement.progress}%"></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function generateRecentGames() {
+            const container = document.getElementById('recentGamesList');
+            
+            container.innerHTML = statsData.recentGames.map(game => {
+                const date = new Date(game.date);
+                const timeAgo = getTimeAgo(date);
+                
+                return `
+                    <div class="game-item">
+                        <div class="game-result ${game.result}">
+                            ${game.result === 'win' ? '✓' : '✗'}
+                        </div>
+                        <div class="game-info">
+                            <div class="game-mode">${game.mode} - ${game.role}</div>
+                            <div class="game-details">${game.players} joueurs • ${game.duration}</div>
+                        </div>
+                        <div class="game-date">${timeAgo}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getTimeAgo(date) {
+            const now = new Date();
+            const diffInMinutes = Math.floor((now - date) / (1000 * 60));
+            
+            if (diffInMinutes < 60) {
+                return `Il y a ${diffInMinutes}m`;
+            } else if (diffInMinutes < 1440) {
+                return `Il y a ${Math.floor(diffInMinutes / 60)}h`;
+            } else {
+                return `Il y a ${Math.floor(diffInMinutes / 1440)}j`;
+            }
+        }
+
+        // ===== ANIMATIONS D'ENTRÉE =====
+        function animateCounters() {
+            const counters = [
+                { element: document.getElementById('totalGames'), target: statsData.overview.totalGames },
+                { element: document.getElementById('winRate'), target: statsData.overview.winRate, suffix: '%' },
+                { element: document.getElementById('winStreak'), target: statsData.overview.currentStreak },
+                { element: document.getElementById('avgDuration'), target: statsData.overview.avgDuration, suffix: 'm' }
+            ];
+
+            counters.forEach(counter => {
+                let current = 0;
+                const increment = counter.target / 50;
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= counter.target) {
+                        current = counter.target;
+                        clearInterval(timer);
+                    }
+                    counter.element.textContent = Math.floor(current) + (counter.suffix || '');
+                }, 20);
+            });
+        }
+
+        function animateCharts() {
+            // Animer les barres
+            document.querySelectorAll('.bar').forEach((bar, index) => {
+                bar.style.height = '0%';
+                setTimeout(() => {
+                    bar.style.transition = 'height 0.8s ease-out';
+                    bar.style.height = bar.dataset.height || bar.style.height;
+                }, index * 100);
+            });
+
+            // Animer les succès
+            document.querySelectorAll('.achievement-progress-bar').forEach((bar, index) => {
+                const width = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.transition = 'width 0.8s ease-out';
+                    bar.style.width = width;
+                }, index * 50);
+            });
+        }
+
+        // ===== INTERACTIONS =====
+        function addInteractions() {
+            // Hover sur les barres
+            document.querySelectorAll('.bar').forEach(bar => {
+                bar.addEventListener('mouseenter', () => {
+                    bar.style.filter = 'brightness(1.2)';
+                });
+                
+                bar.addEventListener('mouseleave', () => {
+                    bar.style.filter = 'brightness(1)';
+                });
+            });
+
+            // Click sur les succès
+            document.querySelectorAll('.achievement-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    if (!card.classList.contains('unlocked')) {
+                        card.style.animation = 'shake 0.5s ease-in-out';
+                        setTimeout(() => {
+                            card.style.animation = '';
+                        }, 500);
+                    }
+                });
+            });
+        }
+
+        // ===== INITIALISATION =====
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('📊 Statistiques initialisées');
+            
+            // Générer tous les graphiques
+            generateRoleWinsChart();
+            generateRoleDistributionChart();
+            generateWinRateEvolution();
+            generateGameModeChart();
+            generateAchievements();
+            generateRecentGames();
+            
+            // Animer les éléments
+            setTimeout(() => {
+                animateCounters();
+                animateCharts();
+            }, 500);
+            
+            // Ajouter les interactions
+            addInteractions();
+        });
+
+        // Ajouter les animations CSS
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-5px); }
+                75% { transform: translateX(5px); }
+            }
+            
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            
+            .overview-card, .chart-card, .achievement-card, .game-item {
+                animation: fadeInUp 0.6s ease-out;
+            }
+            
+            .overview-card:nth-child(2) { animation-delay: 0.1s; }
+            .overview-card:nth-child(3) { animation-delay: 0.2s; }
+            .overview-card:nth-child(4) { animation-delay: 0.3s; }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
