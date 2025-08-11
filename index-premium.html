@@ -1,0 +1,1658 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <title>Undercover Premium - Révolution</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- PWA Meta -->
+    <meta name="theme-color" content="#0A0A0F">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="manifest.json">
+    
+    <style>
+        /* ===== CSS VARIABLES ===== */
+        :root {
+            /* Premium Dark Theme */
+            --bg-primary: #0A0A0F;
+            --bg-secondary: #12121A;
+            --bg-tertiary: #1A1A25;
+            --bg-glass: rgba(26, 26, 37, 0.8);
+            --bg-card: rgba(18, 18, 26, 0.95);
+            
+            /* Premium Colors */
+            --accent-primary: #6366F1;
+            --accent-secondary: #8B5CF6;
+            --accent-tertiary: #EC4899;
+            --accent-gradient: linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #EC4899 100%);
+            --accent-glow: rgba(99, 102, 241, 0.4);
+            
+            /* Text Colors */
+            --text-primary: #FFFFFF;
+            --text-secondary: #A1A1AA;
+            --text-muted: #71717A;
+            --text-accent: #6366F1;
+            
+            /* Status Colors */
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --info: #3B82F6;
+            
+            /* Borders & Shadows */
+            --border-primary: rgba(255, 255, 255, 0.1);
+            --border-secondary: rgba(255, 255, 255, 0.05);
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --shadow-glow: 0 0 20px var(--accent-glow);
+            
+            /* Spacing */
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            
+            /* Animations */
+            --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            --bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        /* ===== RESET & BASE ===== */
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ===== PREMIUM BACKGROUND ===== */
+        .app {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            background: var(--bg-primary);
+        }
+
+        .app::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 60%, rgba(236, 72, 153, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .app::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* ===== GLASS MORPHISM COMPONENTS ===== */
+        .glass {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-primary);
+        }
+
+        .card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            transition: all var(--transition-normal);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-xl), var(--shadow-glow);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* ===== PREMIUM BUTTONS ===== */
+        .btn {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: var(--radius-md);
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left var(--transition-slow);
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: var(--accent-gradient);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg), var(--shadow-glow);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-card);
+            border-color: var(--accent-primary);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-secondary);
+        }
+
+        .btn-ghost:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border-color: var(--border-primary);
+        }
+
+        .btn-icon {
+            width: 48px;
+            height: 48px;
+            padding: 0;
+            border-radius: 50%;
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-primary);
+        }
+
+        .btn-icon:hover {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            transform: scale(1.05);
+        }
+
+        /* ===== PREMIUM INPUTS ===== */
+        .input {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all var(--transition-normal);
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+            background: var(--bg-card);
+        }
+
+        .input::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* ===== LAYOUT COMPONENTS ===== */
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+            transition: all var(--transition-normal);
+            z-index: 2;
+        }
+
+        .screen.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            z-index: 3;
+        }
+
+        .container {
+            position: relative;
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 1rem;
+            z-index: 2;
+        }
+
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            padding: 1rem;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: var(--accent-gradient);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        /* ===== HOME SCREEN ===== */
+        .home-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .home-logo {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 2rem;
+            background: var(--accent-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            animation: float 3s ease-in-out infinite;
+            box-shadow: var(--shadow-xl), var(--shadow-glow);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .home-title {
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: var(--accent-gradient);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { filter: brightness(1); }
+            to { filter: brightness(1.2); }
+        }
+
+        .home-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            max-width: 400px;
+        }
+
+        .home-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        /* ===== PLAYER SETUP ===== */
+        .player-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .player-card {
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            background: var(--bg-card);
+            border: 1px solid var(--border-primary);
+            transition: all var(--transition-normal);
+        }
+
+        .player-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--accent-primary);
+        }
+
+        .player-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--accent-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .player-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .player-role {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* ===== GAME SCREEN ===== */
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: relative;
+            z-index: 2;
+        }
+
+        .game-header {
+            padding: 1rem;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .game-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem 1rem;
+            overflow-y: auto;
+        }
+
+        .turn-indicator {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .current-player {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .turn-timer {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--text-primary);
+            margin: 2rem 0;
+            text-align: center;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* ===== CARD REVEAL ===== */
+        .reveal-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 400px;
+            perspective: 1000px;
+        }
+
+        .reveal-card {
+            width: 280px;
+            height: 400px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s var(--bounce);
+            cursor: pointer;
+        }
+
+        .reveal-card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            border-radius: var(--radius-xl);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .card-front {
+            background: var(--bg-card);
+            border: 1px solid var(--border-primary);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-back {
+            background: var(--accent-gradient);
+            color: white;
+            transform: rotateY(180deg);
+            box-shadow: var(--shadow-xl), var(--shadow-glow);
+        }
+
+        .card-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.8;
+        }
+
+        .card-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            opacity: 0.9;
+        }
+
+        .secret-word {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .word-description {
+            font-size: 1rem;
+            opacity: 0.8;
+            line-height: 1.5;
+        }
+
+        /* ===== VOTING INTERFACE ===== */
+        .voting-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .vote-card {
+            aspect-ratio: 1;
+            border-radius: var(--radius-lg);
+            background: var(--bg-card);
+            border: 2px solid var(--border-primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vote-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--accent-gradient);
+            opacity: 0;
+            transition: opacity var(--transition-normal);
+        }
+
+        .vote-card:hover {
+            transform: translateY(-4px) scale(1.05);
+            border-color: var(--accent-primary);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .vote-card.selected {
+            border-color: var(--accent-primary);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .vote-card.selected::before {
+            opacity: 0.1;
+        }
+
+        .vote-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--accent-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .vote-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===== MODAL SYSTEM ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition-normal);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            max-width: 400px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-xl);
+            transform: scale(0.9) translateY(20px);
+            transition: all var(--transition-normal);
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--accent-primary);
+        }
+
+        .modal-content {
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        /* ===== ANIMATIONS ===== */
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .slide-up {
+            animation: slideUp 0.5s var(--bounce);
+        }
+
+        .scale-in {
+            animation: scaleIn 0.3s var(--bounce);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from { 
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to { 
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* ===== RESPONSIVE DESIGN ===== */
+        @media (max-width: 480px) {
+            .container {
+                padding: 0.5rem;
+            }
+            
+            .home-container {
+                padding: 1rem;
+            }
+            
+            .btn {
+                padding: 0.875rem 1.5rem;
+            }
+            
+            .reveal-card {
+                width: 240px;
+                height: 340px;
+            }
+            
+            .secret-word {
+                font-size: 2rem;
+            }
+        }
+
+        /* ===== PREMIUM THEMES ===== */
+        .theme-neon {
+            --accent-primary: #00F5FF;
+            --accent-secondary: #FF00FF;
+            --accent-tertiary: #00FF41;
+            --accent-gradient: linear-gradient(135deg, #00F5FF 0%, #FF00FF 50%, #00FF41 100%);
+            --accent-glow: rgba(0, 245, 255, 0.4);
+        }
+
+        .theme-sunset {
+            --accent-primary: #FF6B6B;
+            --accent-secondary: #FFE66D;
+            --accent-tertiary: #FF8E53;
+            --accent-gradient: linear-gradient(135deg, #FF6B6B 0%, #FFE66D 50%, #FF8E53 100%);
+            --accent-glow: rgba(255, 107, 107, 0.4);
+        }
+
+        .theme-ocean {
+            --accent-primary: #0EA5E9;
+            --accent-secondary: #06B6D4;
+            --accent-tertiary: #8B5CF6;
+            --accent-gradient: linear-gradient(135deg, #0EA5E9 0%, #06B6D4 50%, #8B5CF6 100%);
+            --accent-glow: rgba(14, 165, 233, 0.4);
+        }
+
+        /* ===== LOADING STATES ===== */
+        .loading {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* ===== UTILITY CLASSES ===== */
+        .text-center { text-align: center; }
+        .text-left { text-align: left; }
+        .text-right { text-align: right; }
+
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .items-center { align-items: center; }
+        .justify-center { justify-content: center; }
+        .justify-between { justify-content: space-between; }
+
+        .w-full { width: 100%; }
+        .h-full { height: 100%; }
+
+        .mb-1 { margin-bottom: 0.25rem; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-8 { margin-bottom: 2rem; }
+
+        .p-4 { padding: 1rem; }
+        .p-6 { padding: 1.5rem; }
+        .p-8 { padding: 2rem; }
+
+        .hidden { display: none; }
+        .visible { display: block; }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <!-- HOME SCREEN -->
+        <div id="screen-home" class="screen active">
+            <div class="home-container fade-in">
+                <div class="home-logo">🎭</div>
+                <h1 class="home-title">Undercover</h1>
+                <p class="home-subtitle">L'expérience premium du jeu d'espionnage le plus captivant</p>
+                
+                <div class="home-actions">
+                    <button id="btn-start-game" class="btn btn-primary slide-up">
+                        <span>🚀</span>
+                        Commencer une partie
+                    </button>
+                    <button id="btn-join-game" class="btn btn-secondary slide-up">
+                        <span>🔗</span>
+                        Rejoindre une partie
+                    </button>
+                    <button id="btn-settings" class="btn btn-ghost slide-up">
+                        <span>⚙️</span>
+                        Paramètres
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SETUP SCREEN -->
+        <div id="screen-setup" class="screen">
+            <div class="header glass">
+                <div class="header-content">
+                    <button id="btn-back-home" class="btn-icon">
+                        <span>←</span>
+                    </button>
+                    <div class="logo">Configuration</div>
+                    <button id="btn-help" class="btn-icon">
+                        <span>?</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="container">
+                <div class="card p-6 mb-8 fade-in">
+                    <h2 class="text-center mb-4">Créer votre partie</h2>
+                    
+                    <div class="mb-4">
+                        <label class="block mb-2 text-sm font-medium">Nom de la partie</label>
+                        <input id="game-name" type="text" class="input" placeholder="Ma partie Undercover" value="Partie Premium">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block mb-2 text-sm font-medium">Mode de jeu</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button class="btn btn-secondary mode-btn active" data-mode="classic">
+                                <span>⚡</span>
+                                Classique
+                            </button>
+                            <button class="btn btn-secondary mode-btn" data-mode="premium">
+                                <span>💎</span>
+                                Premium
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block mb-2 text-sm font-medium">Nombre de joueurs</label>
+                        <div class="flex items-center justify-between">
+                            <button id="btn-minus-players" class="btn-icon">-</button>
+                            <span id="player-count" class="text-2xl font-bold">4</span>
+                            <button id="btn-plus-players" class="btn-icon">+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card p-6 mb-8 fade-in">
+                    <h3 class="mb-4">Joueurs</h3>
+                    <div id="players-list" class="space-y-3">
+                        <!-- Players will be added here -->
+                    </div>
+                    <button id="btn-add-player" class="btn btn-ghost w-full mt-4">
+                        <span>+</span>
+                        Ajouter un joueur
+                    </button>
+                </div>
+
+                <div class="flex gap-4">
+                    <button id="btn-start-premium-game" class="btn btn-primary flex-1">
+                        Lancer la partie
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- GAME SCREEN -->
+        <div id="screen-game" class="screen">
+            <div class="game-container">
+                <div class="game-header">
+                    <div class="header-content">
+                        <div class="logo">Undercover</div>
+                        <div class="flex items-center gap-2">
+                            <span id="round-counter" class="text-sm">Tour 1</span>
+                            <button id="btn-game-menu" class="btn-icon">⋮</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="game-content">
+                    <div id="game-phase-content">
+                        <!-- Game content will be dynamically loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- REVEAL SCREEN -->
+        <div id="screen-reveal" class="screen">
+            <div class="container">
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl font-bold mb-2">Découvrez votre rôle</h2>
+                    <p class="text-secondary">Touchez la carte pour révéler votre identité secrète</p>
+                </div>
+
+                <div class="reveal-container">
+                    <div id="reveal-card" class="reveal-card">
+                        <div class="card-face card-front">
+                            <div class="card-icon">🎭</div>
+                            <div class="card-text">Touchez pour révéler</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <div id="revealed-role" class="secret-word">CIVIL</div>
+                            <div id="revealed-word" class="word-description">Votre mot secret</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-8">
+                    <button id="btn-continue-game" class="btn btn-primary">
+                        Continuer
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- VOTING SCREEN -->
+        <div id="screen-voting" class="screen">
+            <div class="container">
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl font-bold mb-2">Phase de vote</h2>
+                    <p class="text-secondary">Qui pensez-vous être l'Undercover ?</p>
+                    <div id="vote-timer" class="turn-timer">30</div>
+                </div>
+
+                <div id="voting-grid" class="voting-grid">
+                    <!-- Voting cards will be added here -->
+                </div>
+
+                <div class="text-center mt-8">
+                    <button id="btn-confirm-vote" class="btn btn-primary" disabled>
+                        Confirmer le vote
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- RESULTS SCREEN -->
+        <div id="screen-results" class="screen">
+            <div class="container text-center">
+                <div id="results-content">
+                    <!-- Results will be shown here -->
+                </div>
+                
+                <div class="flex gap-4 mt-8">
+                    <button id="btn-new-game" class="btn btn-secondary flex-1">
+                        Nouvelle partie
+                    </button>
+                    <button id="btn-play-again" class="btn btn-primary flex-1">
+                        Rejouer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL OVERLAY -->
+    <div id="modal-overlay" class="modal-overlay">
+        <div class="modal">
+            <h3 id="modal-title" class="modal-title"></h3>
+            <div id="modal-content" class="modal-content"></div>
+            <div id="modal-actions" class="modal-actions">
+                <button id="modal-close" class="btn btn-ghost">Fermer</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== PREMIUM UNDERCOVER GAME ENGINE =====
+        
+        class PremiumUndercoverGame {
+            constructor() {
+                this.state = {
+                    screen: 'home',
+                    gameMode: 'classic',
+                    players: [],
+                    currentPlayer: 0,
+                    round: 1,
+                    phase: 'setup', // setup, reveal, hint, vote, results
+                    votes: {},
+                    eliminated: [],
+                    words: { civil: '', undercover: '' },
+                    roles: {},
+                    timer: null,
+                    timeLeft: 0
+                };
+                
+                this.wordPairs = [
+                    ['Pomme', 'Poire'],
+                    ['Chat', 'Chien'],
+                    ['Café', 'Thé'],
+                    ['Plage', 'Montagne'],
+                    ['Livre', 'Film'],
+                    ['Pizza', 'Burger'],
+                    ['Été', 'Hiver'],
+                    ['Voiture', 'Vélo'],
+                    ['Mer', 'Océan'],
+                    ['Lune', 'Soleil']
+                ];
+                
+                this.init();
+            }
+            
+            init() {
+                this.bindEvents();
+                this.updatePlayersList();
+                this.showScreen('home');
+            }
+            
+            bindEvents() {
+                // Home screen
+                document.getElementById('btn-start-game').addEventListener('click', () => {
+                    this.showScreen('setup');
+                    this.playSound('click');
+                });
+                
+                document.getElementById('btn-join-game').addEventListener('click', () => {
+                    this.showModal('Rejoindre une partie', 'Fonctionnalité bientôt disponible !');
+                });
+                
+                document.getElementById('btn-settings').addEventListener('click', () => {
+                    this.showSettingsModal();
+                });
+                
+                // Setup screen
+                document.getElementById('btn-back-home').addEventListener('click', () => {
+                    this.showScreen('home');
+                    this.playSound('click');
+                });
+                
+                document.getElementById('btn-minus-players').addEventListener('click', () => {
+                    this.changePlayerCount(-1);
+                });
+                
+                document.getElementById('btn-plus-players').addEventListener('click', () => {
+                    this.changePlayerCount(1);
+                });
+                
+                document.getElementById('btn-add-player').addEventListener('click', () => {
+                    this.addPlayer();
+                });
+                
+                document.getElementById('btn-start-premium-game').addEventListener('click', () => {
+                    this.startGame();
+                });
+                
+                // Game mode buttons
+                document.querySelectorAll('.mode-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                        e.target.classList.add('active');
+                        this.state.gameMode = e.target.dataset.mode;
+                        this.playSound('click');
+                    });
+                });
+                
+                // Reveal card
+                document.getElementById('reveal-card').addEventListener('click', () => {
+                    this.revealCard();
+                });
+                
+                document.getElementById('btn-continue-game').addEventListener('click', () => {
+                    this.nextPhase();
+                });
+                
+                // Voting
+                document.getElementById('btn-confirm-vote').addEventListener('click', () => {
+                    this.confirmVote();
+                });
+                
+                // Results
+                document.getElementById('btn-new-game').addEventListener('click', () => {
+                    this.newGame();
+                });
+                
+                document.getElementById('btn-play-again').addEventListener('click', () => {
+                    this.playAgain();
+                });
+                
+                // Modal
+                document.getElementById('modal-close').addEventListener('click', () => {
+                    this.hideModal();
+                });
+                
+                document.getElementById('modal-overlay').addEventListener('click', (e) => {
+                    if (e.target === e.currentTarget) {
+                        this.hideModal();
+                    }
+                });
+            }
+            
+            showScreen(screenId) {
+                document.querySelectorAll('.screen').forEach(screen => {
+                    screen.classList.remove('active');
+                });
+                
+                const targetScreen = document.getElementById(`screen-${screenId}`);
+                if (targetScreen) {
+                    targetScreen.classList.add('active');
+                    this.state.screen = screenId;
+                }
+            }
+            
+            changePlayerCount(delta) {
+                const currentCount = parseInt(document.getElementById('player-count').textContent);
+                const newCount = Math.max(3, Math.min(12, currentCount + delta));
+                document.getElementById('player-count').textContent = newCount;
+                
+                // Adjust players array
+                while (this.state.players.length < newCount) {
+                    this.state.players.push({
+                        id: this.state.players.length + 1,
+                        name: `Joueur ${this.state.players.length + 1}`,
+                        role: null,
+                        word: null,
+                        eliminated: false
+                    });
+                }
+                
+                if (this.state.players.length > newCount) {
+                    this.state.players = this.state.players.slice(0, newCount);
+                }
+                
+                this.updatePlayersList();
+                this.playSound('click');
+            }
+            
+            addPlayer() {
+                const name = prompt('Nom du joueur :') || `Joueur ${this.state.players.length + 1}`;
+                this.state.players.push({
+                    id: this.state.players.length + 1,
+                    name: name,
+                    role: null,
+                    word: null,
+                    eliminated: false
+                });
+                
+                document.getElementById('player-count').textContent = this.state.players.length;
+                this.updatePlayersList();
+                this.playSound('click');
+            }
+            
+            updatePlayersList() {
+                const container = document.getElementById('players-list');
+                container.innerHTML = '';
+                
+                this.state.players.forEach((player, index) => {
+                    const playerEl = document.createElement('div');
+                    playerEl.className = 'flex items-center justify-between p-4 bg-tertiary rounded-lg';
+                    playerEl.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <div class="player-avatar w-10 h-10 text-sm">${player.name.charAt(0).toUpperCase()}</div>
+                            <span class="font-medium">${player.name}</span>
+                        </div>
+                        <button class="btn-icon text-sm" onclick="game.removePlayer(${index})">×</button>
+                    `;
+                    container.appendChild(playerEl);
+                });
+            }
+            
+            removePlayer(index) {
+                this.state.players.splice(index, 1);
+                document.getElementById('player-count').textContent = this.state.players.length;
+                this.updatePlayersList();
+                this.playSound('eliminate');
+            }
+            
+            startGame() {
+                if (this.state.players.length < 3) {
+                    this.showModal('Erreur', 'Il faut au moins 3 joueurs pour commencer une partie.');
+                    return;
+                }
+                
+                this.assignRoles();
+                this.assignWords();
+                this.state.phase = 'reveal';
+                this.state.currentPlayer = 0;
+                this.showScreen('reveal');
+                this.updateRevealCard();
+                this.playSound('start');
+            }
+            
+            assignRoles() {
+                const playerCount = this.state.players.length;
+                const undercoverCount = Math.max(1, Math.floor(playerCount / 4));
+                
+                // Reset roles
+                this.state.players.forEach(player => player.role = 'civil');
+                
+                // Assign undercover roles randomly
+                const shuffled = [...this.state.players].sort(() => Math.random() - 0.5);
+                for (let i = 0; i < undercoverCount; i++) {
+                    shuffled[i].role = 'undercover';
+                }
+                
+                // Store roles mapping
+                this.state.roles = {};
+                this.state.players.forEach(player => {
+                    this.state.roles[player.id] = player.role;
+                });
+            }
+            
+            assignWords() {
+                const wordPair = this.wordPairs[Math.floor(Math.random() * this.wordPairs.length)];
+                const [civilWord, undercoverWord] = Math.random() > 0.5 ? wordPair : [wordPair[1], wordPair[0]];
+                
+                this.state.words.civil = civilWord;
+                this.state.words.undercover = undercoverWord;
+                
+                this.state.players.forEach(player => {
+                    player.word = player.role === 'civil' ? civilWord : undercoverWord;
+                });
+            }
+            
+            updateRevealCard() {
+                const currentPlayer = this.state.players[this.state.currentPlayer];
+                document.getElementById('revealed-role').textContent = 
+                    currentPlayer.role === 'civil' ? 'CIVIL' : 'UNDERCOVER';
+                document.getElementById('revealed-word').textContent = currentPlayer.word;
+                
+                // Reset card flip
+                document.getElementById('reveal-card').classList.remove('flipped');
+            }
+            
+            revealCard() {
+                document.getElementById('reveal-card').classList.toggle('flipped');
+                this.playSound('flip');
+            }
+            
+            nextPhase() {
+                if (this.state.phase === 'reveal') {
+                    this.state.currentPlayer++;
+                    
+                    if (this.state.currentPlayer >= this.state.players.length) {
+                        // All players have seen their cards, start voting
+                        this.state.phase = 'vote';
+                        this.showVotingScreen();
+                    } else {
+                        // Next player's turn to reveal
+                        this.updateRevealCard();
+                    }
+                } else if (this.state.phase === 'vote') {
+                    this.processVotes();
+                }
+                
+                this.playSound('click');
+            }
+            
+            showVotingScreen() {
+                this.showScreen('voting');
+                this.createVotingCards();
+                this.startVoteTimer();
+            }
+            
+            createVotingCards() {
+                const container = document.getElementById('voting-grid');
+                container.innerHTML = '';
+                
+                this.state.players.filter(p => !p.eliminated).forEach(player => {
+                    const card = document.createElement('div');
+                    card.className = 'vote-card';
+                    card.dataset.playerId = player.id;
+                    card.innerHTML = `
+                        <div class="vote-avatar">${player.name.charAt(0).toUpperCase()}</div>
+                        <div class="vote-name">${player.name}</div>
+                    `;
+                    
+                    card.addEventListener('click', () => {
+                        this.selectVote(player.id, card);
+                    });
+                    
+                    container.appendChild(card);
+                });
+            }
+            
+            selectVote(playerId, cardElement) {
+                // Remove previous selection
+                document.querySelectorAll('.vote-card').forEach(card => {
+                    card.classList.remove('selected');
+                });
+                
+                // Select new card
+                cardElement.classList.add('selected');
+                this.state.selectedVote = playerId;
+                
+                // Enable confirm button
+                document.getElementById('btn-confirm-vote').disabled = false;
+                this.playSound('click');
+            }
+            
+            startVoteTimer() {
+                this.state.timeLeft = 30;
+                this.updateVoteTimer();
+                
+                this.state.timer = setInterval(() => {
+                    this.state.timeLeft--;
+                    this.updateVoteTimer();
+                    
+                    if (this.state.timeLeft <= 0) {
+                        clearInterval(this.state.timer);
+                        this.confirmVote();
+                    }
+                }, 1000);
+            }
+            
+            updateVoteTimer() {
+                document.getElementById('vote-timer').textContent = this.state.timeLeft;
+            }
+            
+            confirmVote() {
+                if (this.state.timer) {
+                    clearInterval(this.state.timer);
+                }
+                
+                if (this.state.selectedVote) {
+                    this.state.votes[Date.now()] = this.state.selectedVote;
+                }
+                
+                this.processVotes();
+            }
+            
+            processVotes() {
+                // For demo purposes, randomly eliminate a player
+                const alivePlayers = this.state.players.filter(p => !p.eliminated);
+                const eliminatedPlayer = alivePlayers[Math.floor(Math.random() * alivePlayers.length)];
+                eliminatedPlayer.eliminated = true;
+                this.state.eliminated.push(eliminatedPlayer.id);
+                
+                this.showResults(eliminatedPlayer);
+            }
+            
+            showResults(eliminatedPlayer) {
+                this.showScreen('results');
+                
+                const resultsContent = document.getElementById('results-content');
+                const isGameOver = this.checkGameEnd();
+                
+                if (isGameOver) {
+                    const winner = isGameOver.winner;
+                    resultsContent.innerHTML = `
+                        <div class="text-center">
+                            <div class="text-6xl mb-4">${winner === 'civil' ? '🏆' : '🎭'}</div>
+                            <h2 class="text-3xl font-bold mb-4">
+                                ${winner === 'civil' ? 'Les Civils gagnent !' : 'Les Undercover gagnent !'}
+                            </h2>
+                            <p class="text-lg text-secondary mb-8">
+                                ${eliminatedPlayer.name} (${eliminatedPlayer.role}) a été éliminé(e)
+                            </p>
+                            <div class="card p-6">
+                                <h3 class="text-xl font-bold mb-4">Révélation des rôles</h3>
+                                <div class="space-y-2">
+                                    ${this.state.players.map(player => `
+                                        <div class="flex justify-between items-center">
+                                            <span>${player.name}</span>
+                                            <span class="font-bold ${player.role === 'civil' ? 'text-blue-400' : 'text-red-400'}">
+                                                ${player.role.toUpperCase()} - ${player.word}
+                                            </span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    resultsContent.innerHTML = `
+                        <div class="text-center">
+                            <div class="text-6xl mb-4">⚡</div>
+                            <h2 class="text-2xl font-bold mb-4">Tour ${this.state.round} terminé</h2>
+                            <p class="text-lg text-secondary mb-8">
+                                ${eliminatedPlayer.name} (${eliminatedPlayer.role}) a été éliminé(e)
+                            </p>
+                            <button id="btn-next-round" class="btn btn-primary">
+                                Tour suivant
+                            </button>
+                        </div>
+                    `;
+                    
+                    document.getElementById('btn-next-round').addEventListener('click', () => {
+                        this.nextRound();
+                    });
+                }
+                
+                this.playSound(isGameOver ? 'win' : 'eliminate');
+            }
+            
+            checkGameEnd() {
+                const alivePlayers = this.state.players.filter(p => !p.eliminated);
+                const aliveCivils = alivePlayers.filter(p => p.role === 'civil');
+                const aliveUndercover = alivePlayers.filter(p => p.role === 'undercover');
+                
+                if (aliveUndercover.length === 0) {
+                    return { winner: 'civil' };
+                }
+                
+                if (aliveUndercover.length >= aliveCivils.length) {
+                    return { winner: 'undercover' };
+                }
+                
+                return null;
+            }
+            
+            nextRound() {
+                this.state.round++;
+                this.state.phase = 'vote';
+                this.state.votes = {};
+                this.state.selectedVote = null;
+                this.showVotingScreen();
+            }
+            
+            newGame() {
+                this.state = {
+                    screen: 'home',
+                    gameMode: 'classic',
+                    players: [],
+                    currentPlayer: 0,
+                    round: 1,
+                    phase: 'setup',
+                    votes: {},
+                    eliminated: [],
+                    words: { civil: '', undercover: '' },
+                    roles: {},
+                    timer: null,
+                    timeLeft: 0
+                };
+                
+                this.showScreen('home');
+                this.updatePlayersList();
+                this.playSound('click');
+            }
+            
+            playAgain() {
+                this.state.eliminated = [];
+                this.state.votes = {};
+                this.state.round = 1;
+                this.state.currentPlayer = 0;
+                this.state.phase = 'reveal';
+                
+                this.state.players.forEach(player => {
+                    player.eliminated = false;
+                });
+                
+                this.assignRoles();
+                this.assignWords();
+                this.showScreen('reveal');
+                this.updateRevealCard();
+                this.playSound('start');
+            }
+            
+            showModal(title, content, actions = null) {
+                document.getElementById('modal-title').textContent = title;
+                document.getElementById('modal-content').innerHTML = content;
+                
+                if (actions) {
+                    const actionsContainer = document.getElementById('modal-actions');
+                    actionsContainer.innerHTML = '';
+                    actions.forEach(action => {
+                        const btn = document.createElement('button');
+                        btn.className = `btn ${action.class || 'btn-primary'}`;
+                        btn.textContent = action.text;
+                        btn.addEventListener('click', action.onClick || (() => this.hideModal()));
+                        actionsContainer.appendChild(btn);
+                    });
+                }
+                
+                document.getElementById('modal-overlay').classList.add('active');
+            }
+            
+            hideModal() {
+                document.getElementById('modal-overlay').classList.remove('active');
+            }
+            
+            showSettingsModal() {
+                this.showModal(
+                    'Paramètres',
+                    `
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block mb-2">Thème</label>
+                            <select class="input" id="theme-select">
+                                <option value="default">Sombre Premium</option>
+                                <option value="neon">Néon</option>
+                                <option value="sunset">Coucher de soleil</option>
+                                <option value="ocean">Océan</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" id="sound-toggle" checked>
+                                <span>Sons activés</span>
+                            </label>
+                        </div>
+                        <div>
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" id="vibration-toggle" checked>
+                                <span>Vibrations activées</span>
+                            </label>
+                        </div>
+                    </div>
+                    `,
+                    [
+                        { text: 'Annuler', class: 'btn-ghost' },
+                        { text: 'Sauvegarder', class: 'btn-primary', onClick: () => this.saveSettings() }
+                    ]
+                );
+            }
+            
+            saveSettings() {
+                const theme = document.getElementById('theme-select').value;
+                const sound = document.getElementById('sound-toggle').checked;
+                const vibration = document.getElementById('vibration-toggle').checked;
+                
+                // Apply theme
+                document.body.className = theme === 'default' ? '' : `theme-${theme}`;
+                
+                // Save to localStorage
+                localStorage.setItem('undercover-settings', JSON.stringify({
+                    theme, sound, vibration
+                }));
+                
+                this.hideModal();
+                this.playSound('click');
+            }
+            
+            playSound(type) {
+                // Placeholder for sound system
+                if (this.soundEnabled) {
+                    console.log(`Playing sound: ${type}`);
+                }
+            }
+        }
+        
+        // Initialize the game
+        const game = new PremiumUndercoverGame();
+        
+        // Make game globally accessible for debugging
+        window.game = game;
+        
+        // Load saved settings
+        const savedSettings = localStorage.getItem('undercover-settings');
+        if (savedSettings) {
+            const settings = JSON.parse(savedSettings);
+            if (settings.theme && settings.theme !== 'default') {
+                document.body.className = `theme-${settings.theme}`;
+            }
+        }
+        
+        // Add some premium visual effects
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add floating particles effect
+            const createFloatingParticle = () => {
+                const particle = document.createElement('div');
+                particle.style.cssText = `
+                    position: fixed;
+                    width: 4px;
+                    height: 4px;
+                    background: var(--accent-primary);
+                    border-radius: 50%;
+                    pointer-events: none;
+                    opacity: 0.6;
+                    left: ${Math.random() * 100}vw;
+                    top: 100vh;
+                    z-index: 0;
+                    animation: float-up ${3 + Math.random() * 4}s linear forwards;
+                `;
+                
+                document.body.appendChild(particle);
+                
+                setTimeout(() => {
+                    particle.remove();
+                }, 7000);
+            };
+            
+            // Create floating particles periodically
+            setInterval(createFloatingParticle, 2000);
+            
+            // Add CSS for floating animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes float-up {
+                    to {
+                        transform: translateY(-100vh) rotate(360deg);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>
