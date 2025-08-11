@@ -1,0 +1,1446 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Partie en Cours - Undercover Ultimate</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ===== VARIABLES CSS ===== */
+        :root {
+            --bg-primary: #0A0A0F;
+            --bg-secondary: #1A1A25;
+            --bg-tertiary: #2A2A35;
+            --text-primary: #FFFFFF;
+            --text-secondary: #A1A1AA;
+            --text-muted: #6B7280;
+            --accent-primary: #6366F1;
+            --accent-secondary: #8B5CF6;
+            --accent-tertiary: #EC4899;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --border: rgba(255, 255, 255, 0.1);
+            --glass: rgba(255, 255, 255, 0.05);
+            --shadow: rgba(0, 0, 0, 0.3);
+            --glow: rgba(99, 102, 241, 0.3);
+        }
+
+        /* ===== RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            user-select: none;
+        }
+
+        /* ===== BACKGROUND ===== */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+        }
+
+        /* ===== HEADER DE JEU ===== */
+        .game-header {
+            position: sticky;
+            top: 0;
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 0;
+            z-index: 100;
+        }
+
+        .game-header-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .game-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .round-indicator {
+            background: var(--accent-primary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .phase-indicator {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .game-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.5rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+        }
+
+        .action-btn:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        /* ===== TIMER CENTRAL ===== */
+        .timer-section {
+            text-align: center;
+            padding: 2rem 1rem;
+            position: relative;
+        }
+
+        .timer-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 2rem auto;
+        }
+
+        .timer-circle {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .timer-track {
+            fill: none;
+            stroke: var(--bg-secondary);
+            stroke-width: 8;
+        }
+
+        .timer-progress {
+            fill: none;
+            stroke: var(--accent-primary);
+            stroke-width: 8;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1s linear;
+        }
+
+        .timer-progress.warning {
+            stroke: var(--warning);
+            animation: pulse-warning 1s infinite;
+        }
+
+        .timer-progress.danger {
+            stroke: var(--danger);
+            animation: pulse-danger 0.5s infinite;
+        }
+
+        @keyframes pulse-warning {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        @keyframes pulse-danger {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .timer-display {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .timer-value {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--accent-primary);
+            font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 0.5rem;
+        }
+
+        .timer-value.warning {
+            color: var(--warning);
+        }
+
+        .timer-value.danger {
+            color: var(--danger);
+            animation: shake 0.5s infinite;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translate(-50%, -50%) translateX(0); }
+            25% { transform: translate(-50%, -50%) translateX(-2px); }
+            75% { transform: translate(-50%, -50%) translateX(2px); }
+        }
+
+        .timer-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .phase-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--accent-primary);
+        }
+
+        .phase-description {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            max-width: 500px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* ===== CONTAINER PRINCIPAL ===== */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 1rem 2rem 1rem;
+        }
+
+        /* ===== PHASES DE JEU ===== */
+        .game-phase {
+            display: none;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .game-phase.active {
+            display: block;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== RÉVÉLATION DES RÔLES ===== */
+        .reveal-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            margin: 2rem auto;
+            max-width: 400px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .reveal-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-primary);
+        }
+
+        .reveal-card.flipped {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border-color: var(--accent-primary);
+        }
+
+        .card-front, .card-back {
+            transition: all 0.6s ease;
+        }
+
+        .card-back {
+            display: none;
+        }
+
+        .reveal-card.flipped .card-front {
+            display: none;
+        }
+
+        .reveal-card.flipped .card-back {
+            display: block;
+        }
+
+        .card-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .card-role {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .card-word {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 1rem;
+        }
+
+        .card-instruction {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* ===== JOUEURS GRID ===== */
+        .players-section {
+            margin: 2rem 0;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-align: center;
+            color: var(--accent-primary);
+        }
+
+        .players-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .player-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .player-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-primary);
+        }
+
+        .player-card.current-player {
+            border-color: var(--accent-primary);
+            background: var(--glow);
+            animation: glow-pulse 2s infinite;
+        }
+
+        .player-card.eliminated {
+            opacity: 0.5;
+            filter: grayscale(100%);
+            border-color: var(--danger);
+        }
+
+        .player-card.voted {
+            border-color: var(--warning);
+            background: rgba(245, 158, 11, 0.1);
+        }
+
+        @keyframes glow-pulse {
+            0%, 100% { box-shadow: 0 0 0 0 var(--glow); }
+            50% { box-shadow: 0 0 0 10px transparent; }
+        }
+
+        .player-avatar {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            margin: 0 auto 1rem auto;
+            position: relative;
+        }
+
+        .player-avatar::after {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 50%;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .player-card.current-player .player-avatar::after {
+            opacity: 0.3;
+            animation: rotate 3s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .player-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .player-status {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        .vote-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--danger);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.3s ease;
+        }
+
+        .vote-count.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* ===== ACTIONS DE JEU ===== */
+        .game-actions-section {
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            margin: 0.5rem;
+            min-width: 150px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+            box-shadow: 0 4px 15px var(--glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px var(--glow);
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--accent-primary);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* ===== MODAL ===== */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--accent-primary);
+        }
+
+        .modal-message {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        /* ===== RÉSULTATS ===== */
+        .results-section {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .result-icon {
+            font-size: 6rem;
+            margin-bottom: 1rem;
+            animation: bounce 1s ease-out;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-20px); }
+            60% { transform: translateY(-10px); }
+        }
+
+        .result-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .result-title.victory {
+            color: var(--success);
+        }
+
+        .result-title.defeat {
+            color: var(--danger);
+        }
+
+        .result-message {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .roles-reveal {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .roles-reveal-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--accent-primary);
+        }
+
+        .roles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .role-reveal-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .role-reveal-card.civil {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .role-reveal-card.undercover {
+            border-color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem 2rem 1rem;
+            }
+            
+            .timer-container {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .timer-value {
+                font-size: 2rem;
+            }
+            
+            .players-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .game-header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .players-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background animé -->
+    <div class="animated-bg"></div>
+
+    <!-- Header de jeu -->
+    <div class="game-header">
+        <div class="game-header-content">
+            <div class="game-info">
+                <div class="round-indicator" id="roundIndicator">
+                    Tour 1
+                </div>
+                <div class="phase-indicator" id="phaseIndicator">
+                    Révélation des rôles
+                </div>
+            </div>
+            <div class="game-actions">
+                <button class="action-btn" onclick="pauseGame()" title="Pause">
+                    ⏸️
+                </button>
+                <button class="action-btn" onclick="showSettings()" title="Paramètres">
+                    ⚙️
+                </button>
+                <button class="action-btn" onclick="quitGame()" title="Quitter">
+                    🚪
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Timer central -->
+    <div class="timer-section">
+        <div class="timer-container">
+            <svg class="timer-circle" viewBox="0 0 200 200">
+                <circle class="timer-track" cx="100" cy="100" r="90"></circle>
+                <circle class="timer-progress" cx="100" cy="100" r="90" 
+                        stroke-dasharray="565.48" stroke-dashoffset="0" id="timerProgress"></circle>
+            </svg>
+            <div class="timer-display">
+                <div class="timer-value" id="timerValue">30</div>
+                <div class="timer-label" id="timerLabel">secondes</div>
+            </div>
+        </div>
+        <div class="phase-title" id="phaseTitle">Révélation des rôles</div>
+        <div class="phase-description" id="phaseDescription">
+            Passez le téléphone au joueur suivant pour qu'il découvre son rôle
+        </div>
+    </div>
+
+    <!-- Container principal -->
+    <div class="container">
+        <!-- Phase: Révélation des rôles -->
+        <div class="game-phase active" id="phase-reveal">
+            <div class="reveal-card" id="revealCard" onclick="flipCard()">
+                <div class="card-front">
+                    <div class="card-icon">🎭</div>
+                    <h3>Touchez pour révéler</h3>
+                    <p style="color: var(--text-secondary); margin-top: 1rem;">
+                        Découvrez votre rôle secret
+                    </p>
+                </div>
+                <div class="card-back">
+                    <div class="card-icon" id="roleIcon">👥</div>
+                    <div class="card-role" id="roleTitle">CIVIL</div>
+                    <div class="card-word" id="roleWord">"Chat"</div>
+                    <div class="card-instruction" id="roleInstruction">
+                        Vous connaissez le vrai mot. Trouvez les Undercover !
+                    </div>
+                </div>
+            </div>
+            
+            <div class="game-actions-section">
+                <button class="btn btn-primary" id="nextPlayerBtn" onclick="nextPlayer()" style="display: none;">
+                    <span>Joueur suivant</span>
+                    <span>→</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Phase: Discussion -->
+        <div class="game-phase" id="phase-discussion">
+            <div class="players-section">
+                <div class="section-title">Tour de parole</div>
+                <div class="players-grid" id="discussionPlayers">
+                    <!-- Sera rempli dynamiquement -->
+                </div>
+            </div>
+            
+            <div class="game-actions-section">
+                <button class="btn btn-secondary" onclick="skipPlayer()">
+                    <span>⏭️</span>
+                    <span>Passer</span>
+                </button>
+                <button class="btn btn-primary" onclick="startVoting()">
+                    <span>🗳️</span>
+                    <span>Passer au vote</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Phase: Vote -->
+        <div class="game-phase" id="phase-vote">
+            <div class="players-section">
+                <div class="section-title">Votez pour éliminer un joueur</div>
+                <div class="players-grid" id="votePlayers">
+                    <!-- Sera rempli dynamiquement -->
+                </div>
+            </div>
+            
+            <div class="game-actions-section">
+                <button class="btn btn-danger" onclick="processVotes()" id="processVotesBtn" disabled>
+                    <span>📊</span>
+                    <span>Compter les votes</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Phase: Résultats -->
+        <div class="game-phase" id="phase-results">
+            <div class="results-section">
+                <div class="result-icon" id="resultIcon">🏆</div>
+                <div class="result-title victory" id="resultTitle">Victoire !</div>
+                <div class="result-message" id="resultMessage">
+                    Les Civils ont gagné ! Tous les Undercover ont été éliminés.
+                </div>
+                
+                <div class="roles-reveal">
+                    <div class="roles-reveal-title">Révélation des rôles</div>
+                    <div class="roles-grid" id="rolesRevealGrid">
+                        <!-- Sera rempli dynamiquement -->
+                    </div>
+                </div>
+                
+                <div class="game-actions-section">
+                    <button class="btn btn-secondary" onclick="newGame()">
+                        <span>🔄</span>
+                        <span>Nouvelle partie</span>
+                    </button>
+                    <button class="btn btn-primary" onclick="playAgain()">
+                        <span>🎮</span>
+                        <span>Rejouer</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="gameModal">
+        <div class="modal-content">
+            <div class="modal-icon" id="modalIcon">ℹ️</div>
+            <div class="modal-title" id="modalTitle">Information</div>
+            <div class="modal-message" id="modalMessage">Message</div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal()">Fermer</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== ÉTAT DU JEU =====
+        let gameState = {
+            phase: 'reveal', // reveal, discussion, vote, results
+            round: 1,
+            currentPlayerIndex: 0,
+            players: [],
+            timer: null,
+            timeLeft: 30,
+            maxTime: 30,
+            votes: {},
+            gameConfig: {}
+        };
+
+        // ===== DONNÉES DE TEST =====
+        const testPlayers = [
+            { id: '1', name: 'Alice', avatar: 'A', role: 'civil', word: 'Chat', eliminated: false },
+            { id: '2', name: 'Bob', avatar: 'B', role: 'undercover', word: 'Chien', eliminated: false },
+            { id: '3', name: 'Charlie', avatar: 'C', role: 'civil', word: 'Chat', eliminated: false },
+            { id: '4', name: 'Diana', avatar: 'D', role: 'civil', word: 'Chat', eliminated: false },
+            { id: '5', name: 'Eve', avatar: 'E', role: 'civil', word: 'Chat', eliminated: false },
+            { id: '6', name: 'Frank', avatar: 'F', role: 'undercover', word: 'Chien', eliminated: false }
+        ];
+
+        // ===== GESTION DU TIMER =====
+        function startTimer(duration, onComplete) {
+            clearInterval(gameState.timer);
+            gameState.timeLeft = duration;
+            gameState.maxTime = duration;
+            
+            updateTimerDisplay();
+            
+            gameState.timer = setInterval(() => {
+                gameState.timeLeft--;
+                updateTimerDisplay();
+                
+                if (gameState.timeLeft <= 0) {
+                    clearInterval(gameState.timer);
+                    if (onComplete) onComplete();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const timerValue = document.getElementById('timerValue');
+            const timerProgress = document.getElementById('timerProgress');
+            const circumference = 565.48;
+            
+            // Mettre à jour la valeur
+            timerValue.textContent = gameState.timeLeft;
+            
+            // Mettre à jour la couleur selon le temps restant
+            const percentage = gameState.timeLeft / gameState.maxTime;
+            timerValue.className = 'timer-value';
+            timerProgress.className = 'timer-progress';
+            
+            if (percentage <= 0.2) {
+                timerValue.classList.add('danger');
+                timerProgress.classList.add('danger');
+            } else if (percentage <= 0.5) {
+                timerValue.classList.add('warning');
+                timerProgress.classList.add('warning');
+            }
+            
+            // Mettre à jour le cercle de progression
+            const offset = circumference - (percentage * circumference);
+            timerProgress.style.strokeDashoffset = offset;
+            
+            // Vibration sur mobile pour les dernières secondes
+            if (gameState.timeLeft <= 3 && gameState.timeLeft > 0) {
+                if (navigator.vibrate) {
+                    navigator.vibrate(200);
+                }
+            }
+        }
+
+        function stopTimer() {
+            clearInterval(gameState.timer);
+        }
+
+        // ===== GESTION DES PHASES =====
+        function setPhase(phaseName) {
+            // Masquer toutes les phases
+            document.querySelectorAll('.game-phase').forEach(phase => {
+                phase.classList.remove('active');
+            });
+            
+            // Afficher la phase demandée
+            document.getElementById(`phase-${phaseName}`).classList.add('active');
+            
+            // Mettre à jour l'état
+            gameState.phase = phaseName;
+            
+            // Mettre à jour l'interface
+            updatePhaseIndicator();
+            updatePhaseInfo(phaseName);
+        }
+
+        function updatePhaseIndicator() {
+            const indicator = document.getElementById('phaseIndicator');
+            const phases = {
+                reveal: 'Révélation des rôles',
+                discussion: 'Discussion',
+                vote: 'Vote',
+                results: 'Résultats'
+            };
+            indicator.textContent = phases[gameState.phase] || 'Phase inconnue';
+        }
+
+        function updatePhaseInfo(phase) {
+            const title = document.getElementById('phaseTitle');
+            const description = document.getElementById('phaseDescription');
+            
+            const phaseInfo = {
+                reveal: {
+                    title: 'Révélation des rôles',
+                    description: 'Passez le téléphone au joueur suivant pour qu\'il découvre son rôle'
+                },
+                discussion: {
+                    title: 'Phase de discussion',
+                    description: 'Chaque joueur donne un indice sur son mot à tour de rôle'
+                },
+                vote: {
+                    title: 'Phase de vote',
+                    description: 'Votez pour éliminer le joueur que vous soupçonnez d\'être un Undercover'
+                },
+                results: {
+                    title: 'Fin de partie',
+                    description: 'Découvrez qui étaient les vrais Undercover !'
+                }
+            };
+            
+            const info = phaseInfo[phase];
+            if (info) {
+                title.textContent = info.title;
+                description.textContent = info.description;
+            }
+        }
+
+        // ===== PHASE RÉVÉLATION =====
+        function flipCard() {
+            const card = document.getElementById('revealCard');
+            const nextBtn = document.getElementById('nextPlayerBtn');
+            
+            if (!card.classList.contains('flipped')) {
+                card.classList.add('flipped');
+                
+                // Afficher les informations du joueur actuel
+                const currentPlayer = gameState.players[gameState.currentPlayerIndex];
+                updateRevealCard(currentPlayer);
+                
+                // Afficher le bouton suivant après un délai
+                setTimeout(() => {
+                    nextBtn.style.display = 'flex';
+                }, 500);
+                
+                // Jouer un son (simulation)
+                playSound('flip');
+            }
+        }
+
+        function updateRevealCard(player) {
+            const roleIcon = document.getElementById('roleIcon');
+            const roleTitle = document.getElementById('roleTitle');
+            const roleWord = document.getElementById('roleWord');
+            const roleInstruction = document.getElementById('roleInstruction');
+            
+            const roleInfo = {
+                civil: {
+                    icon: '👥',
+                    title: 'CIVIL',
+                    instruction: 'Vous connaissez le vrai mot. Trouvez les Undercover !'
+                },
+                undercover: {
+                    icon: '🎭',
+                    title: 'UNDERCOVER',
+                    instruction: 'Votre mot est différent. Faites-vous passer pour un Civil !'
+                },
+                oracle: {
+                    icon: '🔮',
+                    title: 'ORACLE',
+                    instruction: 'Vous êtes un Civil avec des informations bonus !'
+                }
+            };
+            
+            const info = roleInfo[player.role] || roleInfo.civil;
+            
+            roleIcon.textContent = info.icon;
+            roleTitle.textContent = info.title;
+            roleWord.textContent = `"${player.word}"`;
+            roleInstruction.textContent = info.instruction;
+        }
+
+        function nextPlayer() {
+            gameState.currentPlayerIndex++;
+            
+            if (gameState.currentPlayerIndex >= gameState.players.length) {
+                // Tous les joueurs ont vu leur rôle, passer à la discussion
+                startDiscussionPhase();
+            } else {
+                // Préparer pour le joueur suivant
+                resetRevealCard();
+            }
+        }
+
+        function resetRevealCard() {
+            const card = document.getElementById('revealCard');
+            const nextBtn = document.getElementById('nextPlayerBtn');
+            
+            card.classList.remove('flipped');
+            nextBtn.style.display = 'none';
+        }
+
+        // ===== PHASE DISCUSSION =====
+        function startDiscussionPhase() {
+            setPhase('discussion');
+            gameState.currentPlayerIndex = 0;
+            
+            renderDiscussionPlayers();
+            startTimer(60, () => {
+                // Temps écoulé, passer au vote automatiquement
+                startVoting();
+            });
+        }
+
+        function renderDiscussionPlayers() {
+            const container = document.getElementById('discussionPlayers');
+            const alivePlayers = gameState.players.filter(p => !p.eliminated);
+            
+            container.innerHTML = alivePlayers.map((player, index) => `
+                <div class="player-card ${index === gameState.currentPlayerIndex ? 'current-player' : ''}" 
+                     data-player-id="${player.id}">
+                    <div class="player-avatar">${player.avatar}</div>
+                    <div class="player-name">${player.name}</div>
+                    <div class="player-status">
+                        <div class="status-dot"></div>
+                        <span>${index === gameState.currentPlayerIndex ? 'À son tour' : 'En attente'}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function skipPlayer() {
+            const alivePlayers = gameState.players.filter(p => !p.eliminated);
+            gameState.currentPlayerIndex = (gameState.currentPlayerIndex + 1) % alivePlayers.length;
+            renderDiscussionPlayers();
+            
+            // Réinitialiser le timer
+            startTimer(60, () => startVoting());
+        }
+
+        function startVoting() {
+            setPhase('vote');
+            gameState.votes = {};
+            
+            renderVotePlayers();
+            startTimer(30, () => {
+                // Temps écoulé, traiter les votes automatiquement
+                processVotes();
+            });
+        }
+
+        // ===== PHASE VOTE =====
+        function renderVotePlayers() {
+            const container = document.getElementById('votePlayers');
+            const alivePlayers = gameState.players.filter(p => !p.eliminated);
+            
+            container.innerHTML = alivePlayers.map(player => `
+                <div class="player-card" data-player-id="${player.id}" onclick="voteForPlayer('${player.id}')">
+                    <div class="player-avatar">${player.avatar}</div>
+                    <div class="player-name">${player.name}</div>
+                    <div class="player-status">
+                        <div class="status-dot"></div>
+                        <span>Cliquez pour voter</span>
+                    </div>
+                    <div class="vote-count" id="votes-${player.id}">0</div>
+                </div>
+            `).join('');
+        }
+
+        function voteForPlayer(playerId) {
+            // Simulation de vote (dans un vrai jeu, chaque joueur voterait)
+            gameState.votes[playerId] = (gameState.votes[playerId] || 0) + 1;
+            
+            // Mettre à jour l'affichage
+            const voteCount = document.getElementById(`votes-${playerId}`);
+            const playerCard = document.querySelector(`[data-player-id="${playerId}"]`);
+            
+            if (voteCount && playerCard) {
+                voteCount.textContent = gameState.votes[playerId];
+                voteCount.classList.add('visible');
+                playerCard.classList.add('voted');
+            }
+            
+            // Activer le bouton de traitement des votes
+            document.getElementById('processVotesBtn').disabled = false;
+            
+            playSound('vote');
+        }
+
+        function processVotes() {
+            stopTimer();
+            
+            // Trouver le joueur avec le plus de votes
+            let maxVotes = 0;
+            let eliminatedPlayer = null;
+            
+            Object.entries(gameState.votes).forEach(([playerId, votes]) => {
+                if (votes > maxVotes) {
+                    maxVotes = votes;
+                    eliminatedPlayer = gameState.players.find(p => p.id === playerId);
+                }
+            });
+            
+            if (eliminatedPlayer) {
+                eliminatedPlayer.eliminated = true;
+                
+                showModal(
+                    '🗳️',
+                    'Joueur éliminé',
+                    `${eliminatedPlayer.name} a été éliminé avec ${maxVotes} vote${maxVotes > 1 ? 's' : ''} !`,
+                    [
+                        { text: 'Continuer', action: () => checkGameEnd() }
+                    ]
+                );
+            } else {
+                showModal(
+                    '🤝',
+                    'Égalité',
+                    'Aucun joueur n\'a été éliminé à cause d\'une égalité dans les votes.',
+                    [
+                        { text: 'Nouveau tour', action: () => nextRound() }
+                    ]
+                );
+            }
+        }
+
+        // ===== FIN DE PARTIE =====
+        function checkGameEnd() {
+            const alivePlayers = gameState.players.filter(p => !p.eliminated);
+            const aliveUndercover = alivePlayers.filter(p => p.role === 'undercover');
+            const aliveCivils = alivePlayers.filter(p => p.role !== 'undercover');
+            
+            if (aliveUndercover.length === 0) {
+                // Victoire des Civils
+                endGame('civils', 'Les Civils ont gagné ! Tous les Undercover ont été éliminés.');
+            } else if (aliveUndercover.length >= aliveCivils.length) {
+                // Victoire des Undercover
+                endGame('undercover', 'Les Undercover ont gagné ! Ils sont maintenant majoritaires.');
+            } else {
+                // Continuer la partie
+                nextRound();
+            }
+        }
+
+        function nextRound() {
+            gameState.round++;
+            gameState.currentPlayerIndex = 0;
+            
+            // Réinitialiser les votes
+            gameState.votes = {};
+            
+            // Mettre à jour l'indicateur de tour
+            document.getElementById('roundIndicator').textContent = `Tour ${gameState.round}`;
+            
+            // Retourner à la phase de discussion
+            startDiscussionPhase();
+        }
+
+        function endGame(winner, message) {
+            setPhase('results');
+            
+            const resultIcon = document.getElementById('resultIcon');
+            const resultTitle = document.getElementById('resultTitle');
+            const resultMessage = document.getElementById('resultMessage');
+            
+            if (winner === 'civils') {
+                resultIcon.textContent = '🏆';
+                resultTitle.textContent = 'Victoire des Civils !';
+                resultTitle.className = 'result-title victory';
+            } else {
+                resultIcon.textContent = '🎭';
+                resultTitle.textContent = 'Victoire des Undercover !';
+                resultTitle.className = 'result-title defeat';
+            }
+            
+            resultMessage.textContent = message;
+            
+            // Révéler tous les rôles
+            renderRolesReveal();
+            
+            playSound('gameEnd');
+        }
+
+        function renderRolesReveal() {
+            const container = document.getElementById('rolesRevealGrid');
+            
+            container.innerHTML = gameState.players.map(player => `
+                <div class="role-reveal-card ${player.role}">
+                    <div class="player-avatar">${player.avatar}</div>
+                    <div class="player-name">${player.name}</div>
+                    <div style="font-size: 0.9rem; font-weight: 600; margin: 0.5rem 0; color: var(--${player.role === 'undercover' ? 'danger' : 'success'});">
+                        ${player.role === 'undercover' ? 'UNDERCOVER' : 'CIVIL'}
+                    </div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); font-style: italic;">
+                        "${player.word}"
+                    </div>
+                    ${player.eliminated ? '<div style="font-size: 0.7rem; color: var(--danger); margin-top: 0.5rem;">Éliminé</div>' : ''}
+                </div>
+            `).join('');
+        }
+
+        // ===== ACTIONS DE JEU =====
+        function pauseGame() {
+            stopTimer();
+            showModal(
+                '⏸️',
+                'Jeu en pause',
+                'Le jeu est actuellement en pause. Que souhaitez-vous faire ?',
+                [
+                    { text: 'Reprendre', action: () => resumeGame() },
+                    { text: 'Paramètres', action: () => showSettings() },
+                    { text: 'Quitter', action: () => quitGame() }
+                ]
+            );
+        }
+
+        function resumeGame() {
+            closeModal();
+            // Reprendre le timer avec le temps restant
+            if (gameState.timeLeft > 0) {
+                startTimer(gameState.timeLeft, () => {
+                    if (gameState.phase === 'discussion') {
+                        startVoting();
+                    } else if (gameState.phase === 'vote') {
+                        processVotes();
+                    }
+                });
+            }
+        }
+
+        function showSettings() {
+            showModal(
+                '⚙️',
+                'Paramètres',
+                'Fonctionnalité à venir...',
+                [
+                    { text: 'Fermer', action: () => closeModal() }
+                ]
+            );
+        }
+
+        function quitGame() {
+            showModal(
+                '🚪',
+                'Quitter la partie',
+                'Êtes-vous sûr de vouloir quitter la partie en cours ?',
+                [
+                    { text: 'Annuler', action: () => closeModal() },
+                    { text: 'Quitter', action: () => window.location.href = 'index-ultimate.html' }
+                ]
+            );
+        }
+
+        function newGame() {
+            window.location.href = 'game-setup.html';
+        }
+
+        function playAgain() {
+            // Réinitialiser l'état du jeu avec les mêmes joueurs
+            gameState.phase = 'reveal';
+            gameState.round = 1;
+            gameState.currentPlayerIndex = 0;
+            gameState.votes = {};
+            
+            // Réinitialiser les joueurs
+            gameState.players.forEach(player => {
+                player.eliminated = false;
+            });
+            
+            // Réassigner les rôles aléatoirement
+            assignRandomRoles();
+            
+            // Recommencer
+            setPhase('reveal');
+            resetRevealCard();
+            
+            document.getElementById('roundIndicator').textContent = 'Tour 1';
+        }
+
+        // ===== MODAL =====
+        function showModal(icon, title, message, actions = []) {
+            const modal = document.getElementById('gameModal');
+            const modalIcon = document.getElementById('modalIcon');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalMessage = document.getElementById('modalMessage');
+            const modalActions = document.querySelector('.modal-actions');
+            
+            modalIcon.textContent = icon;
+            modalTitle.textContent = title;
+            modalMessage.textContent = message;
+            
+            // Générer les boutons d'action
+            if (actions.length === 0) {
+                actions = [{ text: 'Fermer', action: () => closeModal() }];
+            }
+            
+            modalActions.innerHTML = actions.map(action => 
+                `<button class="btn ${action.class || 'btn-primary'}" onclick="handleModalAction('${action.text}')">${action.text}</button>`
+            ).join('');
+            
+            // Stocker les actions pour les gérer
+            window.modalActions = actions;
+            
+            modal.classList.add('active');
+        }
+
+        function handleModalAction(actionText) {
+            const action = window.modalActions.find(a => a.text === actionText);
+            if (action && action.action) {
+                action.action();
+            } else {
+                closeModal();
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('gameModal').classList.remove('active');
+        }
+
+        // ===== SONS (SIMULATION) =====
+        function playSound(type) {
+            console.log(`🔊 Playing sound: ${type}`);
+            // Dans une vraie implémentation, jouer les sons correspondants
+        }
+
+        // ===== UTILITAIRES =====
+        function assignRandomRoles() {
+            // Simulation d'assignation de rôles
+            const roles = ['civil', 'civil', 'civil', 'civil', 'undercover', 'undercover'];
+            const words = { civil: 'Chat', undercover: 'Chien' };
+            
+            gameState.players.forEach((player, index) => {
+                player.role = roles[index] || 'civil';
+                player.word = words[player.role];
+            });
+        }
+
+        // ===== INITIALISATION =====
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🎮 Interface de jeu initialisée');
+            
+            // Charger les joueurs (simulation ou depuis localStorage)
+            gameState.players = testPlayers;
+            
+            // Assigner les rôles
+            assignRandomRoles();
+            
+            // Démarrer la phase de révélation
+            setPhase('reveal');
+            
+            // Fermer les modals en cliquant à l'extérieur
+            document.getElementById('gameModal').addEventListener('click', (e) => {
+                if (e.target.id === 'gameModal') {
+                    closeModal();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
