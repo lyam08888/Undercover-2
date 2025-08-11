@@ -1,0 +1,78 @@
+{
+  "name": "Undercover Premium - Révolution",
+  "short_name": "Undercover Premium",
+  "description": "L'expérience premium du jeu d'espionnage le plus captivant. Démasquez les agents secrets dans cette version haut de gamme avec des graphismes époustouflants et des fonctionnalités avancées.",
+  "version": "2.0.0",
+  "start_url": "/index-premium.html",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#6366F1",
+  "background_color": "#0A0A0F",
+  "lang": "fr",
+  "scope": "/",
+  "categories": ["games", "entertainment", "social"],
+  "icons": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiByeD0iMjQiIGZpbGw9InVybCgjZ3JhZGllbnQwX2xpbmVhcl8xXzEpIi8+CjxwYXRoIGQ9Ik05NiAxNDRDMTIwLjMwMSAxNDQgMTQwIDEyNC4zMDEgMTQwIDEwMEM1NCA3NS42OTg1IDc1LjY5ODUgNTYgOTYgNTZDMTE2LjMwMSA1NiAxMzYgNzUuNjk4NSAxMzYgMTAwQzEzNiAxMjQuMzAxIDExNi4zMDEgMTQ0IDk2IDE0NFoiIGZpbGw9IndoaXRlIiBmaWxsLW9wYWNpdHk9IjAuOSIvPgo8cGF0aCBkPSJNODAgODhDODQuNDE4MyA4OCA4OCA5MS41ODE3IDg4IDk2Qzg4IDEwMC40MTggODQuNDE4MyAxMDQgODAgMTA0Qzc1LjU4MTcgMTA0IDcyIDEwMC40MTggNzIgOTZDNzIgOTEuNTgxNyA3NS41ODE3IDg4IDgwIDg4WiIgZmlsbD0iIzBBMEEwRiIvPgo8cGF0aCBkPSJNMTEyIDg4QzExNi40MTggODggMTIwIDkxLjU4MTcgMTIwIDk2QzEyMCAxMDAuNDE4IDExNi40MTggMTA0IDExMiAxMDRDMTA3LjU4MiAxMDQgMTA0IDEwMC40MTggMTA0IDk2QzEwNCA5MS41ODE3IDEwNy41ODIgODggMTEyIDg4WiIgZmlsbD0iIzBBMEEwRiIvPgo8cGF0aCBkPSJNODAgMTE2QzgwIDExMi42ODYgODIuNjg2MyAxMTAgODYgMTEwSDEwNkMxMDkuMzE0IDExMCAxMTIgMTEyLjY4NiAxMTIgMTE2QzExMiAxMTkuMzE0IDEwOS4zMTQgMTIyIDEwNiAxMjJIODZDODIuNjg2MyAxMjIgODAgMTE5LjMxNCA4MCAxMTZaIiBmaWxsPSIjMEEwQTBGIi8+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9ImdyYWRpZW50MF9saW5lYXJfMV8xIiB4MT0iMCIgeTE9IjAiIHgyPSIxOTIiIHkyPSIxOTIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KPHN0b3Agc3RvcC1jb2xvcj0iIzYzNjZGMSIvPgo8c3RvcCBvZmZzZXQ9IjAuNSIgc3RvcC1jb2xvcj0iIzhCNUNGNiIvPgo8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNFQzQ4OTkiLz4KPC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8L3N2Zz4K",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iNjQiIGZpbGw9InVybCgjZ3JhZGllbnQwX2xpbmVhcl8xXzEpIi8+CjxwYXRoIGQ9Ik0yNTYgMzg0QzMyMC44MDQgMzg0IDM3NCAzMzAuODA0IDM3NCAyNjZDMzc0IDIwMS4xOTYgMzIwLjgwNCAxNDggMjU2IDE0OEMxOTEuMTk2IDE0OCAxMzggMjAxLjE5NiAxMzggMjY2QzEzOCAzMzAuODA0IDE5MS4xOTYgMzg0IDI1NiAzODRaIiBmaWxsPSJ3aGl0ZSIgZmlsbC1vcGFjaXR5PSIwLjkiLz4KPHBhdGggZD0iTTIxNCAyMzRDMjI1LjA0NiAyMzQgMjM0IDI0Mi45NTQgMjM0IDI1NEMyMzQgMjY1LjA0NiAyMjUuMDQ2IDI3NCAyMTQgMjc0QzIwMi45NTQgMjc0IDE5NCAyNjUuMDQ2IDE5NCAyNTRDMTk0IDI0Mi45NTQgMjAyLjk1NCAyMzQgMjE0IDIzNFoiIGZpbGw9IiMwQTBBMEYiLz4KPHBhdGggZD0iTTI5OCAyMzRDMzA5LjA0NiAyMzQgMzE4IDI0Mi45NTQgMzE4IDI1NEMzMTggMjY1LjA0NiAzMDkuMDQ2IDI3NCAyOTggMjc0QzI4Ni45NTQgMjc0IDI3OCAyNjUuMDQ2IDI3OCAyNTRDMjc4IDI0Mi45NTQgMjg2Ljk1NCAyMzQgMjk4IDIzNFoiIGZpbGw9IiMwQTBBMEYiLz4KPHBhdGggZD0iTTIxNCAzMDZDMjE0IDI5OC4yNjggMjIwLjI2OCAyOTIgMjI4IDI5MkgyODRDMjkxLjczMiAyOTIgMjk4IDI5OC4yNjggMjk4IDMwNkMyOTggMzEzLjczMiAyOTEuNzMyIDMyMCAyODQgMzIwSDIyOEMyMjAuMjY4IDMyMCAyMTQgMzEzLjczMiAyMTQgMzA2WiIgZmlsbD0iIzBBMEEwRiIvPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJncmFkaWVudDBfbGluZWFyXzFfMSIgeDE9IjAiIHkxPSIwIiB4Mj0iNTEyIiB5Mj0iNTEyIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CjxzdG9wIHN0b3AtY29sb3I9IiM2MzY2RjEiLz4KPHN0b3Agb2Zmc2V0PSIwLjUiIHN0b3AtY29sb3I9IiM4QjVDRjYiLz4KPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjRUM0ODk5Ii8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPC9zdmc+Cg==",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjU2OCIgdmlld0JveD0iMCAwIDMyMCA1NjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMjAiIGhlaWdodD0iNTY4IiBmaWxsPSIjMEEwQTBGIi8+CjxyZWN0IHg9IjIwIiB5PSI4MCIgd2lkdGg9IjI4MCIgaGVpZ2h0PSI0MDAiIHJ4PSIxNiIgZmlsbD0idXJsKCNncmFkaWVudDBfbGluZWFyXzFfMSkiIGZpbGwtb3BhY2l0eT0iMC4xIi8+Cjx0ZXh0IHg9IjE2MCIgeT0iMjAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSIgZm9udC1zaXplPSIzMiIgZm9udC13ZWlnaHQ9ImJvbGQiPkFwZXLDp3U8L3RleHQ+Cjx0ZXh0IHg9IjE2MCIgeT0iMjQwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjQTFBMUFBIiBmb250LXNpemU9IjE2Ij5KZXUgZCdlc3Bpb25uYWdlIHByZW1pdW08L3RleHQ+CjxyZWN0IHg9IjYwIiB5PSIzMDAiIHdpZHRoPSIyMDAiIGhlaWdodD0iNDgiIHJ4PSIyNCIgZmlsbD0idXJsKCNncmFkaWVudDBfbGluZWFyXzFfMSkiLz4KPHN2ZyB4PSIxNDAiIHk9IjMxMiIgd2lkdGg9IjQwIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgNDAgMjQiPgo8cGF0aCBkPSJNMjAgMjRDMzEuMDQ1NiAyNCA0MCAyMC40MTgzIDQwIDE2QzQwIDExLjU4MTcgMzEuMDQ1NiA4IDIwIDhDOC45NTQ0IDggMCAxMS41ODE3IDAgMTZDMCAyMC40MTgzIDguOTU0NCAyNCAyMCAyNFoiIGZpbGw9IndoaXRlIiBmaWxsLW9wYWNpdHk9IjAuOSIvPgo8L3N2Zz4KPGRlZnM+CjxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZGllbnQwX2xpbmVhcl8xXzEiIHgxPSIwIiB5MT0iMCIgeDI9IjMyMCIgeTI9IjU2OCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBzdG9wLWNvbG9yPSIjNjM2NkYxIi8+CjxzdG9wIG9mZnNldD0iMC41IiBzdG9wLWNvbG9yPSIjOEI1Q0Y2Ii8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI0VDNDg5OSIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+Cjwvc3ZnPgo=",
+      "sizes": "320x568",
+      "type": "image/svg+xml",
+      "form_factor": "narrow"
+    }
+  ],
+  "features": [
+    "Cross Platform",
+    "Premium Graphics",
+    "Advanced Sound System",
+    "Multiple Themes",
+    "Offline Play",
+    "Progressive Web App"
+  ],
+  "shortcuts": [
+    {
+      "name": "Nouvelle partie rapide",
+      "short_name": "Partie rapide",
+      "description": "Commencer une nouvelle partie immédiatement",
+      "url": "/index-premium.html?quick=true",
+      "icons": [
+        {
+          "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHZpZXdCb3g9IjAgMCA5NiA5NiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9Ijk2IiBoZWlnaHQ9Ijk2IiByeD0iMTIiIGZpbGw9IiM2MzY2RjEiLz4KPHBhdGggZD0iTTQ4IDcyQzYxLjI1NDggNzIgNzIgNjEuMjU0OCA3MiA0OEM3MiAzNC43NDUyIDYxLjI1NDggMjQgNDggMjRDMzQuNzQ1MiAyNCAyNCAzNC43NDUyIDI0IDQ4QzI0IDYxLjI1NDggMzQuNzQ1MiA3MiA0OCA3MloiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik00MCA0NEMzNi42ODYzIDQ0IDM0IDQ2LjY4NjMgMzQgNTBDMzQgNTMuMzEzNyAzNi42ODYzIDU2IDQwIDU2QzQzLjMxMzcgNTYgNDYgNTMuMzEzNyA0NiA1MEM0NiA0Ni42ODYzIDQzLjMxMzcgNDQgNDAgNDRaIiBmaWxsPSIjNjM2NkYxIi8+CjxwYXRoIGQ9Ik01NiA0NEM1Mi42ODYzIDQ0IDUwIDQ2LjY4NjMgNTAgNTBDNTAgNTMuMzEzNyA1Mi42ODYzIDU2IDU2IDU2QzU5LjMxMzcgNTYgNjIgNTMuMzEzNyA2MiA1MEM2MiA0Ni42ODYzIDU5LjMxMzcgNDQgNTYgNDRaIiBmaWxsPSIjNjM2NkYxIi8+Cjwvc3ZnPgo=",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Paramètres",
+      "short_name": "Paramètres",
+      "description": "Accéder aux paramètres du jeu",
+      "url": "/index-premium.html?settings=true",
+      "icons": [
+        {
+          "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHZpZXdCb3g9IjAgMCA5NiA5NiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9Ijk2IiBoZWlnaHQ9Ijk2IiByeD0iMTIiIGZpbGw9IiM4QjVDRjYiLz4KPHBhdGggZD0iTTQ4IDYwQzU0LjYyNzQgNjAgNjAgNTQuNjI3NCA2MCA0OEM2MCA0MS4zNzI2IDU0LjYyNzQgMzYgNDggMzZDNDEuMzcyNiAzNiAzNiA0MS4zNzI2IDM2IDQ4QzM2IDU0LjYyNzQgNDEuMzcyNiA2MCA0OCA2MFoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik00OCA3MkM0NC42ODYzIDcyIDQyIDY5LjMxMzcgNDIgNjZWNjBINTRWNjZDNTQgNjkuMzEzNyA1MS4zMTM3IDcyIDQ4IDcyWiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTQ4IDI0QzUxLjMxMzcgMjQgNTQgMjYuNjg2MyA1NCAzMFYzNkg0MlYzMEM0MiAyNi42ODYzIDQ0LjY4NjMgMjQgNDggMjRaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  }
+}

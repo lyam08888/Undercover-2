@@ -14,7 +14,7 @@
     <meta name="theme-color" content="#0A0A0F">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="manifest-premium.json">
     
     <style>
         /* ===== CSS VARIABLES ===== */
@@ -1033,6 +1033,12 @@
         </div>
     </div>
 
+    <!-- Premium CSS Animations -->
+    <link rel="stylesheet" href="assets/css/premium-animations.css">
+    
+    <script src="assets/js/premium-sounds.js"></script>
+    <script type="module" src="assets/js/premium-themes.js"></script>
+    
     <script>
         // ===== PREMIUM UNDERCOVER GAME ENGINE =====
         
@@ -1069,10 +1075,192 @@
                 this.init();
             }
             
-            init() {
+            async init() {
+                // Initialize premium systems
+                await this.initPremiumSystems();
+                
                 this.bindEvents();
                 this.updatePlayersList();
                 this.showScreen('home');
+                
+                // Add premium visual effects
+                this.initPremiumEffects();
+            }
+            
+            async initPremiumSystems() {
+                // Initialize sound system
+                if (window.PremiumSounds) {
+                    this.sounds = window.PremiumSounds;
+                    await this.sounds.init();
+                }
+                
+                // Initialize theme system
+                if (window.themeManager) {
+                    this.themeManager = window.themeManager;
+                    this.themeManager.init();
+                }
+                
+                // Load premium settings
+                this.loadPremiumSettings();
+            }
+            
+            initPremiumEffects() {
+                // Add particle system
+                this.createParticleSystem();
+                
+                // Add dynamic background
+                this.createDynamicBackground();
+                
+                // Add premium animations to elements
+                this.enhanceElements();
+            }
+            
+            createParticleSystem() {
+                const particleContainer = document.createElement('div');
+                particleContainer.className = 'particle-container';
+                document.body.appendChild(particleContainer);
+                
+                setInterval(() => {
+                    if (Math.random() < 0.3) {
+                        this.createParticle(particleContainer);
+                    }
+                }, 1000);
+            }
+            
+            createParticle(container) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + 'vw';
+                particle.style.animationDuration = (3 + Math.random() * 4) + 's';
+                particle.style.opacity = Math.random() * 0.5 + 0.3;
+                
+                container.appendChild(particle);
+                
+                setTimeout(() => {
+                    particle.remove();
+                }, 7000);
+            }
+            
+            createDynamicBackground() {
+                const canvas = document.createElement('canvas');
+                canvas.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    pointer-events: none;
+                    z-index: 0;
+                    opacity: 0.1;
+                `;
+                document.body.appendChild(canvas);
+                
+                const ctx = canvas.getContext('2d');
+                let animationId;
+                
+                const resizeCanvas = () => {
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
+                };
+                
+                const drawBackground = () => {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    
+                    const time = Date.now() * 0.001;
+                    const gradient = ctx.createRadialGradient(
+                        canvas.width / 2, canvas.height / 2, 0,
+                        canvas.width / 2, canvas.height / 2, Math.max(canvas.width, canvas.height) / 2
+                    );
+                    
+                    gradient.addColorStop(0, `hsla(${(time * 20) % 360}, 70%, 60%, 0.1)`);
+                    gradient.addColorStop(1, 'transparent');
+                    
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    animationId = requestAnimationFrame(drawBackground);
+                };
+                
+                resizeCanvas();
+                window.addEventListener('resize', resizeCanvas);
+                drawBackground();
+            }
+            
+            enhanceElements() {
+                // Add hover effects to buttons
+                document.querySelectorAll('.btn').forEach(btn => {
+                    btn.classList.add('hover-lift', 'hover-glow');
+                    
+                    btn.addEventListener('mouseenter', () => {
+                        if (this.sounds) this.sounds.playHover();
+                    });
+                });
+                
+                // Add ripple effect to clickable elements
+                document.querySelectorAll('.btn, .card, .vote-card').forEach(el => {
+                    el.addEventListener('click', (e) => {
+                        this.createRippleEffect(e, el);
+                    });
+                });
+            }
+            
+            createRippleEffect(event, element) {
+                const ripple = document.createElement('span');
+                const rect = element.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = event.clientX - rect.left - size / 2;
+                const y = event.clientY - rect.top - size / 2;
+                
+                ripple.style.cssText = `
+                    position: absolute;
+                    width: ${size}px;
+                    height: ${size}px;
+                    left: ${x}px;
+                    top: ${y}px;
+                    background: rgba(255, 255, 255, 0.3);
+                    border-radius: 50%;
+                    transform: scale(0);
+                    animation: ripple-effect 0.6s linear;
+                    pointer-events: none;
+                `;
+                
+                element.style.position = 'relative';
+                element.style.overflow = 'hidden';
+                element.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            }
+            
+            loadPremiumSettings() {
+                const settings = localStorage.getItem('undercover-premium-settings');
+                if (settings) {
+                    try {
+                        this.premiumSettings = JSON.parse(settings);
+                    } catch (error) {
+                        this.premiumSettings = this.getDefaultPremiumSettings();
+                    }
+                } else {
+                    this.premiumSettings = this.getDefaultPremiumSettings();
+                }
+            }
+            
+            getDefaultPremiumSettings() {
+                return {
+                    theme: 'darkPremium',
+                    soundEnabled: true,
+                    vibrationsEnabled: true,
+                    animationsEnabled: true,
+                    particlesEnabled: true,
+                    autoSave: true,
+                    difficulty: 'normal',
+                    language: 'fr'
+                };
+            }
+            
+            savePremiumSettings() {
+                localStorage.setItem('undercover-premium-settings', JSON.stringify(this.premiumSettings));
             }
             
             bindEvents() {
@@ -1538,61 +1726,216 @@
             }
             
             showSettingsModal() {
+                const themes = {
+                    'darkPremium': 'Sombre Premium',
+                    'neonCyber': 'Néon Cyber',
+                    'sunsetGlow': 'Coucher de soleil',
+                    'oceanDeep': 'Océan profond',
+                    'forestMystic': 'Forêt mystique',
+                    'royalPurple': 'Violet royal',
+                    'minimalLight': 'Minimal clair',
+                    'retroGaming': 'Rétro gaming'
+                };
+                
+                const themeOptions = Object.entries(themes)
+                    .map(([key, name]) => `<option value="${key}" ${this.premiumSettings.theme === key ? 'selected' : ''}>${name}</option>`)
+                    .join('');
+                
                 this.showModal(
-                    'Paramètres',
+                    '⚙️ Paramètres Premium',
                     `
-                    <div class="space-y-4">
+                    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                         <div>
-                            <label class="block mb-2">Thème</label>
+                            <label class="block mb-2 font-medium">🎨 Thème</label>
                             <select class="input" id="theme-select">
-                                <option value="default">Sombre Premium</option>
-                                <option value="neon">Néon</option>
-                                <option value="sunset">Coucher de soleil</option>
-                                <option value="ocean">Océan</option>
+                                ${themeOptions}
                             </select>
                         </div>
+                        
                         <div>
-                            <label class="flex items-center gap-2">
-                                <input type="checkbox" id="sound-toggle" checked>
-                                <span>Sons activés</span>
-                            </label>
+                            <label class="block mb-2 font-medium">🔊 Audio & Vibrations</label>
+                            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                <label class="flex items-center gap-2">
+                                    <input type="checkbox" id="sound-toggle" ${this.premiumSettings.soundEnabled ? 'checked' : ''}>
+                                    <span>Sons premium activés</span>
+                                </label>
+                                <label class="flex items-center gap-2">
+                                    <input type="checkbox" id="vibration-toggle" ${this.premiumSettings.vibrationsEnabled ? 'checked' : ''}>
+                                    <span>Vibrations haptiques</span>
+                                </label>
+                            </div>
                         </div>
+                        
                         <div>
-                            <label class="flex items-center gap-2">
-                                <input type="checkbox" id="vibration-toggle" checked>
-                                <span>Vibrations activées</span>
-                            </label>
+                            <label class="block mb-2 font-medium">✨ Effets visuels</label>
+                            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                <label class="flex items-center gap-2">
+                                    <input type="checkbox" id="animations-toggle" ${this.premiumSettings.animationsEnabled ? 'checked' : ''}>
+                                    <span>Animations avancées</span>
+                                </label>
+                                <label class="flex items-center gap-2">
+                                    <input type="checkbox" id="particles-toggle" ${this.premiumSettings.particlesEnabled ? 'checked' : ''}>
+                                    <span>Système de particules</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block mb-2 font-medium">🎮 Gameplay</label>
+                            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                <label class="block mb-1">Difficulté</label>
+                                <select class="input" id="difficulty-select">
+                                    <option value="easy" ${this.premiumSettings.difficulty === 'easy' ? 'selected' : ''}>Facile</option>
+                                    <option value="normal" ${this.premiumSettings.difficulty === 'normal' ? 'selected' : ''}>Normal</option>
+                                    <option value="hard" ${this.premiumSettings.difficulty === 'hard' ? 'selected' : ''}>Difficile</option>
+                                    <option value="expert" ${this.premiumSettings.difficulty === 'expert' ? 'selected' : ''}>Expert</option>
+                                </select>
+                                <label class="flex items-center gap-2 mt-2">
+                                    <input type="checkbox" id="autosave-toggle" ${this.premiumSettings.autoSave ? 'checked' : ''}>
+                                    <span>Sauvegarde automatique</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block mb-2 font-medium">🌍 Langue</label>
+                            <select class="input" id="language-select">
+                                <option value="fr" ${this.premiumSettings.language === 'fr' ? 'selected' : ''}>Français</option>
+                                <option value="en" ${this.premiumSettings.language === 'en' ? 'selected' : ''}>English</option>
+                                <option value="es" ${this.premiumSettings.language === 'es' ? 'selected' : ''}>Español</option>
+                                <option value="de" ${this.premiumSettings.language === 'de' ? 'selected' : ''}>Deutsch</option>
+                            </select>
+                        </div>
+                        
+                        <div style="padding: 1rem; background: var(--bg-tertiary); border-radius: 8px; border-left: 4px solid var(--accent-primary);">
+                            <h4 style="margin: 0 0 0.5rem 0; color: var(--accent-primary);">💎 Version Premium</h4>
+                            <p style="margin: 0; font-size: 0.9rem; color: var(--text-secondary);">
+                                Vous utilisez la version premium d'Undercover avec toutes les fonctionnalités avancées débloquées !
+                            </p>
                         </div>
                     </div>
                     `,
                     [
-                        { text: 'Annuler', class: 'btn-ghost' },
+                        { text: 'Réinitialiser', class: 'btn-ghost', onClick: () => this.resetSettings() },
+                        { text: 'Annuler', class: 'btn-secondary' },
                         { text: 'Sauvegarder', class: 'btn-primary', onClick: () => this.saveSettings() }
                     ]
                 );
             }
             
             saveSettings() {
+                // Get all settings from the modal
                 const theme = document.getElementById('theme-select').value;
-                const sound = document.getElementById('sound-toggle').checked;
-                const vibration = document.getElementById('vibration-toggle').checked;
+                const soundEnabled = document.getElementById('sound-toggle').checked;
+                const vibrationsEnabled = document.getElementById('vibration-toggle').checked;
+                const animationsEnabled = document.getElementById('animations-toggle').checked;
+                const particlesEnabled = document.getElementById('particles-toggle').checked;
+                const difficulty = document.getElementById('difficulty-select').value;
+                const autoSave = document.getElementById('autosave-toggle').checked;
+                const language = document.getElementById('language-select').value;
                 
-                // Apply theme
-                document.body.className = theme === 'default' ? '' : `theme-${theme}`;
+                // Update premium settings
+                this.premiumSettings = {
+                    theme,
+                    soundEnabled,
+                    vibrationsEnabled,
+                    animationsEnabled,
+                    particlesEnabled,
+                    difficulty,
+                    autoSave,
+                    language
+                };
                 
-                // Save to localStorage
-                localStorage.setItem('undercover-settings', JSON.stringify({
-                    theme, sound, vibration
-                }));
+                // Apply theme if theme manager is available
+                if (this.themeManager) {
+                    this.themeManager.applyTheme(theme);
+                }
+                
+                // Apply sound settings
+                if (this.sounds) {
+                    this.sounds.setEnabled(soundEnabled);
+                }
+                
+                // Save settings
+                this.savePremiumSettings();
                 
                 this.hideModal();
-                this.playSound('click');
+                this.playSound('success');
+                
+                // Show confirmation
+                setTimeout(() => {
+                    this.showModal('✅ Paramètres sauvegardés', 'Vos préférences ont été mises à jour avec succès !');
+                }, 300);
+            }
+            
+            resetSettings() {
+                this.showModal(
+                    '⚠️ Réinitialiser les paramètres',
+                    'Êtes-vous sûr de vouloir réinitialiser tous les paramètres aux valeurs par défaut ?',
+                    [
+                        { text: 'Annuler', class: 'btn-secondary' },
+                        { text: 'Réinitialiser', class: 'btn-danger', onClick: () => this.confirmResetSettings() }
+                    ]
+                );
+            }
+            
+            confirmResetSettings() {
+                this.premiumSettings = this.getDefaultPremiumSettings();
+                this.savePremiumSettings();
+                
+                // Apply default theme
+                if (this.themeManager) {
+                    this.themeManager.applyTheme(this.premiumSettings.theme);
+                }
+                
+                this.hideModal();
+                this.playSound('notification');
+                
+                setTimeout(() => {
+                    this.showModal('🔄 Paramètres réinitialisés', 'Tous les paramètres ont été restaurés aux valeurs par défaut.');
+                }, 300);
             }
             
             playSound(type) {
-                // Placeholder for sound system
-                if (this.soundEnabled) {
-                    console.log(`Playing sound: ${type}`);
+                if (this.sounds && this.premiumSettings.soundEnabled) {
+                    switch(type) {
+                        case 'click':
+                            this.sounds.playClick();
+                            break;
+                        case 'flip':
+                            this.sounds.playCardFlip();
+                            break;
+                        case 'start':
+                            this.sounds.playGameStart();
+                            break;
+                        case 'win':
+                            this.sounds.playVictory();
+                            break;
+                        case 'eliminate':
+                            this.sounds.playElimination();
+                            break;
+                        case 'timer':
+                            this.sounds.playTimer();
+                            break;
+                        case 'notification':
+                            this.sounds.playNotification();
+                            break;
+                        case 'error':
+                            this.sounds.playError();
+                            break;
+                        case 'success':
+                            this.sounds.playSuccess();
+                            break;
+                        default:
+                            this.sounds.playClick();
+                    }
+                }
+            }
+            
+            // Enhanced vibration with patterns
+            vibrate(pattern) {
+                if (this.premiumSettings.vibrationsEnabled && navigator.vibrate) {
+                    navigator.vibrate(pattern);
                 }
             }
         }
@@ -1653,6 +1996,151 @@
             `;
             document.head.appendChild(style);
         });
+        
+        // ===== SERVICE WORKER REGISTRATION =====
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async () => {
+                try {
+                    const registration = await navigator.serviceWorker.register('/sw-premium.js');
+                    console.log('✅ Service Worker registered successfully:', registration.scope);
+                    
+                    // Check for updates
+                    registration.addEventListener('updatefound', () => {
+                        const newWorker = registration.installing;
+                        console.log('🔄 New Service Worker installing...');
+                        
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed') {
+                                if (navigator.serviceWorker.controller) {
+                                    // New version available
+                                    console.log('🆕 New version available!');
+                                    showUpdateNotification();
+                                } else {
+                                    // First time installation
+                                    console.log('✅ App ready for offline use!');
+                                    showInstallNotification();
+                                }
+                            }
+                        });
+                    });
+                    
+                    // Listen for messages from service worker
+                    navigator.serviceWorker.addEventListener('message', (event) => {
+                        console.log('📨 Message from Service Worker:', event.data);
+                        
+                        if (event.data.type === 'UPDATE_AVAILABLE') {
+                            showUpdateNotification();
+                        }
+                    });
+                    
+                } catch (error) {
+                    console.error('❌ Service Worker registration failed:', error);
+                }
+            });
+        }
+        
+        function showUpdateNotification() {
+            if (game && game.showModal) {
+                game.showModal(
+                    '🆕 Mise à jour disponible',
+                    'Une nouvelle version d\'Undercover Premium est disponible avec des améliorations et de nouvelles fonctionnalités !',
+                    [
+                        { text: 'Plus tard', class: 'btn-ghost' },
+                        { text: 'Mettre à jour', class: 'btn-primary', onClick: () => updateApp() }
+                    ]
+                );
+            }
+        }
+        
+        function showInstallNotification() {
+            if (game && game.showModal) {
+                game.showModal(
+                    '📱 App installée',
+                    'Undercover Premium est maintenant disponible hors ligne ! Vous pouvez jouer même sans connexion Internet.',
+                    [
+                        { text: 'Super !', class: 'btn-primary' }
+                    ]
+                );
+            }
+        }
+        
+        function updateApp() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistration().then((registration) => {
+                    if (registration && registration.waiting) {
+                        registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+                        window.location.reload();
+                    }
+                });
+            }
+        }
+        
+        // ===== PWA INSTALL PROMPT =====
+        let deferredPrompt;
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('💾 PWA install prompt available');
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Show custom install button
+            showInstallButton();
+        });
+        
+        function showInstallButton() {
+            // Add install button to home screen
+            const installBtn = document.createElement('button');
+            installBtn.className = 'btn btn-secondary';
+            installBtn.innerHTML = '📱 Installer l\'app';
+            installBtn.style.cssText = `
+                position: fixed;
+                bottom: 2rem;
+                right: 2rem;
+                z-index: 1000;
+                animation: slideUp 0.5s ease-out;
+            `;
+            
+            installBtn.addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    console.log('PWA install outcome:', outcome);
+                    
+                    if (outcome === 'accepted') {
+                        game.playSound('success');
+                    }
+                    
+                    deferredPrompt = null;
+                    installBtn.remove();
+                }
+            });
+            
+            document.body.appendChild(installBtn);
+            
+            // Auto-hide after 10 seconds
+            setTimeout(() => {
+                if (installBtn.parentNode) {
+                    installBtn.style.animation = 'slideDown 0.5s ease-in forwards';
+                    setTimeout(() => installBtn.remove(), 500);
+                }
+            }, 10000);
+        }
+        
+        // ===== PERFORMANCE MONITORING =====
+        if ('performance' in window) {
+            window.addEventListener('load', () => {
+                setTimeout(() => {
+                    const perfData = performance.getEntriesByType('navigation')[0];
+                    const loadTime = perfData.loadEventEnd - perfData.loadEventStart;
+                    console.log(`⚡ App loaded in ${loadTime.toFixed(2)}ms`);
+                    
+                    // Track performance metrics
+                    if (loadTime > 3000) {
+                        console.warn('⚠️ Slow loading detected');
+                    }
+                }, 0);
+            });
+        }
     </script>
 </body>
 </html>
