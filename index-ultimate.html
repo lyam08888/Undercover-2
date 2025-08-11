@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Undercover Ultimate - Le Jeu d'Espionnage Ultime</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- PWA Meta -->
+    <meta name="theme-color" content="#0A0A0F">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <style>
+        /* ===== VARIABLES CSS ===== */
+        :root {
+            --bg-primary: #0A0A0F;
+            --bg-secondary: #1A1A25;
+            --bg-tertiary: #2A2A35;
+            --text-primary: #FFFFFF;
+            --text-secondary: #A1A1AA;
+            --text-muted: #6B7280;
+            --accent-primary: #6366F1;
+            --accent-secondary: #8B5CF6;
+            --accent-tertiary: #EC4899;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --border: rgba(255, 255, 255, 0.1);
+            --glass: rgba(255, 255, 255, 0.05);
+            --shadow: rgba(0, 0, 0, 0.3);
+            --glow: rgba(99, 102, 241, 0.3);
+        }
+
+        /* ===== RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* ===== BACKGROUND ANIMÉ ===== */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 60%, rgba(236, 72, 153, 0.05) 0%, transparent 50%);
+            animation: bgShift 20s ease-in-out infinite;
+        }
+
+        @keyframes bgShift {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(2deg); }
+        }
+
+        /* ===== LOGO STYLÉ ===== */
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .logo {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary), var(--accent-tertiary));
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            position: relative;
+            box-shadow: 
+                0 20px 40px rgba(99, 102, 241, 0.3),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+            animation: logoFloat 3s ease-in-out infinite;
+        }
+
+        .logo::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary), var(--accent-tertiary));
+            border-radius: 32px;
+            z-index: -1;
+            opacity: 0.5;
+            filter: blur(10px);
+            animation: logoGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(2deg); }
+        }
+
+        @keyframes logoGlow {
+            0% { opacity: 0.3; transform: scale(0.95); }
+            100% { opacity: 0.7; transform: scale(1.05); }
+        }
+
+        .logo-text {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary), var(--accent-tertiary));
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            text-align: center;
+            letter-spacing: -2px;
+            margin-bottom: 0.5rem;
+            animation: textShimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes textShimmer {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.2); }
+        }
+
+        .logo-subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            text-align: center;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* ===== LOADING SCREEN ===== */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loading-spinner {
+            width: 80px;
+            height: 80px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid var(--accent-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 2rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .loading-progress {
+            width: 300px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .loading-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 2px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .loading-tips {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-align: center;
+            max-width: 400px;
+            line-height: 1.5;
+        }
+
+        /* ===== MAIN CONTAINER ===== */
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* ===== WELCOME SCREEN ===== */
+        .welcome-screen {
+            text-align: center;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 1s ease-out 0.5s forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .welcome-message {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            line-height: 1.6;
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 1rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+            box-shadow: 0 4px 15px var(--glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px var(--glow);
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--accent-primary);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-ghost:hover {
+            background: var(--glass);
+            color: var(--text-primary);
+        }
+
+        /* ===== QUICK ACTIONS ===== */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .quick-action {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .quick-action:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--accent-primary);
+        }
+
+        .quick-action-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .quick-action-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: var(--text-primary);
+        }
+
+        .quick-action-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1rem;
+            text-align: center;
+            background: linear-gradient(transparent, var(--bg-primary));
+            z-index: 10;
+        }
+
+        .version-info {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover {
+            background: var(--accent-primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 480px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .logo {
+                width: 100px;
+                height: 100px;
+                font-size: 2.5rem;
+            }
+            
+            .logo-text {
+                font-size: 2rem;
+            }
+            
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ===== ANIMATIONS SUPPLÉMENTAIRES ===== */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--accent-primary);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: floatUp 8s linear infinite;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.3;
+            }
+            90% {
+                opacity: 0.3;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background animé -->
+    <div class="animated-bg"></div>
+    
+    <!-- Particules flottantes -->
+    <div class="floating-particles" id="particles"></div>
+
+    <!-- Écran de chargement -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="logo">
+            🎭
+        </div>
+        <div class="loading-spinner"></div>
+        <div class="loading-text" id="loadingText">Initialisation...</div>
+        <div class="loading-progress">
+            <div class="loading-progress-bar" id="progressBar"></div>
+        </div>
+        <div class="loading-tips" id="loadingTips">
+            Préparez-vous à vivre l'expérience d'espionnage ultime !
+        </div>
+    </div>
+
+    <!-- Contenu principal -->
+    <div class="container">
+        <div class="welcome-screen" id="welcomeScreen">
+            <!-- Logo principal -->
+            <div class="logo-container">
+                <div class="logo">
+                    🎭
+                </div>
+                <div class="logo-text">UNDERCOVER</div>
+                <div class="logo-subtitle">Ultimate Edition</div>
+            </div>
+
+            <!-- Message de bienvenue -->
+            <div class="welcome-message">
+                Bienvenue dans l'expérience d'espionnage la plus immersive jamais créée. 
+                Démasquez les agents secrets, trompez vos adversaires et survivez dans ce jeu de déduction ultime.
+            </div>
+
+            <!-- Boutons principaux -->
+            <button class="btn btn-primary" onclick="startNewGame()">
+                <span>🎮</span>
+                <span>Nouvelle Partie</span>
+            </button>
+
+            <button class="btn btn-secondary" onclick="continueGame()">
+                <span>▶️</span>
+                <span>Continuer</span>
+            </button>
+
+            <!-- Actions rapides -->
+            <div class="quick-actions">
+                <a href="rules.html" class="quick-action">
+                    <span class="quick-action-icon">📖</span>
+                    <div class="quick-action-title">Règles</div>
+                    <div class="quick-action-desc">Apprenez à jouer</div>
+                </a>
+
+                <a href="settings.html" class="quick-action">
+                    <span class="quick-action-icon">⚙️</span>
+                    <div class="quick-action-title">Paramètres</div>
+                    <div class="quick-action-desc">Personnalisez votre expérience</div>
+                </a>
+
+                <a href="statistics.html" class="quick-action">
+                    <span class="quick-action-icon">📊</span>
+                    <div class="quick-action-title">Statistiques</div>
+                    <div class="quick-action-desc">Vos performances</div>
+                </a>
+
+                <a href="themes.html" class="quick-action">
+                    <span class="quick-action-icon">🎨</span>
+                    <div class="quick-action-title">Thèmes</div>
+                    <div class="quick-action-desc">Styles visuels</div>
+                </a>
+            </div>
+
+            <!-- Boutons supplémentaires -->
+            <button class="btn btn-ghost" onclick="showAbout()" style="margin-top: 2rem;">
+                <span>ℹ️</span>
+                <span>À propos</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div class="version-info">
+            Undercover Ultimate v3.0.0 - Édition Premium
+        </div>
+        <div class="social-links">
+            <a href="#" class="social-link" title="Partager">📤</a>
+            <a href="#" class="social-link" title="Évaluer">⭐</a>
+            <a href="#" class="social-link" title="Support">💬</a>
+        </div>
+    </div>
+
+    <script>
+        // ===== SYSTÈME DE CHARGEMENT AVANCÉ =====
+        class LoadingManager {
+            constructor() {
+                this.steps = [
+                    { text: "Initialisation du moteur de jeu...", duration: 800 },
+                    { text: "Chargement des thèmes premium...", duration: 600 },
+                    { text: "Configuration du système audio...", duration: 700 },
+                    { text: "Préparation des animations...", duration: 500 },
+                    { text: "Optimisation des performances...", duration: 400 },
+                    { text: "Finalisation...", duration: 300 }
+                ];
+                this.currentStep = 0;
+                this.totalDuration = this.steps.reduce((sum, step) => sum + step.duration, 0);
+                this.startTime = Date.now();
+            }
+
+            async start() {
+                const loadingText = document.getElementById('loadingText');
+                const progressBar = document.getElementById('progressBar');
+                const loadingTips = document.getElementById('loadingTips');
+                
+                const tips = [
+                    "💡 Astuce : Observez attentivement les réactions des autres joueurs",
+                    "🎯 Conseil : Donnez des indices subtils mais pas trop évidents",
+                    "🕵️ Stratégie : Les Undercover doivent se fondre dans la masse",
+                    "⚡ Info : Utilisez les gestes et expressions pour tromper vos adversaires",
+                    "🎭 Secret : Parfois, dire la vérité peut être la meilleure stratégie"
+                ];
+
+                for (let i = 0; i < this.steps.length; i++) {
+                    const step = this.steps[i];
+                    loadingText.textContent = step.text;
+                    
+                    // Changer le tip aléatoirement
+                    if (Math.random() > 0.5) {
+                        loadingTips.textContent = tips[Math.floor(Math.random() * tips.length)];
+                    }
+                    
+                    // Animer la barre de progression
+                    const progress = ((i + 1) / this.steps.length) * 100;
+                    progressBar.style.width = progress + '%';
+                    
+                    await this.delay(step.duration);
+                }
+
+                // Masquer l'écran de chargement
+                this.hide();
+            }
+
+            delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+
+            hide() {
+                const loadingScreen = document.getElementById('loadingScreen');
+                loadingScreen.classList.add('hidden');
+                
+                // Démarrer les animations de la page principale
+                setTimeout(() => {
+                    this.startMainAnimations();
+                }, 500);
+            }
+
+            startMainAnimations() {
+                // Démarrer les particules
+                this.createParticles();
+                
+                // Ajouter des effets sonores (simulation)
+                console.log('🔊 Système audio initialisé');
+                
+                // Animer l'entrée du contenu
+                const welcomeScreen = document.getElementById('welcomeScreen');
+                welcomeScreen.style.animation = 'fadeInUp 1s ease-out forwards';
+            }
+
+            createParticles() {
+                const particlesContainer = document.getElementById('particles');
+                
+                setInterval(() => {
+                    if (Math.random() > 0.7) {
+                        const particle = document.createElement('div');
+                        particle.className = 'particle';
+                        particle.style.left = Math.random() * 100 + 'vw';
+                        particle.style.animationDelay = Math.random() * 2 + 's';
+                        particle.style.animationDuration = (6 + Math.random() * 4) + 's';
+                        
+                        particlesContainer.appendChild(particle);
+                        
+                        // Supprimer la particule après l'animation
+                        setTimeout(() => {
+                            particle.remove();
+                        }, 10000);
+                    }
+                }, 1000);
+            }
+        }
+
+        // ===== FONCTIONS PRINCIPALES =====
+        function startNewGame() {
+            // Animation de clic
+            event.target.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                event.target.style.transform = '';
+            }, 150);
+            
+            // Redirection vers la configuration de partie
+            setTimeout(() => {
+                window.location.href = 'game-setup.html';
+            }, 300);
+        }
+
+        function continueGame() {
+            // Vérifier s'il y a une partie sauvegardée
+            const savedGame = localStorage.getItem('undercover-saved-game');
+            
+            if (savedGame) {
+                window.location.href = 'game-continue.html';
+            } else {
+                showModal('Aucune partie sauvegardée', 'Commencez une nouvelle partie pour jouer !');
+            }
+        }
+
+        function showAbout() {
+            showModal(
+                'À propos d\'Undercover Ultimate',
+                `
+                <div style="text-align: left; line-height: 1.6;">
+                    <p><strong>Version:</strong> 3.0.0 Ultimate Edition</p>
+                    <p><strong>Développé par:</strong> Équipe Undercover</p>
+                    <p><strong>Fonctionnalités:</strong></p>
+                    <ul style="margin: 1rem 0; padding-left: 1.5rem;">
+                        <li>Interface ultra-moderne</li>
+                        <li>Système audio immersif</li>
+                        <li>Thèmes premium multiples</li>
+                        <li>Mode hors ligne complet</li>
+                        <li>Statistiques avancées</li>
+                        <li>Animations fluides</li>
+                    </ul>
+                    <p style="margin-top: 1rem; font-style: italic; color: var(--text-secondary);">
+                        L'expérience d'espionnage la plus complète jamais créée !
+                    </p>
+                </div>
+                `
+            );
+        }
+
+        function showModal(title, content) {
+            // Créer une modal dynamique
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                backdrop-filter: blur(10px);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 2000;
+                animation: fadeIn 0.3s ease;
+            `;
+            
+            modal.innerHTML = `
+                <div style="
+                    background: var(--bg-secondary);
+                    border: 1px solid var(--border);
+                    border-radius: 16px;
+                    padding: 2rem;
+                    max-width: 400px;
+                    width: 90%;
+                    animation: slideIn 0.3s ease;
+                ">
+                    <h2 style="margin-bottom: 1rem; color: var(--accent-primary);">${title}</h2>
+                    <div style="margin-bottom: 2rem; color: var(--text-secondary);">${content}</div>
+                    <button onclick="this.closest('div').remove()" class="btn btn-primary">
+                        Fermer
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Fermer en cliquant à l'extérieur
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+        }
+
+        // ===== INITIALISATION =====
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('🎮 Undercover Ultimate - Initialisation...');
+            
+            // Démarrer le chargement
+            const loadingManager = new LoadingManager();
+            await loadingManager.start();
+            
+            // Ajouter des gestionnaires d'événements
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    // Fermer les modals ouvertes
+                    document.querySelectorAll('[style*="z-index: 2000"]').forEach(modal => {
+                        modal.remove();
+                    });
+                }
+            });
+            
+            console.log('✅ Undercover Ultimate prêt !');
+        });
+
+        // ===== EFFETS VISUELS AVANCÉS =====
+        document.addEventListener('mousemove', (e) => {
+            // Effet de parallaxe subtil sur le logo
+            const logo = document.querySelector('.logo');
+            if (logo) {
+                const x = (e.clientX / window.innerWidth - 0.5) * 10;
+                const y = (e.clientY / window.innerHeight - 0.5) * 10;
+                logo.style.transform = `translate(${x}px, ${y}px) rotate(${x * 0.1}deg)`;
+            }
+        });
+
+        // Effet de clic sur les boutons
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('btn')) {
+                // Créer un effet de ripple
+                const ripple = document.createElement('span');
+                const rect = e.target.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+                
+                ripple.style.cssText = `
+                    position: absolute;
+                    width: ${size}px;
+                    height: ${size}px;
+                    left: ${x}px;
+                    top: ${y}px;
+                    background: rgba(255, 255, 255, 0.3);
+                    border-radius: 50%;
+                    transform: scale(0);
+                    animation: ripple 0.6s linear;
+                    pointer-events: none;
+                `;
+                
+                e.target.style.position = 'relative';
+                e.target.style.overflow = 'hidden';
+                e.target.appendChild(ripple);
+                
+                setTimeout(() => ripple.remove(), 600);
+            }
+        });
+
+        // Ajouter l'animation ripple au CSS
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+            
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
