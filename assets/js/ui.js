@@ -64,7 +64,7 @@ function goto(screen){
 
 function wireHome(){
   $('#btn-add').onclick = ()=>{ addPlayer(prompt('Nom du joueur ?')||''); Sound.play('click'); };
-  $('#btn-start').onclick = ()=>{ startGame(); Sound.play('launch'); };
+  $('#start-game-btn').onclick = ()=>{ startGame(); Sound.play('launch'); };
 }
 
 window.addEventListener('DOMContentLoaded', ()=>{
