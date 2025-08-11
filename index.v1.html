@@ -1,0 +1,2929 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>Undercover - Révolution</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#0D1117">
+<style>
+  #tsparticles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+  }
+  :root{
+    --bg: #0D1117;
+    --surface: #161B22;
+    --surface-light: #2c333d;
+    --border: #30363d;
+    --ink: #e6edf3;
+    --muted: #8b949e;
+    --accent: #38BDF8;
+    --accent-glow: rgba(56, 189, 248, 0.3);
+    --danger: #F472B6;
+    --warn: #FBBF24;
+    --success: #34D399;
+    --r: 12px;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+  html,body{height:100%; overflow: hidden;}
+  body{
+    margin:0; font-family: 'Inter', sans-serif;
+    color:var(--ink);
+    background-color: var(--bg);
+    background-image: radial-gradient(circle at 10% 10%, var(--accent-glow), transparent 40%), radial-gradient(circle at 90% 90%, rgba(244, 114, 182, 0.1), transparent 40%);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    display: grid;
+    place-items: center;
+  }
+  .app{
+    width: 100%;
+    height: 100dvh; /* Use dynamic viewport height to solve mobile screen issue */
+    display:flex;
+    flex-direction:column; 
+    position: relative; 
+    background: var(--bg);
+    overflow: hidden;
+  }
+  header{position:sticky;top:0;z-index:10;background: rgba(13, 17, 23, 0.7);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border-bottom:1px solid var(--border); display: none;}
+  .bar{display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem; height: 60px;}
+  .title{font-weight:800; font-size:1.1rem;}
+  .spacer{flex:1}
+  .icon-btn{background: transparent; border:none; color:var(--muted); padding:.5rem; border-radius:50%; display:inline-flex;align-items:center; cursor:pointer; transition: all .2s ease;}
+  .icon-btn:hover, .icon-btn:focus { color:var(--ink); background: var(--surface); }
+  main{flex:1; display:flex;flex-direction:column; overflow: hidden; position: relative;}
+  .screen{position:absolute; top:0; left:0; width:100%; height:100%; display:flex; flex-direction:column; padding:1rem; overflow-y:auto; opacity:0; visibility:hidden; animation-fill-mode: both; pointer-events: none; z-index: 1;}
+  .screen.active{opacity:1; visibility:visible; pointer-events: auto; z-index: 2;}
+  .screen.slide-out { animation: slideOut .3s ease-out forwards; }
+  .screen.slide-in { animation: slideIn .3s ease-in forwards; }
+  .card{background:var(--surface); border-radius:var(--r); padding:1.2rem; border: 1px solid var(--border); animation: fadeInUp .4s .1s both; display: flex; flex-direction: column;}
+  h1{font-size:1.5rem;margin:0 0 1rem 0; font-weight: 800; color: var(--accent); display: flex; align-items: center; gap: 0.5rem;}
+  h2{font-size:1.1rem;margin:1.5rem 0 .75rem 0;color:var(--muted); font-weight: 700;}
+  .row{display:flex;gap:.75rem;align-items:center;flex-wrap:wrap}
+  input[type="text"], select{width:100%; padding:.75rem 1rem; font-size:1rem; color:var(--ink); background:var(--bg); border:1px solid var(--border); border-radius:8px; outline:none; transition: all .2s ease;}
+  input[type="text"]:focus, select:focus {border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow);}
+  .pill{display:flex; align-items:center; justify-content:space-between; gap:.75rem; padding:.75rem 1rem; border-radius:8px; border:1px solid var(--border); background:var(--bg);}
+  .numstep{display:flex;align-items:center;gap:.55rem}
+  .step-btn{width:40px;height:40px;border-radius:8px;border:1px solid var(--border); background:var(--surface-light); color:var(--ink); font-size:1.25rem; font-weight:600; cursor:pointer; transition: all .2s ease;}
+  .step-btn:hover { border-color: var(--accent); }
+  .counter{min-width:40px;text-align:center;font-weight:700;font-size:1.25rem}
+  .btn{width:100%; padding:1rem 1.1rem; border-radius:8px; font-weight:700; border:none; color:var(--bg); background:var(--accent); font-size:1rem; cursor:pointer; transition: all .2s ease; -webkit-tap-highlight-color: transparent;}
+  .btn:hover { filter: brightness(1.1); }
+  .btn:active { transform: scale(0.98); }
+  .btn.ghost{background:var(--surface-light); color:var(--ink); border:1px solid var(--border);}
+  .btn.ghost:hover{border-color:var(--muted);}
+  .btn.danger{background:var(--danger); color: #fff;}
+  .players{display:flex;flex-direction:column; gap:.6rem}
+  .player-row{display:flex; align-items:center; gap:.7rem; padding:.5rem; border-radius:8px; background: var(--surface-light);}
+  .avatar{width:48px;height:48px;border-radius:8px;display:grid;place-items:center;font-weight:700; background:var(--bg); color:var(--muted); overflow:hidden; position:relative; flex-shrink: 0;}
+  .avatar img{width:100%;height:100%;object-fit:cover;display:block}
+  .center{display:grid;place-items:center; flex: 1; text-align: center;}
+  .hint{font-size:.9rem;color:var(--muted); line-height: 1.5; max-width: 40ch; margin: 0 auto;}
+  dialog{ border:none; border-radius:var(--r); background: var(--surface); color:var(--ink); padding:0; box-shadow:0 25px 50px -12px rgba(0,0,0,0.5); width:min(92vw,420px); border: 1px solid var(--border);}
+  dialog::backdrop{background:rgba(0,0,0,.6); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);}
+  dialog[open]{animation: zoomIn .2s ease-out;}
+  @keyframes zoomIn {from{opacity:0; transform:scale(.95)}}
+  .modal{padding:1.5rem}
+  .modal h2 {margin:0 0 .5rem 0; font-weight: 700; font-size: 1.25rem; color: var(--accent);}
+  .modal p {margin:.5rem 0 1.5rem 0; color: var(--muted); line-height: 1.6;}
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0; }
+
+  .tip-box {
+    font-size: .85rem;
+    color: var(--muted);
+    background-color: var(--surface);
+    padding: .75rem 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    line-height: 1.5;
+    text-align: center;
+  }
+  .tip-box::before {
+    content: '💡 Astuce : ';
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  /* Action Bar */
+  .action-bar{ position: fixed; bottom: 0; left: 0; right: 0; z-index: 10; padding: .75rem; background: linear-gradient(180deg, transparent, var(--bg) 80%); display: none; max-width: 480px; margin: 0 auto; animation: slideUp .3s ease-out; }
+  .action-bar.visible { display: flex; gap: .75rem; }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+  /* Pass Screen */
+  .pass-container { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem; flex: 1; user-select: none;}
+  .reveal-card-wrapper { perspective: 1500px; }
+  .reveal-card {
+    width: 85vw;
+    max-width: 300px;
+    aspect-ratio: 5 / 7;
+    border-radius: var(--r);
+    background: linear-gradient(165deg, var(--surface), #21262d);
+    cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 1.5rem; text-align: center;
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), box-shadow .3s ease, opacity .3s ease-in-out;
+    border: 1px solid var(--border);
+    box-shadow: 0 0 2px rgba(0,0,0,0.2), 0 4px 12px rgba(0,0,0,0.3);
+    position: relative;
+    transform-style: preserve-3d;
+  }
+  .reveal-card .icon { font-size: 3rem; margin-bottom: 1rem; color: var(--accent); transition: transform .3s ease; }
+  .reveal-card .text { font-weight: 600; font-size: 1rem; }
+  .reveal-card.flipped {
+    transform: rotateY(180deg);
+    box-shadow: 0 0 25px var(--accent-glow), 0 0 40px var(--accent-glow);
+  }
+  .card-face { position: absolute; top:0; left:0; width:100%; height:100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; }
+  .card-back { transform: rotateY(180deg); }
+  .word-big { font-size: 2rem; font-weight: 800; color: var(--accent); }
+  
+  /* Game Screen */
+  .game-container { width: 100%; height: 100%; display: flex; flex-direction: column; }
+  .turn-display { display: flex; flex-direction: column; align-items: center; gap: 1rem; padding: 1rem; background: var(--surface); border-radius: var(--r); margin-bottom: 1rem; animation: slideDown .5s both; text-align: center;}
+  .turn-player-avatar { width: 60px; height: 60px; border-radius: 50%; position: relative; margin: 0 auto .5rem auto; }
+  .turn-player-avatar .avatar { width: 100%; height: 100%; border-radius: 50%; }
+  .turn-timer-ring { position: absolute; top: -5px; left: -5px; width: 70px; height: 70px; }
+  .turn-timer-circle { stroke: var(--accent); stroke-width: 4; fill: transparent; transition: stroke-dashoffset 0.2s linear, stroke 0.3s; transform: rotate(-90deg); transform-origin: 50% 50%; }
+  .turn-player-name { font-size: 1.1rem; font-weight: 700; }
+  .game-content-area { flex: 1; display: grid; place-items: center; text-align: center; padding: 1rem; }
+  .hint-text { font-size: 2.5rem; font-weight: 800; animation: fadeIn .5s ease; }
+  .vote-timer-display { text-align: center; font-size: 3rem; font-weight: 800; color: var(--accent); animation: pulse 1s infinite; }
+  .player-grid-vote { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 1rem; padding: 1rem 0; width: 100%;}
+  .player-vote-card { display: flex; flex-direction: column; align-items: center; gap: .5rem; padding: 1rem; background: var(--surface); border-radius: var(--r); border: 2px solid transparent; cursor: pointer; transition: all .2s ease; }
+  .player-vote-card:not(.disabled):hover { transform: translateY(-4px); border-color: var(--muted); }
+  .player-vote-card.voted { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); transform: scale(1.05); }
+  .player-vote-card .avatar { width: 64px; height: 64px; border-radius: 50%; }
+  .player-vote-card .name { font-weight: 600; font-size: 0.9rem; }
+  .player-vote-card.disabled { opacity: 0.6; cursor: not-allowed; }
+
+  /* Setup Steps */
+  .setup-step {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+    overflow-y: auto;
+    opacity: 0;
+    visibility: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .setup-step.active { opacity: 1; visibility: visible; }
+
+  /* Setup Options */
+  .option-card {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .5rem;
+    padding: 1rem .5rem; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 8px; cursor: pointer; transition: all .2s ease; text-align: center;
+    flex: 1;
+  }
+  .option-card.active { background: var(--surface-light); border-color: var(--accent); }
+  .option-card .icon { font-size: 1.5rem; }
+  .option-card .label { font-size: .9rem; font-weight: 600; }
+  .option-card .value { font-size: .8rem; color: var(--muted); }
+
+  .theme-list {
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+    margin-top: 1rem;
+    overflow-y: auto;
+    padding-right: .5rem; /* For scrollbar */
+  }
+  .theme-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    text-align: left;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all .2s ease;
+    background: var(--bg);
+  }
+  .theme-item:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent);
+  }
+  .theme-item.active {
+    background: var(--surface-light);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+    transform: translateY(-3px);
+  }
+  .theme-item .icon {
+    font-size: 1.5rem;
+    line-height: 1;
+    background: var(--surface);
+    padding: .75rem;
+    border-radius: 8px;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+  }
+  .theme-item .details {
+    display: flex;
+    flex-direction: column;
+  }
+  .theme-item .label {
+    font-size: 1rem;
+    font-weight: 700;
+  }
+  .theme-item .description {
+    font-size: .85rem;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  /* Home Screen */
+  .home-logo-container {
+    perspective: 800px;
+    margin-bottom: -1rem; /* Pull title up */
+  }
+  .home-logo {
+    width: 120px;
+    height: auto;
+    opacity: 0;
+    transform: rotateX(-90deg) translateY(50px);
+    animation: unfold-in 1s cubic-bezier(0.16, 1, 0.3, 1) .2s forwards;
+  }
+
+  @keyframes unfold-in {
+    to {
+      opacity: 1;
+      transform: rotateX(0deg) translateY(0);
+    }
+  }
+
+  .home-title {
+    font-size: clamp(2rem, 10vw, 3.2rem);
+    font-weight: 800;
+    text-align: center;
+    letter-spacing: -1.5px;
+    background: linear-gradient(90deg, var(--accent), #fff, var(--danger), var(--accent));
+    background-size: 300% auto;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    animation: title-shimmer 6s linear infinite, title-glow 1.5s ease-in-out infinite alternate;
+  }
+  .home-title .accent { color: inherit; } /* Inherit the gradient */
+
+  @keyframes title-shimmer {
+    to {
+        background-position: -300% center;
+    }
+  }
+
+  #home-sound-toggle {
+    position: absolute;
+    top: 1.5rem;
+    right: 1rem;
+    font-size: 1.5rem;
+    z-index: 10;
+  }
+
+  .confetti-particle {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0;
+    animation: confetti-burst 0.9s ease-out forwards;
+  }
+
+  @keyframes confetti-burst {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: translate(var(--x), var(--y)) scale(0); opacity: 0; }
+  }
+
+  .floating-word {
+    position: absolute;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--muted);
+    opacity: 0;
+    animation: float-and-fade 5s ease-in-out forwards;
+    pointer-events: none;
+    white-space: nowrap;
+    z-index: 0;
+  }
+
+  @keyframes float-and-fade {
+    0% { transform: translateY(20px) scale(0.8); opacity: 0; }
+    20%, 80% { transform: translateY(-20px) scale(1); opacity: 0.6; }
+    100% { transform: translateY(-60px) scale(0.7); opacity: 0; }
+  }
+
+  /* Vote Reveal */
+  .vote-reveal-grid { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 1rem; margin-top: 1rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border); }
+  .vote-reveal-grid:last-child { border-bottom: none; }
+  .vote-reveal-item { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; text-align: center; }
+  .vote-reveal-item .avatar { width: 56px; height: 56px; border-radius: 50%; }
+  .vote-reveal-item .name { font-size: 0.9rem; font-weight: 600; }
+  .vote-arrow { font-size: 2rem; color: var(--muted); }
+  .vote-arrow.suspect { color: var(--danger); font-weight: bold; }
+  
+  /* Event Screen */
+  #screen-event .center { gap: 1.5rem; }
+  #event-icon { font-size: 4rem; animation: zoomIn .5s both; }
+  #event-title { font-size: 2rem; animation: fadeInUp .5s .2s both; }
+  #event-description { max-width: 45ch; animation: fadeInUp .5s .4s both; }
+  
+  /* Animations */
+  @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+  @keyframes slideOut { to { opacity: 0; transform: translateX(-50%); visibility: hidden; } }
+  @keyframes slideIn { from { opacity: 0; transform: translateX(50%); } to { opacity: 1; transform: translateX(0); visibility: visible;} }
+  .reveal-avatar { animation: zoomIn .5s .1s both; }
+  .reveal-title { animation: fadeInUp .5s .3s both; }
+  .reveal-card-info { animation: fadeInUp .5s .5s both; }
+  .winner-banner { animation: zoomIn .5s cubic-bezier(0.25, 2.5, 0.5, 1) both; }
+
+  @keyframes title-glow {
+    from { text-shadow: 0 0 10px var(--accent-glow), 0 0 20px var(--accent-glow); }
+    to { text-shadow: 0 0 20px var(--accent-glow), 0 0 30px var(--accent-glow), 0 0 5px var(--accent); }
+  }
+
+  @keyframes slide-out-left { from { transform: translateX(0); opacity: 1; } to { transform: translateX(-100%); opacity: 0; } }
+  @keyframes slide-in-right { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  @keyframes slide-out-right { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+  @keyframes slide-in-left { from { transform: translateX(-100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  .slide-out-left { animation: slide-out-left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+  .slide-in-right { animation: slide-in-right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+  .slide-out-right { animation: slide-out-right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+  .slide-in-left { animation: slide-in-left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+
+  @keyframes logo-transition-in {
+    from { transform: scale(0.5) rotate(-90deg); opacity: 0; }
+    to { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+  @keyframes logo-transition-out {
+    from { transform: scale(1) rotate(0deg); opacity: 1; }
+    to { transform: scale(2) rotate(90deg); opacity: 0; }
+  }
+  @keyframes screen-fade-out {
+    to { opacity: 0; }
+  }
+  @keyframes screen-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* Summary Screen */
+  .summary-card {
+    background: var(--surface);
+    border-radius: var(--r);
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--border);
+    width: 100%;
+  }
+  .summary-card h3 {
+    margin: 0 0 0.75rem 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--accent);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.5rem;
+  }
+  .summary-card p {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+  .summary-card .icon {
+    font-size: 1.5rem;
+  }
+  .roles-pills, .player-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+  }
+  .role-pill, .player-pill {
+    background: var(--bg);
+    padding: .4rem .8rem;
+    border-radius: 1rem;
+    font-size: .85rem;
+    font-weight: 600;
+    border: 1px solid var(--border);
+  }
+  .player-pill {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+  .player-pill .avatar {
+    width: 24px;
+    height: 24px;
+    font-size: .8rem;
+  }
+
+  /* Summary Animation */
+  #screen-summary.active #summary-title { animation: fadeInUp .5s .2s both; }
+  #screen-summary.active #summary-grid { animation: fadeInUp .5s .4s both; }
+  #screen-summary.active #summary-roles { animation: fadeInUp .5s .6s both; }
+  #screen-summary.active #summary-players { animation: fadeInUp .5s .8s both; }
+  #screen-summary.active #summary-countdown { animation: fadeInUp .5s 1s both; }
+
+  @media (min-width: 501px) {
+    .app {
+      max-width: 480px;
+      height: 95vh;
+      max-height: 900px;
+      border-radius: 16px;
+      box-shadow: 0 0 80px rgba(0,0,0,0.5);
+    }
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/tsparticles@3.4.0/tsparticles.bundle.min.js"></script>
+</head>
+<body>
+<div id="tsparticles"></div>
+<div class="app">
+  <header id="game-header">
+    <div class="bar">
+      <div class="title">Undercover</div>
+      <div class="spacer"></div>
+      <button id="btnShowMyCard" class="icon-btn" title="Voir ma carte" style="display: none;"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></button>
+      <button id="btnNewWord" class="icon-btn" title="Nouveau mot" style="display: none;"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button>
+      <button id="btnReset" class="icon-btn" title="Nouvelle partie"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg></button>
+      <button id="btnHelp" class="icon-btn" title="Règles"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></button>
+    </div>
+  </header>
+
+  <main>
+    <!-- HOME -->
+    <section id="screen-home" class="screen active">
+      <button id="home-sound-toggle" class="icon-btn">🔇</button>
+      <div class="center" style="display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 3rem 1rem; gap: 2.5rem;">
+            <div class="title-container" style="position: relative; display: flex; flex-direction: column; align-items: center;">
+              <div class="home-logo-container">
+                <svg id="home-logo" class="home-logo" viewBox="0 0 200 80" width="150">
+                    <g fill="none" stroke="var(--accent)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M 30 60 Q 100 80 170 60" />
+                        <path d="M 50 58 C 50 30, 70 20, 100 20 C 130 20, 150 30, 150 58" />
+                        <path d="M 80 30 C 85 25, 115 25, 120 30" />
+                    </g>
+                </svg>
+              </div>
+              <h1 class="home-title" style="animation: fadeInUp .5s .6s both;">Undercover</h1>
+            </div>
+        <div style="animation: fadeInUp .5s .3s both; display: flex; flex-direction: column; gap: .75rem; width: 80%; max-width: 300px;">
+                <button id="start-game-btn" class="btn" style="width: 100%; padding: 1rem 2rem;">Commencer à jouer</button>
+            </div>
+        <div class="tip-box" style="animation: fadeInUp .5s .5s both; max-width: 380px;">Le but est simple : les Civils doivent démasquer les Undercover, et les Undercover doivent survivre !</div>
+        </div>
+    </section>
+
+    <!-- INTRO -->
+    <section id="screen-intro" class="screen">
+        <div class="center" style="justify-content: center; text-align: center; padding: 2rem;">
+            <div id="intro-text-container" style="min-height: 120px; display: flex; align-items: center; justify-content: center;">
+                <h2 id="intro-text" style="font-size: 1.75rem; font-weight: 700; animation: fadeIn .5s forwards;">Votre mission, si vous l'acceptez...</h2>
+            </div>
+            <div id="intro-buttons" style="margin-top: 3rem; opacity: 0; transition: opacity .5s ease .5s; width: 100%; max-width: 320px;">
+                <button id="intro-continue-btn" class="btn">J'ai compris</button>
+                <button id="intro-skip-btn" class="btn ghost" style="margin-top: .75rem;">Passer</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- SETUP -->
+    <section id="screen-setup" class="screen">
+        <!-- Step 1: Mode -->
+        <div class="setup-step active" data-step="1">
+            <div class="card">
+                <h1><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Mode de Jeu <button id="btn-random-mode" class="icon-btn" title="Mode aléatoire" style="font-size: 1.5rem; margin-left: auto;">🎲</button></h1>
+                <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 1rem;">
+                    <select id="game-mode-select" class="input-like" style="width: 100%; padding: .75rem 1rem; font-size: 1rem; color:var(--ink); background:var(--bg); border:1px solid var(--border); border-radius:8px; outline:none; transition: all .2s ease; appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23e6edf3%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.6-3.6%205.4-7.9%205.4-12.9%200-5-1.9-9.4-5.4-12.7z%22/%3E%3C/svg%3E'); background-repeat: no-repeat, repeat; background-position: right .7em top 50%, 0 0; background-size: .65em auto, 100%;"></select>
+                    <div id="game-mode-description" class="tip-box" style="text-align: left; min-height: 80px;"></div>
+                </div>
+            </div>
+        </div>
+        <!-- Step 2: Mission -->
+        <div class="setup-step" data-step="2">
+            <div class="card">
+                <h1><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 17a2.4 2.4 0 0 1 3 0L8 20l3-3a2.4 2.4 0 0 1 3 0L19.5 20a2.4 2.4 0 0 1 0-3L17 15l3-3a2.4 2.4 0 0 0 0-3L15 4l-3 3a2.4 2.4 0 0 0-3 0L4 4a2.4 2.4 0 0 0 0 3l3 3-2.5 2.5a2.4 2.4 0 0 0 0 3Z"/></svg>Choisissez un thème<button id="btn-random-theme" class="icon-btn" title="Thème aléatoire" style="font-size: 1.5rem; margin-left: auto;">🎲</button></h1>
+                <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 1rem;">
+                    <select id="theme-select" class="input-like" style="width: 100%; padding: .75rem 1rem; font-size: 1rem; color:var(--ink); background:var(--bg); border:1px solid var(--border); border-radius:8px; outline:none; transition: all .2s ease; appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23e6edf3%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.6-3.6%205.4-7.9%205.4-12.9%200-5-1.9-9.4-5.4-12.7z%22/%3E%3C/svg%3E'); background-repeat: no-repeat, repeat; background-position: right .7em top 50%, 0 0; background-size: .65em auto, 100%;"></select>
+                    <div id="theme-description" class="tip-box" style="text-align: left; min-height: 80px;"></div>
+                </div>
+            </div>
+        </div>
+        <!-- Step 3: Communication -->
+        <div class="setup-step" data-step="3">
+            <div class="card">
+                <h1><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path></svg>Mode de Communication</h1>
+                <p class="hint" style="margin-top: 0.5rem; text-align: center;">Comment donnerez-vous vos indices ?</p>
+                <div class="setup-options" style="display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; align-content: center; flex: 1; margin-top: 1rem;">
+                    <div id="option-comm-oral" class="option-card active">
+                        <div class="icon">🗣️</div>
+                        <div class="label">Oral</div>
+                        <div class="value">Indices parlés à voix haute.</div>
+                    </div>
+                    <div id="option-comm-ecrit" class="option-card">
+                        <div class="icon">✍️</div>
+                        <div class="label">Écrit</div>
+                        <div class="value">Indices saisis dans l'app.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Step 4: Agents -->
+        <div class="setup-step" data-step="4">
+            <div class="card">
+                <h1><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Paramétrez les agents</h1>
+                <div class="row" style="margin-top:1rem"><div class="pill" style="flex:1.5"><span><b>Agents Humains</b> (0–12)</span><div class="numstep"><button id="minus" class="step-btn">−</button><div id="playerNum" class="counter">4</div><button id="plus" class="step-btn">+</button></div></div><div class="pill" style="flex:1"><span>Bots IA</span><div class="numstep"><button id="minusBot" class="step-btn">−</button><div id="botNum" class="counter">0</div><button id="plusBot" class="step-btn">+</button></div></div></div>
+                <p class="hint" style="margin-top: auto; text-align: center; padding-top: 1rem;">Le nombre total d'agents (humains + bots) doit être entre 3 et 12.</p>
+            </div>
+        </div>
+        <!-- Step 5: Options -->
+        <div class="setup-step" data-step="5">
+            <div class="card">
+                <h1><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 0 2l-.15.08a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l-.22-.38a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1 0-2l.15-.08a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>Options Générales</h1>
+                <div id="game-options-container" style="margin-top: 1rem; display: flex; flex-direction: column; gap: 1rem;">
+                    <!-- Sound Option will be dynamically inserted here -->
+                </div>
+                 <div class="tip-box" style="margin-top: 1rem;">
+                    Configurez ici les options générales de la partie. Les rôles spéciaux seront configurés à l'étape suivante.
+                </div>
+            </div>
+        </div>
+        <!-- Step 6: Special Roles -->
+        <div class="setup-step" data-step="6">
+            <div class="card">
+                <h1><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2-3.5 3.5 3.5 3.5 3.5-3.5Z"/><path d="m2 12 3.5 3.5 3.5-3.5-3.5-3.5Z"/><path d="m12 22 3.5-3.5-3.5-3.5-3.5 3.5Z"/><path d="M22 12 18.5 8.5 15 12l3.5 3.5Z"/></svg>Rôles Spéciaux</h1>
+                <div id="special-roles-container" style="margin-top: 1rem; display: flex; flex-direction: column; gap: 1rem;">
+                    <button id="configure-roles-btn" class="input-like" style="text-align: left; display: flex; justify-content: space-between; align-items: center; width: 100%; padding: .75rem 1rem; font-size: 1rem; color:var(--ink); background:var(--bg); border:1px solid var(--border); border-radius:8px; outline:none; transition: all .2s ease; cursor: pointer;">
+                        <span id="configure-roles-label">Aucun rôle spécial</span>
+                        <span style="color: var(--muted);">Configurer ▼</span>
+                    </button>
+                    <div id="options-description" class="tip-box" style="text-align: left; min-height: 80px;">
+                        Cliquez pour ajouter des rôles comme l'Innocent, le Jester, et plus encore pour pimenter vos parties. Chaque rôle ajoute de nouvelles conditions de victoire !
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Step 7: Players -->
+        <div class="setup-step" data-step="7">
+            <div class="card">
+                <h1 style="font-size: 1.25rem;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Agents Humains</h1>
+                <div id="playersSetup" class="players" style="flex: 1; overflow-y: auto;"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SUMMARY -->
+    <section id="screen-summary" class="screen">
+        <div class="center" style="justify-content: flex-start; text-align: left; padding: 2rem 1.5rem; gap: 1.25rem; overflow-y: auto;">
+            <h1 id="summary-title" style="text-align: center; width: 100%; font-size: 1.75rem;">Récapitulatif de la Mission</h1>
+
+            <div id="summary-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; width: 100%;">
+                <div id="summary-mode" class="summary-card">
+                    <h3>Mode de Jeu</h3>
+                    <p><span class="icon"></span> <span class="label"></span></p>
+                </div>
+                <div id="summary-theme" class="summary-card">
+                    <h3>Thème</h3>
+                    <p><span class="icon"></span> <span class="label"></span></p>
+                </div>
+            </div>
+
+            <div id="summary-roles" class="summary-card" style="width: 100%;">
+                <h3>Rôles Spéciaux Actifs</h3>
+                <div class="roles-pills"></div>
+            </div>
+
+            <div id="summary-players" class="summary-card" style="width: 100%;">
+                <h3>Agents Participants</h3>
+                <div class="player-list"></div>
+            </div>
+
+            <p id="summary-countdown" class="hint" style="text-align: center; width: 100%; margin-top: auto; padding-top: 1rem;">La mission commence dans 5...</p>
+        </div>
+    </section>
+
+    <!-- PASS & CARD REVEAL -->
+    <section id="screen-pass" class="screen">
+        <div class="pass-container">
+            <div style="text-align:center;"><h1>Passez à <b id="currentName"></b></h1><p class="hint">Touchez la carte pour révéler votre rôle secret. <br>Cachez-la avant de passer au suivant.</p></div>
+            <div class="reveal-card-wrapper"><div id="revealCard" class="reveal-card"><div class="card-face card-front"><div class="icon">?</div><div class="text">TOUCHER POUR RÉVÉLER</div></div><div class="card-face card-back"><div id="secretWord" class="word-big"></div></div></div></div>
+        </div>
+    </section>
+
+    <!-- GAME ROUND -->
+    <section id="screen-game" class="screen">
+        <div class="game-container">
+            <div id="turn-display" class="turn-display"></div>
+            <div id="game-content-area" class="game-content-area"></div>
+            <div class="tip-box" style="margin: 0 1rem 1rem 1rem;">Observez les réactions des autres après chaque indice. Une hésitation peut être révélatrice.</div>
+        </div>
+    </section>
+    
+    <!-- EVENT -->
+    <section id="screen-event" class="screen">
+        <div class="center">
+            <div id="event-icon"></div>
+            <h1 id="event-title"></h1>
+            <p id="event-description" class="hint"></p>
+            <div class="tip-box" style="margin-top: 2rem;">Les événements peuvent retourner la situation. Utilisez-les à votre avantage !</div>
+        </div>
+    </section>
+
+    <!-- REVEAL / RESULT -->
+    <section id="screen-reveal" class="screen">
+      <div class="center" style="gap:.8rem;"><div id="revealPhoto" class="avatar reveal-avatar" style="width:120px;height:120px;border-radius:50%;"></div><h1 id="revealTitle" class="reveal-title" style="margin-top: 1rem;"></h1><div class="card reveal-card-info" style="max-width:400px; width: 100%;"><div id="roleBadge" style="font-weight: 600; color: var(--muted); margin-bottom: .5rem;">Rôle</div><div id="revealedWord" style="font-size: 1.2rem; font-weight: 700;"></div></div>
+      <div class="tip-box" style="margin-top: 1.5rem;">Si un Civil est éliminé, les Undercover gagnent du terrain. S'il s'agissait d'un Undercover, vous êtes plus proches de la victoire !</div></div>
+    </section>
+    
+    <!-- LAST WORD -->
+    <section id="screen-lastword" class="screen">
+        <div class="center" style="gap: 1rem;">
+            <h1>Dernier Mot</h1>
+            <p class="hint" id="lastword-prompt"></p>
+            <div id="lastword-grid" class="player-grid-vote"></div>
+            <div class="tip-box">Votre "dernier mot" peut influencer le prochain vote. Choisissez judicieusement !</div>
+        </div>
+    </section>
+
+    <!-- END -->
+    <section id="screen-end" class="screen">
+      <div class="center" style="gap:.8rem;"><h1 id="winnerBanner" class="winner-banner" style="font-size: 2.5rem;"></h1><p id="summary" class="hint" style="max-width: 400px; animation: fadeInUp .5s .2s both;"></p>
+      <div id="vote-reveal-container" class="card" style="width: 100%; max-width: 400px; display:none; animation: fadeInUp .5s .4s both;">
+        <h2>Qui a voté contre qui ?</h2>
+        <div id="vote-reveal-details"></div>
+      </div>
+      <div class="tip-box" style="animation: fadeInUp .5s .6s both;">Chaque partie est différente. Essayez de nouvelles stratégies, de nouveaux thèmes et de nouveaux rôles !</div>
+      </div>
+    </section>
+  </main>
+
+  <div id="transition-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--bg); display: none; place-items: center; z-index: 50;">
+    <svg id="transition-logo" viewBox="0 0 200 80" width="150" style="width: 120px; height: auto; stroke: var(--accent); stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; fill: none;">
+        <g>
+            <path d="M 30 60 Q 100 80 170 60"></path>
+            <path d="M 50 58 C 50 30, 70 20, 100 20 C 130 20, 150 30, 150 58"></path>
+            <path d="M 80 30 C 85 25, 115 25, 120 30"></path>
+        </g>
+    </svg>
+  </div>
+
+  <div id="actionBar" class="action-bar"></div>
+</div>
+
+<!-- Modals -->
+<dialog id="modal-template">
+    <div class="modal"><h2 id="modal-title"></h2><p id="modal-message"></p><div id="modal-input-wrap" style="display:none;"><input type="text" id="modal-input" style="width: 100%;"></div><div id="modal-actions" class="row" style="margin-top:1.5rem"></div></div>
+</dialog>
+
+<script>
+(function(){
+  // ---------- WORD DATA V4 ----------
+  const THEME_DATA = {
+    "Culture Pop": [
+      {a:"Pokémon",b:"Digimon", hintsA:["capture", "pokéball", "arène"], hintsB:["digital", "monde", "données"]},
+      {a:"Marvel",b:"DC Comics", hintsA:["iron man", "avengers", "cinéma"], hintsB:["batman", "justice league", "sombre"]},
+      {a:"Harry Potter",b:"Seigneur des Anneaux", hintsA:["baguette", "sorcier", "école"], hintsB:["anneau", "communauté", "quête"]},
+      {a:"Twitch",b:"YouTube", hintsA:["stream", "emote", "abonnement"], hintsB:["vidéo", "chaîne", "playlist"]},
+      {a:"Star Wars", b:"Star Trek", hintsA:["force", "sabre laser", "jedi"], hintsB:["fédération", "vaisseau", "exploration"]},
+      {a:"Mario",b:"Sonic", hintsA:["plombier", "champignon", "princesse"], hintsB:["hérisson", "vitesse", "anneaux"]},
+      {a:"Fortnite",b:"Minecraft", hintsA:["battle royale", "construction", "skin"], hintsB:["blocs", "crafting", "survie"]},
+      {a:"Netflix",b:"Disney+", hintsA:["streaming", "série", "binge"], hintsB:["streaming", "famille", "mickey"]},
+      {a:"Instagram", b:"TikTok", hintsA:["photo", "story", "filtre"], hintsB:["danse", "vidéo", "musique"]},
+      {a:"Zelda", b:"Elden Ring", hintsA:["hyrule", "triforce", "link"], hintsB:["entre-terre", "sans-éclat", "cercle"]},
+      {a:"Manga", b:"Comics", hintsA:["japon", "noir et blanc", "lecture droite"], hintsB:["usa", "couleur", "super-héros"]},
+      {a:"Game of Thrones", b:"The Witcher", hintsA:["trône de fer", "westeros", "dragons"], hintsB:["gwynbleidd", "sorceleur", "monstres"]},
+      {a:"Among Us", b:"Fall Guys", hintsA:["imposteur", "tâches", "sus"], hintsB:["course", "obstacles", "couronne"]}
+    ],
+    "Vie Quotidienne": [
+      {a:"Pull",b:"Gilet", hintsA:["laine", "manches", "col"], hintsB:["boutons", "sans manches", "cardigan"]},
+      {a:"Café",b:"Thé", hintsA:["machine", "expresso", "arabica"], hintsB:["infusion", "sachet", "bouilloire"]},
+      {a:"Fourchette",b:"Cuillère", hintsA:["piquer", "dents", "couvert"], hintsB:["contenir", "soupe", "ronde"]},
+      {a:"Chaussette",b:"Collant", hintsA:["pied", "paire", "coton"], hintsB:["jambe", "nylon", "robe"]},
+      {a:"Livre",b:"Magazine", hintsA:["chapitres", "roman", "auteur"], hintsB:["articles", "photos", "hebdomadaire"]},
+      {a:"Bus", b:"Métro", hintsA:["arrêt", "surface", "ville"], hintsB:["station", "souterrain", "rail"]},
+      {a:"T-shirt",b:"Chemise", hintsA:["coton", "manches courtes", "décontracté"], hintsB:["col", "boutons", "formel"]},
+      {a:"Ascenseur", b:"Escalier", hintsA:["bouton", "étage", "cabine"], hintsB:["marche", "rampe", "effort"]},
+      {a:"Smartphone", b:"Téléphone fixe", hintsA:["tactile", "application", "portable"], hintsB:["fil", "combiné", "maison"]},
+      {a:"Clavier", b:"Souris", hintsA:["touches", "taper", "lettres"], hintsB:["clic", "curseur", "roulette"]},
+      {a:"Douche", b:"Bain", hintsA:["rapide", "debout", "jet"], hintsB:["long", "allongé", "baignoire"]},
+      {a:"Parapluie", b:"Imperméable", hintsA:["baleines", "poignée", "pluie"], hintsB:["capuche", "veste", "protège"]}
+    ],
+    "Gastronomie": [
+      {a:"Baguette",b:"Croissant", hintsA:["longue", "salée", "pain"], hintsB:["viennoiserie", "beurre", "sucré"]},
+      {a:"Camembert",b:"Roquefort", hintsA:["vache", "normandie", "croute"], hintsB:["brebis", "bleu", "cave"]},
+      {a:"Raclette",b:"Fondue", hintsA:["pomme de terre", "fromage fondu", "charcuterie"], hintsB:["pain", "fromage fondu", "caquelon"]},
+      {a:"Sel",b:"Poivre", hintsA:["blanc", "cristal", "mer"], hintsB:["noir", "grain", "épice"]},
+      {a:"Vin rouge",b:"Vin blanc", hintsA:["viande", "tannin", "sombre"], hintsB:["poisson", "sec", "clair"]},
+      {a:"Paella", b:"Risotto", hintsA:["riz", "espagne", "fruits de mer"], hintsB:["riz", "italie", "crémeux"]},
+      {a:"Pizza", b:"Tarte flambée", hintsA:["tomate", "mozzarella", "italie"], hintsB:["crème", "lardons", "alsace"]},
+      {a:"Bière", b:"Cidre", hintsA:["houblon", "mousse", "blonde"], hintsB:["pomme", "pétillant", "brut"]},
+      {a:"Moutarde", b:"Ketchup", hintsA:["dijon", "piquant", "jaune"], hintsB:["tomate", "sucré", "rouge"]},
+      {a:"Sushi",b:"Maki", hintsA:["poisson cru", "tranche", "riz"], hintsB:["rouleau", "algue", "riz"]}
+    ],
+    "Culture G & Arts": [
+        {a:"Tour Eiffel",b:"Arc de Triomphe", hintsA:["fer", "champs de mars", "antenne"], hintsB:["pierre", "étoile", "tombe"]},
+        {a:"Molière",b:"Victor Hugo", hintsA:["théâtre", "comédie", "farce"], hintsB:["roman", "poésie", "misérables"]},
+        {a:"Peinture",b:"Sculpture", hintsA:["toile", "pinceau", "couleur"], hintsB:["volume", "marbre", "statue"]},
+        {a:"Joconde",b:"Cri", hintsA:["sourire", "da vinci", "louvre"], hintsB:["angoisse", "munch", "pont"]},
+        {a:"Mozart",b:"Beethoven", hintsA:["prodige", "opéra", "autriche"], hintsB:["sourd", "symphonie", "allemagne"]},
+        {a:"Léonard de Vinci", b:"Michel-Ange", hintsA:["inventeur", "joconde", "homme de vitruve"], hintsB:["sculpteur", "chapelle sixtine", "david"]},
+        {a:"Opéra", b:"Comédie musicale", hintsA:["chant lyrique", "orchestre", "classique"], hintsB:["broadway", "chansons", "danse"]},
+        {a:"Photographie", b:"Cinéma", hintsA:["instantané", "cliché", "appareil photo"], hintsB:["film", "mouvement", "caméra"]},
+        {a:"Van Gogh", b:"Monet", hintsA:["nuit étoilée", "tournesols", "oreille coupée"], hintsB:["nymphéas", "impressionnisme", "jardin"]},
+        {a:"Rodin", b:"Camille Claudel", hintsA:["le penseur", "bronze", "maître"], hintsB:["la valse", "marbre", "élève"]}
+    ],
+    "Lieux & Voyages": [
+        {a:"Paris",b:"Londres", hintsA:["seine", "capitale", "france"], hintsB:["tamise", "capitale", "angleterre"]},
+        {a:"Alpes",b:"Pyrénées", hintsA:["mont blanc", "ski", "haute"], hintsB:["frontière", "espagne", "chaîne"]},
+        {a:"Japon",b:"Chine", hintsA:["sushi", "tokyo", "île"], hintsB:["muraille", "pékin", "continent"]},
+        {a:"Plage",b:"Montagne", hintsA:["sable", "mer", "vague"], hintsB:["neige", "sommet", "rocher"]},
+        {a:"Désert",b:"Forêt", hintsA:["chaud", "sable", "cactus"], hintsB:["humide", "arbres", "verdure"]},
+        {a:"Rome", b:"Athènes", hintsA:["colisée", "vatican", "latin"], hintsB:["acropole", "parthénon", "grec"]},
+        {a:"Nil", b:"Amazone", hintsA:["égypte", "fleuve", "crocodile"], hintsB:["brésil", "fleuve", "anaconda"]},
+        {a:"Statue de la Liberté", b:"Christ Rédempteur", hintsA:["new york", "torche", "france"], hintsB:["rio", "brésil", "bras ouverts"]},
+        {a:"Venise", b:"Amsterdam", hintsA:["gondole", "italie", "canaux"], hintsB:["vélo", "pays-bas", "canaux"]},
+        {a:"Everest", b:"K2", hintsA:["plus haut", "népal", "himalaya"], hintsB:["deuxième", "pakistan", "difficile"]}
+    ],
+    "Animaux & Nature": [
+      {a:"Chat",b:"Chien", hintsA:["félin", "indépendant", "griffes"], hintsB:["canin", "fidèle", "aboie"]},
+      {a:"Lion",b:"Tigre", hintsA:["savane", "roi", "crinière"], hintsB:["jungle", "rayures", "solitaire"]},
+      {a:"Abeille",b:"Guêpe", hintsA:["miel", "ruche", "pollen"], hintsB:["dard", "agressive", "jaune"]},
+      {a:"Rose",b:"Tulipe", hintsA:["épines", "rouge", "fleur"], hintsB:["bulbe", "hollande", "pétale"]},
+      {a:"Soleil",b:"Lune", hintsA:["jour", "étoile", "chaleur"], hintsB:["nuit", "satellite", "lumière"]},
+      {a:"Loup", b:"Renard", hintsA:["meute", "hurlement", "gris"], hintsB:["rusé", "goupil", "roux"]},
+      {a:"Dauphin", b:"Requin", hintsA:["mammifère", "intelligent", "joueur"], hintsB:["poisson", "prédateur", "aileron"]},
+      {a:"Moustique", b:"Mouche", hintsA:["piqûre", "sang", "zanzara"], hintsB:["agaçante", "déchets", "bzzz"]},
+      {a:"Chêne", b:"Sapin", hintsA:["gland", "feuillu", "robuste"], hintsB:["épines", "conifère", "noël"]},
+      {a:"Orage", b:"Neige", hintsA:["éclair", "tonnerre", "pluie"], hintsB:["flocon", "hiver", "blanc"]}
+    ],
+    "Science & Tech": [
+      {a:"Apple",b:"Microsoft", hintsA:["iphone", "mac", "design"], hintsB:["windows", "office", "logiciel"]},
+      {a:"ADN",b:"ARN", hintsA:["double hélice", "génétique", "chromosome"], hintsB:["simple brin", "messager", "transcription"]},
+      {a:"Voiture électrique",b:"Voiture thermique", hintsA:["batterie", "recharge", "silence"], hintsB:["essence", "moteur", "pollution"]},
+      {a:"Astronaute",b:"Cosmonaute", hintsA:["nasa", "américain", "espace"], hintsB:["roscosmos", "russe", "espace"]},
+      {a:"Robot", b:"Cyborg", hintsA:["machine", "autonome", "ia"], hintsB:["humain", "amélioré", "organique"]},
+      {a:"Bitcoin", b:"Ethereum", hintsA:["cryptomonnaie", "satoshi", "or numérique"], hintsB:["cryptomonnaie", "contrats", "altcoin"]},
+      {a:"Réalité Virtuelle", b:"Réalité Augmentée", hintsA:["casque", "immersion", "métavers"], hintsB:["superposition", "smartphone", "pokémon go"]},
+      {a:"Imprimante 3D", b:"Scanner 3D", hintsA:["créer", "filament", "objet"], hintsB:["copier", "numériser", "modèle"]},
+      {a:"Python",b:"JavaScript", hintsA:["langage", "serpent", "ia"], hintsB:["langage", "web", "navigateur"]}
+    ],
+    "Sport": [
+      {a:"Football",b:"Rugby", hintsA:["rond", "pied", "but"], hintsB:["ovale", "main", "essai"]},
+      {a:"Tennis",b:"Badminton", hintsA:["raquette", "balle", "filet"], hintsB:["raquette", "volant", "léger"]},
+      {a:"Formule 1",b:"Rallye", hintsA:["circuit", "rapide", "monoplace"], hintsB:["spéciale", "dérapage", "copilote"]},
+      {a:"Judo",b:"Karaté", hintsA:["prise", "tatami", "souplesse"], hintsB:["frappe", "dojo", "kata"]},
+      {a:"Piscine",b:"Patinoire", hintsA:["eau", "nager", "maillot"], hintsB:["glace", "patiner", "froid"]},
+      {a:"Jeux Olympiques", b:"Coupe du Monde", hintsA:["flamme", "médailles", "tous les 4 ans"], hintsB:["football", "trophée", "qatar"]},
+      {a:"Cyclisme", b:"Course à pied", hintsA:["vélo", "maillot jaune", "peloton"], hintsB:["marathon", "endurance", "baskets"]},
+      {a:"Boxe", b:"Lutte", hintsA:["gants", "ring", "ko"], hintsB:["prise", "tatami", "soumission"]},
+      {a:"Natation", b:"Plongeon", hintsA:["longueur", "crawl", "bassin"], hintsB:["tremplin", "figures", "hauteur"]},
+      {a:"Escalade",b:"Alpinisme", hintsA:["prise", "mur", "baudrier"], hintsB:["sommet", "piolet", "cordée"]}
+    ],
+    "Culture Algérienne": [
+      {a:"Chorba",b:"Hrira", hintsA:["vermicelles", "soupe", "ramadan"], hintsB:["légumineuses", "soupe", "maroc"]},
+      {a:"Couscous",b:"Berkoukes", hintsA:["fin", "semoule", "légumes"], hintsB:["gros", "plombs", "pâtes"]},
+      {a:"Zlabia",b:"Makrout", hintsA:["friture", "miel", "sucré"], hintsB:["semoule", "datte", "gâteau"]},
+      {a:"Thé à la menthe",b:"Café maure", hintsA:["vert", "infusion", "maghreb"], hintsB:["noir", "turc", "serré"]},
+      {a:"Raï", b:"Chaâbi", hintsA:["musique", "cheb", "oran"], hintsB:["musique", "populaire", "alger"]},
+      {a:"Casbah", b:"Médina", hintsA:["alger", "citadelle", "unesco"], hintsB:["ville ancienne", "souk", "remparts"]},
+      {a:"Fennec", b:"Gazelle", hintsA:["désert", "animal", "football"], hintsB:["cornes", "rapide", "animal"]},
+      {a:"Matlouh", b:"Kesra", hintsA:["pain", "levain", "moelleux"], hintsB:["pain", "galette", "semoule"]}
+    ],
+    "Mots Piégés & Absurdes": [
+      {a:"Ornithorynque",b:"Pangolin", hintsA:["bec", "australie", "venin"], hintsB:["écailles", "fourmis", "roule"]},
+      {a:"Schizophrène",b:"Paranoïaque", hintsA:["voix", "hallucination", "dissociation"], hintsB:["méfiance", "complot", "persécution"]},
+      {a:"Clé",b:"Serrure", hintsA:["tourne", "porte", "métal"], hintsB:["reçoit", "trou", "verrou"]},
+      {a:"Haut",b:"Bas", hintsA:["ciel", "dessus", "monter"], hintsB:["sol", "dessous", "descendre"]},
+      {a:"Gauche",b:"Droite", hintsA:["politique", "main", "coeur"], hintsB:["politique", "main", "sens"]},
+      {a:"Cause", b:"Conséquence", hintsA:["origine", "pourquoi", "début"], hintsB:["résultat", "donc", "fin"]},
+      {a:"Théorie", b:"Pratique", hintsA:["idée", "concept", "papier"], hintsB:["action", "expérience", "réel"]},
+      {a:"Question", b:"Réponse", hintsA:["demande", "interrogation", "point"], hintsB:["solution", "explication", "information"]},
+      {a:"Infini", b:"Néant", hintsA:["sans fin", "univers", "maths"], hintsB:["vide", "rien", "absence"]},
+      {a:"Rire",b:"Sourire", hintsA:["sonore", "drôle", "haha"], hintsB:["silencieux", "visage", "lèvres"]}
+    ],
+    "Histoire & Mythologie": [
+      {a:"Jules César",b:"Alexandre le Grand", hintsA:["rome", "gaule", "empereur"], hintsB:["macédoine", "perse", "conquérant"]},
+      {a:"Cléopâtre",b:"Néfertiti", hintsA:["reine", "égypte", "nil"], hintsB:["reine", "égypte", "beauté"]},
+      {a:"Zeus",b:"Poséidon", hintsA:["ciel", "foudre", "olympe"], hintsB:["mer", "trident", "océan"]},
+      {a:"Lancelot",b:"Arthur", hintsA:["chevalier", "table ronde", "guenièvre"], hintsB:["roi", "excalibur", "camelot"]},
+      {a:"Napoléon", b:"Louis XIV", hintsA:["corse", "empire", "waterloo"], hintsB:["roi-soleil", "versailles", "absolutisme"]},
+      {a:"Spartacus", b:"Hannibal", hintsA:["esclave", "révolte", "gladiateur"], hintsB:["carthage", "éléphants", "alpes"]},
+      {a:"Thor", b:"Loki", hintsA:["marteau", "foudre", "asgard"], hintsB:["ruse", "métamorphe", "frère"]},
+      {a:"Ulysse", b:"Achille", hintsA:["odyssée", "ithaque", "cyclope"], hintsB:["talon", "troie", "colère"]},
+      {a:"Jeanne d'Arc", b:"Charlemagne", hintsA:["pucelle", "orléans", "bûcher"], hintsB:["empereur", "carolingien", "écoles"]}
+    ],
+    "Marques Célèbres": [
+      {a:"Coca-Cola",b:"Pepsi", hintsA:["rouge", "boisson", "américain"], hintsB:["bleu", "boisson", "concurrent"]},
+      {a:"Nike",b:"Adidas", hintsA:["swoosh", "chaussure", "sport"], hintsB:["trois bandes", "chaussure", "allemand"]},
+      {a:"Google",b:"Facebook", hintsA:["recherche", "moteur", "android"], hintsB:["social", "profil", "meta"]},
+      {a:"McDonald's",b:"Burger King", hintsA:["arches", "big mac", "clown"], hintsB:["flamme", "whopper", "roi"]},
+      {a:"IKEA", b:"Leroy Merlin", hintsA:["suède", "meubles", "kit"], hintsB:["france", "bricolage", "maison"]},
+      {a:"Amazon", b:"Alibaba", hintsA:["livraison", "jeff bezos", "prime"], hintsB:["chine", "jack ma", "grossiste"]},
+      {a:"Lego", b:"Playmobil", hintsA:["briques", "danemark", "construction"], hintsB:["figurine", "allemagne", "imagination"]},
+      {a:"Toyota", b:"Tesla", hintsA:["japon", "hybride", "fiabilité"], hintsB:["usa", "électrique", "elon musk"]}
+    ],
+    "Corps Humain": [
+      {a:"Cerveau",b:"Coeur", hintsA:["pensée", "organe", "tête"], hintsB:["sang", "organe", "pompe"]},
+      {a:"Main",b:"Pied", hintsA:["doigts", "saisir", "bras"], hintsB:["orteils", "marcher", "jambe"]},
+      {a:"Oeil",b:"Oreille", hintsA:["vision", "regarder", "couleur"], hintsB:["audition", "écouter", "son"]},
+      {a:"Poumon",b:"Estomac", hintsA:["respiration", "air", "cage thoracique"], hintsB:["digestion", "nourriture", "acide"]},
+      {a:"Sang", b:"Lymphe", hintsA:["rouge", "globules", "veines"], hintsB:["incolore", "ganglions", "défense"]},
+      {a:"Muscle", b:"Tendon", hintsA:["contraction", "force", "viande"], hintsB:["insertion", "élastique", "lien"]},
+      {a:"Peau", b:"Poil", hintsA:["organe", "surface", "derme"], hintsB:["follicule", "protection", "cheveu"]},
+      {a:"Hormone", b:"Enzyme", hintsA:["messager", "glande", "croissance"], hintsB:["catalyseur", "protéine", "digestion"]}
+    ],
+    "Super-Héros & Vilains": [
+      {a:"Batman", b:"Joker", hintsA:["chevalier", "noir", "gotham"], hintsB:["clown", "crime", "rire"]},
+      {a:"Superman", b:"Lex Luthor", hintsA:["kryptonite", "voler", "clark kent"], hintsB:["génie", "riche", "chauve"]},
+      {a:"Spider-Man", b:"Green Goblin", hintsA:["toile", "araignée", "peter parker"], hintsB:["bouffon", "planeur", "osborn"]},
+      {a:"Thanos", b:"Dark Vador", hintsA:["gant", "pierres", "snap"], hintsB:["casque", "côté obscur", "père"]},
+      {a:"Wonder Woman", b:"Captain Marvel", hintsA:["amazone", "lasso", "diana"], hintsB:["kree", "photonique", "carol"]},
+      {a:"Flash", b:"Vif-Argent", hintsA:["vitesse", "dc comics", "barry allen"], hintsB:["vitesse", "marvel", "pietro maximoff"]},
+      {a:"Aquaman",b:"Namor", hintsA:["atlantide", "trident", "dc"], hintsB:["atlantide", "ailes aux pieds", "marvel"]}
+    ],
+    "Expressions Françaises": [
+      {a:"Avoir la frite", b:"Tomber dans les pommes", hintsA:["énergie", "forme", "patate"], hintsB:["évanouir", "malaise", "fruit"]},
+      {a:"Pleuvoir des cordes", b:"Faire un temps de chien", hintsA:["pluie", "intensité", "ficelle"], hintsB:["mauvais", "météo", "animal"]},
+      {a:"Poser un lapin", b:"Donner sa langue au chat", hintsA:["attendre", "rendez-vous", "absent"], hintsB:["sécher", "deviner", "animal"]},
+      {a:"Mettre les pieds dans le plat", b:"Tourner autour du pot", hintsA:["direct", "gaffe", "aborder"], hintsB:["hésiter", "détours", "indirect"]},
+      {a:"Se faire l'avocat du diable", b:"Prêcher pour sa paroisse", hintsA:["défendre", "indéfendable", "argument"], hintsB:["convaincre", "propre intérêt", "église"]},
+      {a:"Tomber de Charybde en Scylla", b:"Choisir entre la peste et le choléra", hintsA:["pire", "situation", "dilemme"], hintsB:["mauvais", "choix", "maladie"]}
+    ],
+    "Philosophie": [
+      {a:"Socrate", b:"Platon", hintsA:["maïeutique", "dialogue", "ciguë"], hintsB:["allégorie", "caverne", "académie"]},
+      {a:"Descartes", b:"Pascal", hintsA:["doute", "cogito", "méthode"], hintsB:["pari", "pensées", "roseau"]},
+      {a:"Kant", b:"Nietzsche", hintsA:["impératif", "catégorique", "critique"], hintsB:["surhomme", "éternel retour", "zarathoustra"]},
+      {a:"Épicurisme", b:"Stoïcisme", hintsA:["plaisir", "bonheur", "jardin"], hintsB:["devoir", "vertu", "ataraxie"]},
+      {a:"Liberté", b:"Déterminisme", hintsA:["choix", "volonté", "autonomie"], hintsB:["cause", "nécessité", "destin"]},
+      {a:"Utopie", b:"Dystopie", hintsA:["idéal", "société", "parfait"], hintsB:["cauchemar", "société", "totalitaire"]}
+    ],
+    "Objets Insolites": [
+      {a:"Canard en caoutchouc", b:"Nain de jardin", hintsA:["bain", "flotte", "coin coin"], hintsB:["pelouse", "barbe", "chapeau pointu"]},
+      {a:"Boule à neige", b:"Pantin", hintsA:["souvenir", "secouer", "hiver"], hintsB:["marionnette", "fils", "bois"]},
+      {a:"Sablier", b:"Boussole", hintsA:["temps", "sable", "écoulement"], hintsB:["direction", "nord", "magnétique"]},
+      {a:"Monocle", b:"Lorgnon", hintsA:["oeil", "chaîne", "gentleman"], hintsB:["nez", "pince-nez", "lunettes"]},
+      {a:"Gramophone", b:"Jukebox", hintsA:["pavillon", "manivelle", "disque"], hintsB:["musique", "pièces", "bar"]},
+      {a:"Perceuse", b:"Visseuse", hintsA:["trou", "mèche", "mur"], hintsB:["serrer", "embout", "meuble"]}
+    ],
+    "Films de Série B": [
+      {a:"Sharknado", b:"Le Blob", hintsA:["requin", "tornade", "catastrophe"], hintsB:["gelée", "extraterrestre", "dévore"]},
+      {a:"Plan 9 from Outer Space", b:"Mars Attacks!", hintsA:["aliens", "zombies", "pire film"], hintsB:["martiens", "humour noir", "lasers"]},
+      {a:"L'Attaque de la moussaka géante", b:"Killer Klowns from Outer Space", hintsA:["plat grec", "monstre", "absurde"], hintsB:["clowns", "tueurs", "espace"]},
+      {a:"The Room", b:"Birdemic", hintsA:["oh hi mark", "tommy wiseau", "cuillères"], hintsB:["oiseaux", "explosions", "logiciel"]},
+      {a:"Mega Shark vs. Giant Octopus", b:"Zombeavers", hintsA:["monstres", "océan", "combat"], hintsB:["castors", "zombies", "horreur"]}
+    ],
+    "Mythologie Urbaine": [
+      {a:"Bigfoot", b:"Monstre du Loch Ness", hintsA:["forêt", "singe", "empreinte"], hintsB:["lac", "écosse", "long cou"]},
+      {a:"Chupacabra", b:"Mothman", hintsA:["chèvre", "sang", "amérique latine"], hintsB:["ailes", "yeux rouges", "papillon"]},
+      {a:"Zone 51", b:"Triangle des Bermudes", hintsA:["désert", "ovni", "secret"], hintsB:["océan", "disparition", "navires"]},
+      {a:"L'homme au crochet", b:"La dame blanche", hintsA:["voiture", "amoureux", "légende"], hintsB:["auto-stoppeuse", "virage", "disparition"]},
+      {a:"Les égouts de New York", b:"Les catacombes de Paris", hintsA:["alligators", "ville", "souterrain"], hintsB:["ossements", "ville", "souterrain"]}
+    ],
+    "Conflits Historiques": [
+      {a:"Guerre de Troie", b:"Guerres Médiques", hintsA:["cheval", "hélène", "achille"], hintsB:["perse", "marathon", "sparte"]},
+      {a:"Guerre des Deux-Roses", b:"Guerre de Cent Ans", hintsA:["angleterre", "lancastre", "york"], hintsB:["france", "jeanne d'arc", "longue"]},
+      {a:"Révolution française", b:"Révolution américaine", hintsA:["bastille", "guillotine", "louis xvi"], hintsB:["indépendance", "boston", "washington"]},
+      {a:"Guerre Froide", b:"Guerre du Vietnam", hintsA:["urss", "usa", "mur de berlin"], hintsB:["communisme", "jungle", "napalm"]},
+      {a:"Guerre de Sécession", b:"Guerre d'indépendance", hintsA:["nord", "sud", "esclavage"], hintsB:["colonies", "angleterre", "1776"]},
+      {a:"Première Guerre Mondiale", b:"Seconde Guerre Mondiale", hintsA:["tranchées", "1914", "verdun"], hintsB:["nazis", "1939", "débarquement"]}
+    ]
+  };
+  const RANDOM_AGENT_NAMES = ["Spectre", "Vipère", "Corbeau", "Ombre", "Fantôme", "Loup", "Cobra", "Phénix", "Tigre", "Faucon", "Mirage", "Zodiac"];
+  const TIPS = [
+    "En tant que Civil, donnez un indice précis mais pas trop évident pour ne pas aider l'Undercover.",
+    "En tant qu'Undercover, essayez de vous fondre dans la masse. Votre premier indice est crucial !",
+    "Si un rôle 'Innocent' est en jeu, il gagne s'il est éliminé ET devine le mot des Civils. Ne le sous-estimez pas !",
+    "Observez les réactions des autres après chaque indice. Une hésitation peut être révélatrice.",
+    "N'hésitez pas à utiliser les événements à votre avantage, ils peuvent renverser la partie !",
+    "Un vote blanc ou une égalité peut sauver un Undercover en difficulté. Discutez bien avant de voter !",
+    "Si vous êtes l'Undercover et que vous avez une idée du mot des Civils, essayez de donner un indice qui correspond aux deux mots.",
+    "En mode Révolution, préparez-vous à tout ! Les rôles peuvent changer à tout moment.",
+    "N'ayez pas peur de voter contre quelqu'un qui semble sûr de lui, c'est peut-être une tactique !"
+  ];
+  const THEME_ICONS = { "Culture Pop": "🍿", "Vie Quotidienne": "🏠", "Gastronomie": "🍔", "Culture G & Arts": "🎨", "Lieux & Voyages": "✈️", "Animaux & Nature": "🐾", "Science & Tech": "🔬", "Sport": "⚽", "Culture Algérienne": "🇩🇿", "Mots Piégés & Absurdes": "🤪", "Histoire & Mythologie": "📜", "Marques Célèbres": "®️", "Corps Humain": "🧬", "Super-Héros & Vilains": "🦸", "Expressions Françaises": "🗣️", "Philosophie": "🤔", "Objets Insolites": "🧸", "Films de Série B": "🎬", "Mythologie Urbaine": "🏙️", "Conflits Historiques": "⚔️", "random": "🎲" };
+  const THEME_DESCRIPTIONS = {
+    "Culture Pop": "De Marvel à Star Wars, en passant par les derniers jeux vidéo et les séries du moment. Un thème parfait pour tester vos connaissances sur tout ce qui fait la culture populaire d'aujourd'hui.",
+    "Vie Quotidienne": "Les objets les plus banals peuvent cacher les plus grands secrets. Dans ce thème, la suspicion se niche dans les moindres détails de votre quotidien. Saurez-vous voir l'extraordinaire dans l'ordinaire ?",
+    "Gastronomie": "Un thème savoureux pour les gourmands et les gourmets. Des plats traditionnels aux ingrédients les plus fins, chaque mot est une invitation à la dégustation. Attention à ne pas être l'ingrédient secret de la recette adverse.",
+    "Culture G & Arts": "De la Joconde à Mozart, en passant par les grandes figures de la littérature. Ce thème mettra votre culture générale et artistique à rude épreuve. Le bluff est un art, à vous de le maîtriser.",
+    "Lieux & Voyages": "Faites vos valises pour un tour du monde express. Des capitales emblématiques aux merveilles naturelles, ce thème est une véritable invitation à l'évasion. Ne vous perdez pas en chemin.",
+    "Animaux & Nature": "Explorez la faune et la flore, des profondeurs de l'océan aux sommets des montagnes. Soyez aussi rusé qu'un renard et aussi observateur qu'un aigle pour démasquer vos adversaires.",
+    "Science & Tech": "Plongez au cœur de l'innovation, de l'ADN aux dernières avancées technologiques. Un thème pour les esprits logiques et les passionnés de science. La précision est votre meilleur atout.",
+    "Sport": "Que vous soyez fan de foot, de tennis ou de sports extrêmes, ce thème est fait pour vous. La compétition est lancée, et seuls les meilleurs stratèges remporteront la partie.",
+    "Culture Algérienne": "Un voyage authentique au cœur de l'Algérie. De la cuisine aux expressions locales, en passant par les lieux emblématiques. Un thème riche en saveurs et en traditions.",
+    "Mots Piégés & Absurdes": "Préparez-vous à des associations d'idées improbables et des mots qui vous mettront au défi. La logique est mise à rude épreuve, et la créativité est la clé pour ne pas se faire piéger.",
+    "Histoire & Mythologie": "Remontez le temps à la rencontre des figures historiques et des dieux de la mythologie. Un thème épique où chaque mot est une légende. Serez-vous à la hauteur de l'histoire ?",
+    "Marques Célèbres": "Logos, slogans, produits iconiques... Ce thème vous plonge dans l'univers impitoyable de la consommation. Votre sens de l'observation sera votre meilleure arme pour démasquer les infiltrés.",
+    "Corps Humain": "Un voyage fascinant et parfois déroutant à l'intérieur de notre propre corps. De la cellule à l'organe, chaque mot est une pièce du puzzle. Une connaissance intime est requise.",
+    "Super-Héros & Vilains": "Endossez le costume de votre héros ou vilain préféré. Dans cette bataille épique entre le bien et le mal, chaque indice est une démonstration de pouvoir. Que le meilleur camp gagne !",
+    "Expressions Françaises": "Mettez votre maîtrise de la langue de Molière à l'épreuve. Les expressions imagées et les proverbes sont autant de pièges à déjouer. Attention à ne pas tomber dans le panneau !",
+    "Philosophie": "Cogito, ergo sum... Pensez, donc bluffez. Un thème pour les esprits affûtés qui n'ont pas peur de jongler avec les grands concepts et les idées complexes. La vérité est une question de perspective.",
+    "Objets Insolites": "Des objets étranges, merveilleux ou complètement loufoques. L'imagination et la créativité sont vos meilleurs alliés pour naviguer dans ce cabinet de curiosités verbal.",
+    "Films de Série B": "Pour les cinéphiles qui n'ont pas peur des requins volants et des monstres en caoutchouc. Un hommage affectueux aux nanars et aux pépites du cinéma de genre. Le ridicule ne tue pas, mais il peut vous démasquer.",
+    "Mythologie Urbaine": "Du monstre du Loch Ness aux légendes du web, explorez les mythes modernes et les créatures qui hantent notre imaginaire collectif. La frontière entre le réel et la fiction est mince.",
+    "Conflits Historiques": "Revivez les grandes batailles, les révolutions et les événements qui ont façonné notre monde. Un thème pour les stratèges et les passionnés d'histoire, où chaque mot est un tournant décisif.",
+    "random": "Laissez le hasard décider pour vous ! Chaque partie est une nouvelle aventure avec un thème totalement aléatoire. Idéal pour ceux qui aiment les surprises et les défis imprévus."
+  };
+
+  const GAME_MODES = {
+    'classic': { icon: '☕', label: 'Classique', description: 'L\'expérience pure d\'Undercover. Pas de timer, pas d\'événements, juste du bluff et de la déduction. Parfait pour découvrir le jeu ou pour les puristes qui aiment prendre leur temps.' },
+    'dynamic': { icon: '⚡', label: 'Dynamique', description: 'Le mode de jeu standard, parfaitement équilibré. Les tours sont rythmés par un timer et des événements aléatoires viennent pimenter la partie, créant des retournements de situation inattendus.' },
+    'revolution': { icon: '💥', label: 'Révolution', description: 'Le chaos total ! Les événements sont fréquents et un événement spécial "Révolution" peut survenir, inversant les rôles des Civils et des Undercover. Personne n\'est à l\'abri !' },
+    'fast': { icon: '⏱️', label: 'Rapide', description: 'Pour les agents qui n\'ont pas de temps à perdre. Les tours et les votes sont beaucoup plus courts, forçant des décisions rapides et instinctives. La pression est à son comble.' },
+    'mystery': { icon: '🕵️', label: 'Mystère', description: 'Le doute est omniprésent. Lorsqu\'un agent est éliminé, son rôle et son mot restent secrets jusqu\'à la fin de la partie. La paranoïa est votre seule alliée.' },
+    'folie': { icon: '🤪', label: 'Folie', description: 'Le mode le plus intense. Un événement aléatoire se produit à chaque tour et les timers sont extrêmement courts. C\'est rapide, imprévisible et totalement fou.' },
+    'traitre': { icon: '😈', label: 'Traître', description: 'Un mode de jeu avancé avec le rôle "Traître". Ce Civil doit se faire passer pour un Undercover et tenter d\'éliminer tout le monde (Civils et Undercover) pour gagner seul.' },
+    'double': { icon: '🎭', label: 'Espion Double', description: 'Introduit le rôle "Espion Double". Cet agent commence comme Undercover, mais s\'il est éliminé, il change de camp et rejoint les Civils, gardant son mot secret.' }
+  };
+  const GAME_OPTIONS = [
+    { id: 'sound', icon: '🔊', label: 'Ambiance Sonore', description: 'Active ou désactive les effets sonores et la musique pour une immersion totale.' },
+    { id: 'innocent', icon: '😇', label: 'Innocent', description: 'Un agent sans mot secret. S\'il est éliminé, il doit deviner le mot des Civils pour gagner seul.' },
+    { id: 'jester', icon: '🃏', label: 'Jester', description: 'Le bouffon du roi. Son seul but est de se faire éliminer par les autres joueurs pour remporter la partie.' },
+    { id: 'agentBlanc', icon: '🕵️', label: 'Agent Blanc', description: 'Un Civil spécial. Si les Undercover sont tous éliminés, il doit deviner leur mot pour gagner seul.' },
+    { id: 'traitre', icon: '😈', label: 'Traître', description: 'Un Civil qui connaît le mot des Undercover. Il gagne seul s\'il parvient à éliminer tous les autres agents.' },
+    { id: 'doubleAgent', icon: '🎭', label: 'Espion Double', description: 'Commence comme Undercover. S\'il est éliminé, il change de camp et rejoint les Civils pour les aider.' }
+  ];
+
+  // ---------- DOM & STATE ----------
+  const dom = {};
+  let setupAgentNames = [];
+  const state = {
+    players: [], wordPair: null,
+    settings: { 
+        gameMode: 'dynamic', // classic, dynamic, revolution
+        theme: 'Culture Pop',
+        communicationMode: 'oral', // oral, ecrit
+        playerCount: 4, botCount: 0, 
+        undercoverCount: 1, 
+        sound:false, innocent:false, jester: false, agentBlanc: false,
+        traitre: false, doubleAgent: false
+    },
+    round: 1, distributionIndex: 0,
+    lastEliminated: null, lastVotes: {}, lastSuspect: null,
+    tabooWord: null,
+    maxPlayers: 12, minPlayers: 3,
+    setupStep: 1, isNavigating: false,
+    _activeScreen: 'home', _gameController: null, _currentEvent: null
+  };
+
+  const getDOMElements = () => {
+    const ids = [
+      'screen-home', 'screen-intro', 'screen-setup', 'screen-summary', 'screen-pass', 'screen-game', 'screen-reveal', 'screen-end', 'screen-lastword', 'screen-event',
+      'summary-title', 'summary-grid', 'summary-mode', 'summary-theme', 'summary-roles', 'summary-players', 'summary-countdown',
+      'intro-text-container', 'intro-text', 'intro-buttons', 'intro-continue-btn', 'intro-skip-btn',
+      'theme-select', 'theme-description', 'minus', 'plus', 'playerNum', 'minusBot', 'plusBot', 'botNum', 'playersSetup',
+      'game-options-container', 'btn-random-mode', 'btn-random-theme', 'configure-roles-btn', 'configure-roles-label',
+
+
+      'btnReset', 'btnHelp', 'btnNewWord', 'btnShowMyCard', 'option-sound', 'option-innocent', 'option-jester', 'option-agent-blanc', 'option-traitre', 'option-double',
+      'option-comm-oral', 'option-comm-ecrit',
+      'game-mode-select', 'game-mode-description',
+
+      'currentName', 'revealCard', 'secretWord', 'start-game-btn', 'tips-btn', 'game-header', 'home-sound-toggle',
+      'turn-display', 'game-content-area', 'lastword-prompt', 'lastword-grid',
+      'event-icon', 'event-title', 'event-description',
+      'revealPhoto', 'revealTitle', 'roleBadge', 'revealedWord', 'winnerBanner', 'summary', 'actionBar',
+      'vote-reveal-container', 'vote-reveal-details',
+      'modal-template', 'modal-title', 'modal-message', 'modal-input-wrap', 'modal-input', 'modal-actions'
+    ];
+    ids.forEach(id => dom[id.replace(/-(\w)/g, (m, g) => g.toUpperCase())] = document.getElementById(id));
+    dom.screens = {
+        home: dom.screenHome, intro: dom.screenIntro, setup: dom.screenSetup, summary: dom.screenSummary, pass: dom.screenPass, game: dom.screenGame,
+        reveal: dom.screenReveal, end: dom.screenEnd, lastword: dom.screenLastword, event: dom.screenEvent
+    };
+  };
+
+  // ---------- UTILS ----------
+  const rand = (n)=> Math.floor(Math.random()*n);
+  const shuffle = (array) => {
+    const newArray = [...array];
+    for (let i = newArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+    return newArray;
+  };
+  const byId = (id)=> state.players.find(p=>p.id===id);
+  const alive = ()=> state.players.filter(p=>p.alive);
+  const clamp = (n,min,max)=> Math.max(min, Math.min(max, n));
+  
+  function show(screenId, direction = 'forward'){
+    const currentScreen = dom.screens[state._activeScreen];
+    const nextScreen = dom.screens[screenId];
+
+    if (!nextScreen || (currentScreen && currentScreen === nextScreen) || state.isNavigating) return;
+    sounds.transition();
+
+    const useSlideAnimation = false;
+
+    if (useSlideAnimation) {
+        state.isNavigating = true;
+        const outClass = 'slide-out-left';
+        const inClass = 'slide-in-right';
+
+        if (currentScreen) {
+            currentScreen.classList.add(outClass);
+            currentScreen.addEventListener('animationend', () => {
+                currentScreen.classList.remove('active', outClass);
+            }, { once: true });
+        }
+
+        nextScreen.classList.add('active', inClass);
+        nextScreen.addEventListener('animationend', () => {
+            nextScreen.classList.remove(inClass);
+            state.isNavigating = false;
+        }, { once: true });
+    } else { // Use new logo transition for all other transitions
+        state.isNavigating = true;
+        const transitionOverlay = document.getElementById('transition-overlay');
+        const transitionLogo = document.getElementById('transition-logo');
+
+        const sequence = async () => {
+            transitionOverlay.style.display = 'grid';
+
+            if (currentScreen) {
+                currentScreen.style.animation = 'screen-fade-out 0.3s ease-out forwards';
+                await new Promise(r => setTimeout(r, 300));
+                currentScreen.classList.remove('active');
+                currentScreen.style.animation = '';
+            }
+
+            transitionLogo.style.animation = 'logo-transition-in 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards';
+            await new Promise(r => setTimeout(r, 400));
+            await new Promise(r => setTimeout(r, 200));
+            transitionLogo.style.animation = 'logo-transition-out 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards';
+
+            nextScreen.style.opacity = 0;
+            nextScreen.classList.add('active');
+
+            await new Promise(r => setTimeout(r, 200));
+            nextScreen.style.animation = 'screen-fade-in 0.4s ease-in forwards';
+            await new Promise(r => setTimeout(r, 400));
+
+            // Cleanup
+            transitionOverlay.style.display = 'none';
+            transitionLogo.style.animation = '';
+            nextScreen.style.animation = '';
+            nextScreen.style.opacity = '';
+            state.isNavigating = false;
+        };
+        sequence();
+    }
+
+    state._activeScreen = screenId;
+    dom.gameHeader.style.display = ['home', 'setup'].includes(screenId) ? 'none' : 'block';
+    updateActionBar(screenId);
+    const inGame = ['pass', 'game', 'reveal', 'lastword', 'event'].includes(screenId);
+    dom.btnNewWord.style.display = inGame ? 'inline-flex' : 'none';
+    dom.btnShowMyCard.style.display = inGame ? 'inline-flex' : 'none';
+}
+  window.show = show; // Expose for testing
+
+  // ---------- MODAL SYSTEM ----------
+  const showModal = (config) => {
+    dom.modalTitle.textContent = config.title;
+    dom.modalMessage.innerHTML = config.message;
+    dom.modalInputWrap.style.display = config.input ? 'block' : 'none';
+    if (config.input) {
+        dom.modalInput.placeholder = config.input.placeholder || '';
+        dom.modalInput.value = '';
+        setTimeout(() => dom.modalInput.focus(), 100);
+    }
+    dom.modalActions.innerHTML = '';
+    if (config.buttons && config.buttons.length > 0) {
+        config.buttons.forEach((btnConfig, i) => {
+            const button = document.createElement('button');
+            button.className = `btn ${btnConfig.class || ''}`;
+            button.textContent = btnConfig.text;
+            button.style.flex = 1;
+            button.style.animation = `fadeInUp .4s ${150 + i * 60}ms both`;
+            button.onclick = () => {
+                sounds.click();
+                const inputValue = config.input ? dom.modalInput.value : null;
+                if (btnConfig.onClick) btnConfig.onClick(inputValue);
+                if (!config.preventClose) dom.modalTemplate.close();
+            };
+            dom.modalActions.appendChild(button);
+        });
+    }
+    if (dom.modalTemplate.open) dom.modalTemplate.close();
+    dom.modalTemplate.showModal();
+  };
+
+  // ---------- AUDIO & HAPTICS ----------
+  class AudioManager {
+    constructor(config) {
+      this.sounds = {};
+      this.audioCtx = null;
+      this.masterGain = null;
+      this.isInitialized = false;
+      this.soundConfigs = config;
+      this.activeLoop = null; // To keep track of the looping sound
+    }
+
+    init() {
+      if (this.isInitialized) return;
+      try {
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        if (Ctx) {
+          this.audioCtx = new Ctx();
+          this.masterGain = this.audioCtx.createGain();
+          this.masterGain.gain.value = 1;
+          this.masterGain.connect(this.audioCtx.destination);
+          this.isInitialized = true;
+          this.preload();
+        }
+      } catch (e) {
+        console.error("Web Audio API is not supported in this browser.");
+      }
+    }
+
+    // Must be called after a user interaction
+    resumeContext() {
+      if (this.audioCtx && this.audioCtx.state === 'suspended') {
+        this.audioCtx.resume();
+      }
+    }
+
+    preload() {
+      if (!this.isInitialized) return;
+      Object.entries(this.soundConfigs).forEach(([key, path]) => {
+        // We will load sounds on demand for now, but preloading can be done here
+        // For simplicity, we'll just store the path
+        this.sounds[key] = { path: path, buffer: null };
+      });
+    }
+
+    async loadSound(key) {
+        if (!this.sounds[key] || this.sounds[key].buffer) {
+            return; // Already loaded or invalid key
+        }
+        try {
+            const response = await fetch(this.sounds[key].path);
+            const arrayBuffer = await response.arrayBuffer();
+            this.sounds[key].buffer = await this.audioCtx.decodeAudioData(arrayBuffer);
+        } catch (e) {
+            console.error(`Failed to load sound: ${key}`, e);
+        }
+    }
+
+    play(key, loop = false) {
+      if (!state.settings.sound || !this.isInitialized) return;
+      this.resumeContext();
+
+      const sound = this.sounds[key];
+      if (!sound) return;
+
+      const playSound = () => {
+        const source = this.audioCtx.createBufferSource();
+        source.buffer = sound.buffer;
+        source.connect(this.masterGain);
+        source.loop = loop;
+        source.start(0);
+
+        if (loop) {
+            if (this.activeLoop) {
+                this.activeLoop.stop();
+            }
+            this.activeLoop = source;
+        }
+      };
+
+      if (sound.buffer) {
+          playSound();
+      } else {
+          this.loadSound(key).then(() => {
+              if (sound.buffer) playSound();
+          });
+      }
+    }
+
+    stopLoop() {
+        if (this.activeLoop) {
+            this.activeLoop.stop();
+            this.activeLoop = null;
+        }
+    }
+  }
+
+  // Placeholder sound paths from Kenney.nl. User can replace these files.
+  const soundConfig = {
+    'music': 'assets/music.ogg', // Remplacez par votre musique de fond
+    'launch': 'assets/launch.ogg',
+    'click': 'assets/click.ogg',
+    'flip': 'assets/flip.ogg',
+    'event': 'assets/event.ogg',
+    'timer': 'assets/timer.ogg',
+    'win': 'assets/win.ogg',
+    'lose': 'assets/lose.ogg',
+    'eliminate': 'assets/eliminate.ogg',
+    'transition': 'assets/click.ogg',
+    'vote': 'assets/flip.ogg',
+    'countdown': 'assets/timer.ogg'
+  };
+
+  const audioManager = new AudioManager(soundConfig);
+
+  // The old 'sounds' object is now replaced by calls to audioManager
+  const sounds = {
+    click: ()=> audioManager.play('click'),
+    flip: ()=> { audioManager.play('flip'); haptic('light'); },
+    start: ()=> audioManager.play('launch'),
+    eliminate: ()=> { audioManager.play('eliminate'); haptic('heavy'); },
+    win: ()=> audioManager.play('win'),
+    lose: ()=> audioManager.play('lose'),
+    tick: (fast=false)=> { if (fast && !audioManager.activeLoop) audioManager.play('timer', true); },
+    event: ()=> audioManager.play('event'),
+    transition: ()=> audioManager.play('transition'),
+    vote: ()=> audioManager.play('vote'),
+    countdown: ()=> audioManager.play('countdown')
+  };
+
+  function initAudio() {
+    if (!audioManager.isInitialized) {
+      audioManager.init();
+    }
+    audioManager.resumeContext();
+  }
+
+  function toggleBackgroundMusic() {
+    if (!audioManager.isInitialized) return;
+    if (state.settings.sound) {
+        audioManager.play('music', true);
+    } else {
+        audioManager.stopLoop();
+    }
+  }
+
+  function haptic(type = 'light') {
+    if (navigator.vibrate) {
+        navigator.vibrate(type === 'heavy' ? [50] : [20]);
+    }
+  }
+
+  function renderGameOptions() {
+    const container = dom.gameOptionsContainer;
+    container.innerHTML = '';
+    const soundOption = GAME_OPTIONS.find(opt => opt.id === 'sound');
+    if (soundOption) {
+        const optionEl = document.createElement('div');
+        optionEl.className = 'theme-item'; // Re-using style
+        optionEl.style.cursor = 'pointer';
+        optionEl.style.alignItems = 'center';
+
+        const soundState = state.settings.sound;
+        optionEl.innerHTML = `
+            <div class="icon">${soundOption.icon}</div>
+            <div class="details">
+                <div class="label">${soundOption.label}</div>
+                <div class="description" style="font-size: .8rem;">${soundOption.description}</div>
+            </div>
+            <span class="value" style="margin-left: auto; font-weight: 600; color: var(--muted);">${soundState ? 'Activé' : 'Désactivé'}</span>
+        `;
+
+        optionEl.onclick = () => {
+            state.settings.sound = !state.settings.sound;
+            if (state.settings.sound) {
+                initAudio();
+            }
+            sounds.click();
+            optionEl.querySelector('.value').textContent = state.settings.sound ? 'Activé' : 'Désactivé';
+            dom.homeSoundToggle.textContent = state.settings.sound ? '🔊' : '🔇';
+            toggleBackgroundMusic();
+        };
+        container.appendChild(optionEl);
+    }
+  }
+
+  // ---------- IMAGE & AVATAR ----------
+  function fileToDataURL(file, maxW=520, maxH=520){
+    return new Promise((resolve,reject)=>{
+      const fr = new FileReader();
+      fr.onload=()=>{ const img=new Image(); img.onload=()=>{ const r=Math.min(maxW/img.width,maxH/img.height,1),w=Math.round(img.width*r),h=Math.round(img.height*r); const c=document.createElement('canvas');c.width=w;c.height=h; c.getContext('2d').drawImage(img,0,0,w,h); resolve(c.toDataURL('image/jpeg',.9)); }; img.onerror=reject; img.src=fr.result; }; fr.onerror=reject; fr.readAsDataURL(file);
+    });
+  }
+  function avatarHTML(p){
+    if(p?.photo) return `<div class="avatar"><img src="${p.photo}" alt="photo ${p.name||'joueur'}"></div>`;
+    const init = (p?.name||'Joueur').split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
+    return `<div class="avatar">${init||'J'}</div>`;
+  }
+
+  // ---------- SETUP ----------
+  function showSetupStep(step, direction = 'forward') {
+    const fromStep = state.setupStep;
+    const toStep = clamp(step, 1, 7);
+    if (fromStep === toStep || state.isNavigating) return;
+
+    state.isNavigating = true;
+
+    const currentStepEl = document.querySelector(`.setup-step[data-step="${fromStep}"]`);
+    const nextStepEl = document.querySelector(`.setup-step[data-step="${toStep}"]`);
+
+    if (!nextStepEl) {
+        state.isNavigating = false;
+        return;
+    }
+
+    const outClass = direction === 'forward' ? 'slide-out-left' : 'slide-out-right';
+    const inClass = direction === 'forward' ? 'slide-in-right' : 'slide-in-left';
+
+    const animationPromises = [];
+
+    if (currentStepEl) {
+        currentStepEl.classList.add(outClass);
+        animationPromises.push(new Promise(resolve => {
+            currentStepEl.addEventListener('animationend', function handler(e) {
+                if (e.target === currentStepEl) {
+                    currentStepEl.classList.remove('active', outClass);
+                    currentStepEl.removeEventListener('animationend', handler);
+                    resolve();
+                }
+            }, { once: true });
+        }));
+    }
+
+    nextStepEl.classList.add('active', inClass);
+    animationPromises.push(new Promise(resolve => {
+        nextStepEl.addEventListener('animationend', function handler(e) {
+            if (e.target === nextStepEl) {
+                nextStepEl.classList.remove(inClass);
+                nextStepEl.removeEventListener('animationend', handler);
+                resolve();
+            }
+        }, { once: true });
+    }));
+
+    Promise.all(animationPromises).then(() => {
+        state.isNavigating = false;
+    });
+    state.setupStep = toStep;
+    updateActionBar('setup');
+  }
+
+  function renderPlayerSetup(){
+    dom.playersSetup.innerHTML='';
+    const n = state.settings.playerCount;
+    for (let i=0;i<n;i++){
+      const p = state.players[i] || {id:i+1, name:'', photo:null};
+      const row = document.createElement('div');
+      row.className='player-row';
+      row.style.animation = `fadeInUp .5s ${i * 50}ms both`;
+      row.innerHTML = `
+        ${avatarHTML(p)}
+        <input type="text" placeholder="Nom de l'agent..." value="${p.name||''}" data-idx="${i}" style="flex:1">
+        <div class="camera-row" style="display:flex; gap: 0.25rem;">
+          <button class="icon-btn" data-random="${i}" title="Nom aléatoire"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"/><path d="M4 20L21 3"/><path d="M21 16v5h-5"/><path d="M15 15l6 6"/><path d="M4 4l5 5"/></svg></button>
+          <button class="icon-btn" data-idx="${i}" title="Prendre/importer une photo"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg></button>
+          <button class="icon-btn" data-remove="${i}" title="Supprimer la photo" style="${p.photo ? '' : 'display:none;'}"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+          <input type="file" accept="image/*" data-file="${i}" class="sr-only">
+        </div>`;
+      dom.playersSetup.appendChild(row);
+    }
+    dom.playersSetup.querySelectorAll('input[type="text"]').forEach(inp=>inp.oninput=(e)=>{ const i=parseInt(e.target.dataset.idx,10); state.players[i]=state.players[i]||{id:i+1}; state.players[i].name=e.target.value; });
+    dom.playersSetup.querySelectorAll('button[data-random]').forEach(btn=>btn.onclick=()=>{ const i=parseInt(btn.dataset.random,10); if(setupAgentNames.length === 0) setupAgentNames = shuffle([...RANDOM_AGENT_NAMES]); const newName = setupAgentNames.pop(); if(state.players[i]) { state.players[i].name = newName; } else { state.players[i] = {id:i+1, name: newName, photo: null}; } renderPlayerSetup(); });
+    dom.playersSetup.querySelectorAll('button[data-idx]').forEach(btn=>btn.onclick=()=>{ const i=parseInt(btn.dataset.idx,10); dom.playersSetup.querySelector(`input[data-file="${i}"]`)?.click(); });
+    dom.playersSetup.querySelectorAll('button[data-remove]').forEach(btn=>btn.onclick=()=>{ const i=parseInt(btn.dataset.remove,10); if(state.players[i])state.players[i].photo=null; renderPlayerSetup(); });
+    dom.playersSetup.querySelectorAll('input[data-file]').forEach(inp=>inp.onchange=async(e)=>{ const i=parseInt(e.target.dataset.file,10); const file=e.target.files?.[0]; if(!file)return; try{const d=await fileToDataURL(file);(state.players[i]||={id:i+1}).photo=d;renderPlayerSetup();}catch{showModal({title:"Erreur",message:"Impossible de charger la photo.",buttons:[{text:"OK"}]})}});
+  }
+
+  function showOptionsModal() {
+    let modalHtml = '<div class="theme-list" style="padding-right: 0; max-height: 60vh; overflow-y: auto;">';
+    GAME_OPTIONS.filter(opt => opt.id !== 'sound').forEach(option => {
+        const isChecked = state.settings[option.id];
+        modalHtml += `
+            <label for="modal-option-${option.id}" class="theme-item" style="cursor: pointer; flex-direction: row; align-items: center; gap: 1rem; user-select: none;">
+                <input type="checkbox" id="modal-option-${option.id}" data-option-id="${option.id}" ${isChecked ? 'checked' : ''} style="width: 20px; height: 20px; flex-shrink: 0; accent-color: var(--accent);">
+                <div class="icon">${option.icon}</div>
+                <div class="details">
+                    <div class="label">${option.label}</div>
+                    <div class="description" style="font-size: .8rem;">${option.description}</div>
+                </div>
+            </label>
+        `;
+    });
+    modalHtml += '</div>';
+
+    showModal({
+        title: "Options & Rôles Spéciaux",
+        message: modalHtml,
+        buttons: [
+            {
+                text: "Terminé",
+                class: "",
+                onClick: () => {
+                    document.querySelectorAll('#modal-template input[type="checkbox"]').forEach(checkbox => {
+                        const optionId = checkbox.dataset.optionId;
+                        if (optionId in state.settings) {
+                            state.settings[optionId] = checkbox.checked;
+                        }
+                    });
+                    updateOptionsButton();
+                }
+            }
+        ]
+    });
+  }
+
+  function updateOptionsButton() {
+    const activeOptions = GAME_OPTIONS.filter(opt => opt.id !== 'sound' && state.settings[opt.id]);
+    const count = activeOptions.length;
+    const label = dom.configureRolesLabel;
+    if (label) {
+        if (count === 0) {
+            label.textContent = "Aucun rôle spécial";
+        } else if (count === 1) {
+            label.textContent = `1 rôle spécial : ${activeOptions[0].label}`;
+        } else {
+            label.textContent = `${count} rôles spéciaux activés`;
+        }
+    }
+  }
+
+  function renderThemeSelection() {
+    const themeSelect = dom.themeSelect;
+    if (themeSelect.options.length > 0) return; // Populate only once
+
+    const themes = [['Aléatoire', 'random'], ...Object.keys(THEME_DATA).map(t => [t,t])];
+
+    themes.forEach(([name, value]) => {
+        const option = document.createElement('option');
+        option.value = value;
+        option.textContent = `${THEME_ICONS[value] || '✨'} ${name}`;
+        if (state.settings.theme === value) {
+            option.selected = true;
+        }
+        themeSelect.appendChild(option);
+    });
+  }
+
+  function updateThemeDetails() {
+      const selectedTheme = state.settings.theme;
+      const themeName = selectedTheme === 'random' ? 'Aléatoire' : selectedTheme;
+      const description = THEME_DESCRIPTIONS[selectedTheme] || "Aucune description pour ce thème.";
+      const icon = THEME_ICONS[selectedTheme] || '✨';
+
+      dom.themeDescription.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <span style="font-size: 1.5rem;">${icon}</span>
+              <div>
+                  <span style="font-weight: 700; color: var(--ink); display: block; font-size: 1.1rem;">${themeName}</span>
+                  <span style="font-size: 0.9rem; color: var(--muted);">${description}</span>
+              </div>
+          </div>`;
+      dom.themeDescription.classList.remove('tip-box');
+      dom.themeDescription.style.cssText = `
+          text-align: left;
+          min-height: 80px;
+          background: var(--surface);
+          border: 1px solid var(--border);
+          padding: 1rem;
+          border-radius: 8px;
+          display: flex;
+          align-items: center;
+      `;
+      if (dom.themeSelect.value !== selectedTheme) {
+          dom.themeSelect.value = selectedTheme;
+      }
+  }
+
+  function initSetup(){
+    state.setupStep = 1;
+    document.querySelectorAll('.setup-step').forEach(el => {
+        el.classList.toggle('active', el.dataset.step === '1');
+    });
+
+    setupAgentNames = shuffle([...RANDOM_AGENT_NAMES]);
+    
+    renderGameOptions();
+    renderThemeSelection();
+    updateThemeDetails(); // Initial call
+
+    dom.themeSelect.onchange = () => {
+        state.settings.theme = dom.themeSelect.value;
+        sounds.click();
+        updateThemeDetails();
+    };
+
+    const gameModeSelect = dom.gameModeSelect;
+    const gameModeDescription = dom.gameModeDescription;
+
+    if (gameModeSelect.options.length === 0) { // Populate only once
+        Object.entries(GAME_MODES).forEach(([key, mode]) => {
+            const option = document.createElement('option');
+            option.value = key;
+            option.textContent = `${mode.icon} ${mode.label}`;
+            gameModeSelect.appendChild(option);
+        });
+    }
+
+    const updateModeDetails = () => {
+        const selectedMode = state.settings.gameMode;
+        const modeData = GAME_MODES[selectedMode];
+        if (modeData) {
+            gameModeDescription.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <span style="font-size: 1.5rem;">${modeData.icon}</span>
+                    <div>
+                        <span style="font-weight: 700; color: var(--ink); display: block; font-size: 1.1rem;">${modeData.label}</span>
+                        <span style="font-size: 0.9rem; color: var(--muted);">${modeData.description}</span>
+                    </div>
+                </div>`;
+            gameModeDescription.classList.remove('tip-box');
+            gameModeDescription.style.cssText = `
+                text-align: left;
+                min-height: 80px;
+                background: var(--surface);
+                border: 1px solid var(--border);
+                padding: 1rem;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+            `;
+        }
+        if (gameModeSelect.value !== selectedMode) {
+            gameModeSelect.value = selectedMode;
+        }
+    };
+
+    updateModeDetails();
+
+    gameModeSelect.onchange = () => {
+        state.settings.gameMode = gameModeSelect.value;
+        sounds.click();
+        updateModeDetails();
+    };
+
+    dom.btnRandomMode.onclick = () => {
+        sounds.click();
+        const modes = Object.keys(GAME_MODES);
+        const randomMode = modes[rand(modes.length)];
+        state.settings.gameMode = randomMode;
+        updateModeDetails();
+    };
+
+    dom.btnRandomTheme.onclick = () => {
+        sounds.click();
+        const themes = Object.keys(THEME_DATA);
+        const randomTheme = themes[rand(themes.length)];
+        state.settings.theme = randomTheme;
+        updateThemeDetails();
+    };
+
+    // Load saved players
+    const savedPlayers = JSON.parse(localStorage.getItem('undercoverPlayers') || '[]');
+    state.settings.playerCount = savedPlayers.length > 0 ? savedPlayers.length : 4;
+    state.players = savedPlayers.length > 0 ? savedPlayers : Array.from({length:4}, (_,i)=>({id:i+1, name:'', photo:null}));
+
+    dom.playerNum.textContent = state.settings.playerCount;
+    dom.botNum.textContent = state.settings.botCount;
+    renderPlayerSetup();
+    
+    updateOptionsButton();
+    dom.configureRolesBtn.onclick = showOptionsModal;
+
+    const updateTotalPlayerCount = () => {
+        const total = state.settings.playerCount + state.settings.botCount;
+        if (total > state.maxPlayers) {
+            state.settings.playerCount = state.maxPlayers - state.settings.botCount;
+        }
+        dom.playerNum.textContent = state.settings.playerCount;
+        dom.botNum.textContent = state.settings.botCount;
+        
+        const currentCount = state.players.length;
+        if (state.settings.playerCount > currentCount) {
+            for(let i = currentCount; i < state.settings.playerCount; i++) {
+                state.players.push({id: i + 1, name: '', photo: null});
+            }
+        } else if (state.settings.playerCount < currentCount) {
+            state.players.splice(state.settings.playerCount);
+        }
+        renderPlayerSetup();
+    };
+
+    dom.minus.onclick = ()=>{ sounds.click(); state.settings.playerCount = clamp(state.settings.playerCount - 1, 0, state.maxPlayers); updateTotalPlayerCount(); };
+    dom.plus.onclick  = ()=>{ sounds.click(); state.settings.playerCount = clamp(state.settings.playerCount + 1, 0, state.maxPlayers); updateTotalPlayerCount(); };
+    dom.minusBot.onclick = ()=>{ sounds.click(); state.settings.botCount = clamp(state.settings.botCount - 1, 0, state.maxPlayers); updateTotalPlayerCount(); };
+    dom.plusBot.onclick  = ()=>{ sounds.click(); state.settings.botCount = clamp(state.settings.botCount + 1, 0, state.maxPlayers); updateTotalPlayerCount(); };
+
+
+    ['sound', 'innocent', 'jester', 'agentBlanc', 'traitre', 'doubleAgent'].forEach(key => {
+        const domKey = `option${key.charAt(0).toUpperCase() + key.slice(1)}`;
+        const el = dom[domKey];
+        if (!el) return;
+        el.onclick = () => {
+            state.settings[key] = !state.settings[key];
+            if(key==='sound' && state.settings.sound) { initAudio(); }
+            sounds.click();
+            updateOptionCards();
+            if (key === 'sound') {
+              // Keep music in sync
+              dom.homeSoundToggle.textContent = state.settings.sound ? '🔊' : '🔇';
+              toggleBackgroundMusic();
+            }
+        };
+    });
+
+    dom.optionCommOral.onclick = () => {
+        sounds.click();
+        state.settings.communicationMode = 'oral';
+        dom.optionCommOral.classList.add('active');
+        dom.optionCommEcrit.classList.remove('active');
+    };
+    dom.optionCommEcrit.onclick = () => {
+        sounds.click();
+        state.settings.communicationMode = 'ecrit';
+        dom.optionCommEcrit.classList.add('active');
+        dom.optionCommOral.classList.remove('active');
+    };
+
+  }
+
+  // ---------- GAME FLOW ----------
+  function showSummary() {
+    // 1. Populate Mode
+    const modeEl = dom.summaryMode;
+    const currentMode = GAME_MODES[state.settings.gameMode] || { icon: '💥', label: state.settings.gameMode };
+    modeEl.querySelector('.icon').textContent = currentMode.icon;
+    modeEl.querySelector('.label').textContent = currentMode.label;
+
+    // 2. Populate Theme
+    const themeEl = dom.summaryTheme;
+    const themeName = state.settings.theme === 'random' ? 'Aléatoire' : state.settings.theme;
+    themeEl.querySelector('.icon').textContent = THEME_ICONS[state.settings.theme] || '✨';
+    themeEl.querySelector('.label').textContent = themeName;
+
+    // 3. Populate Special Roles
+    const rolesContainer = dom.summaryRoles.querySelector('.roles-pills');
+    rolesContainer.innerHTML = '';
+    const specialRoles = [
+      { key: 'innocent', name: 'Innocent 😇' },
+      { key: 'jester', name: 'Jester 🃏' },
+      { key: 'agentBlanc', name: 'Agent Blanc 🕵️' },
+      { key: 'traitre', name: 'Traître 😈' },
+      { key: 'doubleAgent', name: 'Espion Double 🎭' }
+    ];
+    let activeRolesCount = 0;
+    specialRoles.forEach(role => {
+      if (state.settings[role.key]) {
+        const pill = document.createElement('div');
+        pill.className = 'role-pill';
+        pill.textContent = role.name;
+        rolesContainer.appendChild(pill);
+        activeRolesCount++;
+      }
+    });
+
+    if (activeRolesCount === 0) {
+      dom.summaryRoles.style.display = 'none';
+    } else {
+      dom.summaryRoles.style.display = 'block';
+    }
+
+    // 4. Populate Players
+    const playersContainer = dom.summaryPlayers.querySelector('.player-list');
+    playersContainer.innerHTML = '';
+    state.players.forEach(player => {
+      const pill = document.createElement('div');
+      pill.className = 'player-pill';
+      pill.innerHTML = `${avatarHTML(player)} <span>${player.name || 'Agent Anonyme'}</span>`;
+      playersContainer.appendChild(pill);
+    });
+
+    // 5. Show the screen
+    show('summary');
+
+    // 6. Start countdown
+    let countdown = 30;
+    const countdownEl = dom.summaryCountdown;
+    let countdownInterval;
+
+    const proceedToGame = () => {
+      clearInterval(countdownInterval);
+      if (state.settings.playerCount > 0) {
+        show('pass');
+        renderRevealCard();
+      } else {
+        if (state._gameController) state._gameController.startRound();
+      }
+    };
+
+    const updateCountdown = () => {
+      if (countdown > 0) {
+        countdownEl.textContent = `La mission commence dans ${countdown}...`;
+        sounds.countdown();
+        countdown--;
+      } else {
+        countdownEl.textContent = 'Lancement !';
+        proceedToGame();
+      }
+    };
+
+    // Add a skip button
+    const skipButton = document.createElement('button');
+    skipButton.textContent = 'Passer (lancement immédiat)';
+    skipButton.className = 'btn ghost';
+    skipButton.style.marginTop = '0.5rem';
+    skipButton.style.animation = 'fadeInUp .5s 1.2s both';
+    skipButton.onclick = () => {
+        sounds.click();
+        proceedToGame();
+    };
+    countdownEl.parentElement.appendChild(skipButton);
+
+    updateCountdown(); // Initial call
+    countdownInterval = setInterval(updateCountdown, 1000);
+  }
+
+  function startGame(isNewWord = false){
+    const { playerCount, botCount, undercoverCount, agentBlanc, gameMode } = state.settings;
+    let { innocent, jester } = state.settings; // Make them mutable
+    if (gameMode === 'mystery') {
+        innocent = false;
+        jester = false;
+    }
+    const n = playerCount + botCount;
+    if (n < state.minPlayers) { showModal({title:"Pas assez de joueurs", message:`Il faut au moins ${state.minPlayers} agents au total (humains + bots).`, buttons:[{text:"OK"}]}); return; }
+    
+    const U = (n < 4) ? 1 : undercoverCount;
+    const I = (n < 3) ? 0 : (innocent ? 1 : 0);
+    const J = (n < 4) ? 0 : (jester ? 1 : 0);
+    const AB = (n < 4) ? 0 : (agentBlanc ? 1 : 0);
+    const T = (n < 4) ? 0 : (state.settings.traitre ? 1 : 0);
+    const DA = (n < 5) ? 0 : (state.settings.doubleAgent ? 1 : 0);
+    const civils = n - U - I - J - AB - T - DA;
+
+    if (civils < 1){ showModal({title:"Configuration invalide", message:"Configuration de rôles impossible. Essayez avec plus de joueurs ou moins de rôles spéciaux.", buttons:[{text:"OK"}]}); return; }
+    
+    sounds.start();
+    state.round = 1; state.distributionIndex = 0; state.lastSuspect = null; state._currentEvent = null;
+
+    let themeKey = state.settings.theme;
+    if (themeKey === 'random') {
+        const themeKeys = Object.keys(THEME_DATA);
+        themeKey = themeKeys[rand(themeKeys.length)];
+    }
+    let list = THEME_DATA[themeKey];
+    state.wordPair = list[rand(list.length)];
+
+    const sourcePlayers = state.players; // Keep a reference
+    const newPlayers = [];
+    const humanPlayersToSave = [];
+    const botNames = shuffle(["Alpha", "Bravo", "Charlie", "Delta", "Echo", "Foxtrot", "Golf", "Hotel", "India", "Juliett", "Kilo", "Lima"]);
+    if (setupAgentNames.length < playerCount) setupAgentNames = shuffle([...RANDOM_AGENT_NAMES]);
+    
+    for(let i=0; i<playerCount; i++) {
+        const existingPlayer = (isNewWord ? sourcePlayers.filter(p => !p.isBot) : sourcePlayers)[i] || {};
+        let name;
+        if (isNewWord) {
+            // On replay, trust the state, not the DOM
+            name = existingPlayer.name || setupAgentNames.pop() || `Agent ${i+1}`;
+        } else {
+            // On new game, trust the DOM (as it might have been edited)
+            name = (document.querySelector(`#playersSetup input[data-idx="${i}"]`)?.value || '').trim() || existingPlayer.name || setupAgentNames.pop() || `Agent ${i+1}`;
+        }
+        const photo = existingPlayer?.photo || null;
+        newPlayers.push({ id: i+1, name, photo, isBot: false, alive: true });
+        humanPlayersToSave.push({id: i+1, name, photo});
+    }
+    localStorage.setItem('undercoverPlayers', JSON.stringify(humanPlayersToSave));
+
+    for(let i=0; i<botCount; i++) {
+        newPlayers.push({ id: playerCount + i + 1, name: `Bot ${botNames[i]}`, photo: null, isBot: true, alive: true });
+    }
+
+    state.players = newPlayers;
+
+    const p_ids = shuffle(state.players.map(p=>p.id));
+    let assigned_roles = 0;
+    for(let i=0; i<U; i++){ const p = byId(p_ids[i]); p.role='undercover'; p.word=state.wordPair.b; assigned_roles++; }
+    if(I === 1 && p_ids.length > assigned_roles){ const p = byId(p_ids[assigned_roles]); p.role='innocent'; p.word = "???"; assigned_roles++; }
+    if(J === 1 && p_ids.length > assigned_roles){ const p = byId(p_ids[assigned_roles]); p.role='jester'; p.word = "???"; assigned_roles++; }
+    if(AB === 1 && p_ids.length > assigned_roles){ const p = byId(p_ids[assigned_roles]); p.role='agentBlanc'; p.word = "???"; assigned_roles++; }
+    if(T === 1 && p_ids.length > assigned_roles){ const p = byId(p_ids[assigned_roles]); p.role='traitre'; p.word = state.wordPair.a; assigned_roles++; }
+    if(DA === 1 && p_ids.length > assigned_roles){ const p = byId(p_ids[assigned_roles]); p.role='doubleAgent'; p.word = state.wordPair.b; p.originalRole = 'undercover'; assigned_roles++; }
+    state.players.forEach(p => {
+        if (!p.role) { p.role = 'civil'; p.word = state.wordPair.a; }
+    });
+
+    state._gameController = new GameController();
+    
+    showSummary();
+  }
+
+  function renderRevealCard(){
+    dom.revealCard.classList.remove('flipped');
+    const player = state.players.filter(p => !p.isBot)[state.distributionIndex];
+    if (!player) return;
+    dom.currentName.textContent = player.name;
+    if (player.role === 'innocent') {
+        dom.secretWord.textContent = "Vous êtes l'Innocent";
+    } else if (player.role === 'jester') {
+        dom.secretWord.textContent = "Vous êtes le Jester";
+    } else if (player.role === 'agentBlanc') {
+        dom.secretWord.textContent = "Vous êtes l'Agent Blanc";
+    } else if (player.role === 'traitre') {
+        dom.secretWord.textContent = `Traître: ${player.word}`;
+    } else if (player.role === 'doubleAgent') {
+        dom.secretWord.textContent = `Double Agent: ${player.word}`;
+    } else {
+        dom.secretWord.textContent = player.word || "—";
+    }
+  }
+  
+  function nextPlayerReveal() {
+      if (dom.revealCard.classList.contains('flipped')) {
+          showModal({title: "Cachez votre mot !", message: "Retournez la carte avant de passer au joueur suivant.", buttons:[{text:"OK"}]});
+          return;
+      }
+      sounds.click();
+      
+      const humanPlayers = state.players.filter(p => !p.isBot);
+      const isLastPlayer = state.distributionIndex >= humanPlayers.length - 1;
+
+      dom.revealCard.style.transition = 'transform .3s ease-in, opacity .3s ease-in';
+      dom.revealCard.style.transform = 'translateX(150%)';
+      dom.revealCard.style.opacity = '0';
+      
+      setTimeout(() => {
+          if (isLastPlayer) {
+              showModal({ title: "Mission activée !", message: "Tous les agents ont reçu leurs instructions. La phase de jeu commence.", buttons: [] });
+              setTimeout(() => {
+                  if (dom.modalTemplate.open) dom.modalTemplate.close();
+                  state._gameController.startRound();
+              }, 2000);
+          } else {
+              state.distributionIndex++;
+              renderRevealCard();
+              dom.revealCard.style.transition = 'none'; 
+              dom.revealCard.style.transform = 'translateX(-150%)';
+              void dom.revealCard.offsetWidth;
+              dom.revealCard.style.transition = 'transform .3s ease-out, opacity .3s ease-out';
+              dom.revealCard.style.transform = 'translateX(0)';
+              dom.revealCard.style.opacity = '1';
+              setTimeout(() => {
+                  dom.revealCard.style.transition = '';
+                  dom.revealCard.style.transform = '';
+                  dom.revealCard.style.opacity = '';
+              }, 300);
+          }
+      }, 300);
+  }
+  
+  function eliminate(player){
+    sounds.eliminate();
+    player.alive = false; 
+    state.lastEliminated = player;
+
+    if (state.settings.gameMode === 'mystery') {
+        dom.revealTitle.textContent = `${player.name} est éliminé·e`;
+        dom.revealPhoto.innerHTML = avatarHTML(player);
+        dom.roleBadge.textContent = 'Rôle : ???';
+        dom.revealedWord.innerHTML = 'Le rôle et le mot de cet agent restent secrets...';
+    } else {
+        dom.revealTitle.textContent = `${player.name} est éliminé·e`;
+        dom.revealPhoto.innerHTML = avatarHTML(player);
+        let roleText = 'Rôle : Civil';
+        if(player.role === 'undercover') roleText = 'Rôle : Undercover';
+        if(player.role === 'innocent') roleText = 'Rôle : Innocent';
+        if(player.role === 'jester') roleText = 'Rôle : Jester';
+        if(player.role === 'agentBlanc') roleText = 'Rôle : Agent Blanc';
+        if(player.role === 'traitre') roleText = 'Rôle : Traître';
+        if(player.role === 'doubleAgent') roleText = 'Rôle : Espion Double';
+        dom.roleBadge.textContent = roleText;
+        dom.revealedWord.innerHTML = player.word && player.role !== 'innocent' ? `Mot : <b>${player.word}</b>` : `Ce joueur n'avait pas de mot.`;
+    }
+    
+    show('reveal');
+  }
+
+  function handlePostElimination() {
+    const player = state.lastEliminated;
+    if (state.settings.gameMode === 'mystery') {
+        showLastWordScreen();
+        return;
+    }
+    if (player.role === 'jester') {
+        endGame('jester');
+        return;
+    }
+    if (player.role === 'doubleAgent') {
+        player.role = player.originalRole === 'undercover' ? 'civil' : 'undercover';
+        player.word = player.role === 'civil' ? state.wordPair.a : state.wordPair.b;
+        showModal({title: "L'Espion Double a changé de camp !", message: `${player.name} est maintenant du côté des ${player.role === 'civil' ? 'Civils' : 'Undercovers'} !`, buttons:[{text:"Continuer", onClick: checkVictory }]});
+        return;
+    }
+    if (player.role === 'innocent') {
+        showModal({
+            title: "L'Innocent a été découvert !", message: "Pour gagner, vous devez deviner le mot des <b>Civils</b>.",
+            input: { placeholder: "Quel était le mot des Civils ?" },
+            buttons: [{ text: "Valider", class: "warn", onClick: (guess) => {
+                if(guess && guess.trim().toLowerCase() === state.wordPair.a.toLowerCase()) { endGame('innocent'); } 
+                else { showModal({title:"Mauvaise réponse !", message:`Le mot des civils était "<b>${state.wordPair.a}</b>". La partie continue.`, buttons:[{text:"OK", onClick: checkVictory }]}); }
+            }}]
+        });
+    } else {
+        showLastWordScreen();
+    }
+  }
+
+  function showLastWordScreen() {
+    const player = state.lastEliminated;
+    dom.lastwordPrompt.innerHTML = `<b>${player.name}</b>, avant de partir, désignez un joueur que vous trouvez suspect.`;
+    const grid = dom.lastwordGrid;
+    grid.innerHTML = '';
+    alive().forEach((p, i) => {
+        const card = document.createElement('div');
+        card.className = 'player-vote-card';
+        card.style.animation = `fadeInUp .4s ${i * 50}ms both`;
+        card.innerHTML = `${avatarHTML(p)}<div class="name">${p.name}</div>`;
+        card.onclick = () => {
+            state.lastSuspect = p.id;
+            sounds.click();
+            checkVictory();
+        };
+        grid.appendChild(card);
+    });
+    show('lastword');
+  }
+
+  function checkVictory(){
+    if (state._activeScreen === 'end') return;
+    
+    const u_alive = alive().filter(p => p.role === 'undercover');
+    const ab_alive = alive().filter(p => p.role === 'agentBlanc');
+    const non_undercovers_alive = alive().filter(p => p.role !== 'undercover');
+    const traitre_alive = alive().find(p => p.role === 'traitre');
+
+    if (traitre_alive && alive().length === 2 && u_alive.length === 0) {
+        endGame('traitre');
+        return;
+    }
+
+    // Undercover win condition
+    if(u_alive.length >= non_undercovers_alive.length){
+        endGame('undercover');
+        return;
+    }
+
+    // Civil / Agent Blanc win condition
+    if(u_alive.length === 0) {
+        // Undercovers are gone. Now it's between Civils and Agent Blanc (if present).
+        if (ab_alive.length > 0) {
+            const agent = ab_alive[0];
+            showModal({
+                title: `L'Agent Blanc a Survécu !`,
+                message: `<b>${agent.name}</b>, tous les Undercover ont été éliminés. Pour remporter la victoire, vous devez maintenant deviner le mot des Civils !`,
+                input: { placeholder: "Le mot des Civils..." },
+                preventClose: true,
+                buttons: [{ text: "Valider", class: "warn", onClick: (guess) => {
+                    if(guess && guess.trim().toLowerCase() === state.wordPair.a.toLowerCase()) {
+                        endGame('agentBlanc');
+                    } else {
+                        showModal({title:"Mauvaise réponse !", message:`Le mot des Civils était "<b>${state.wordPair.a}</b>". Les Civils remportent la partie !`, buttons:[{text:"OK", onClick: () => endGame('civils') }]});
+                    }
+                }}]
+            });
+        } else {
+            // No Agent Blanc, Civils win normally.
+            endGame('civils');
+        }
+        return;
+    }
+    
+    // If no one has won, continue the game
+    if (['reveal', 'lastword'].includes(state._activeScreen)) {
+        actions.reveal[0].action();
+    }
+  }
+
+  function endGame(winner){
+    let banner = '', detail='';
+    if(winner==='civils'){ banner='Victoire des Civils !'; detail='Les Undercover ont été démasqués.'; sounds.win(); }
+    else if(winner==='innocent'){ banner='Victoire de l\'Innocent !'; detail='Il a deviné le mot des civils !'; sounds.win(); }
+    else if(winner==='jester'){ banner='Victoire du Jester !'; detail='Le Jester a réussi à se faire éliminer !'; sounds.win(); }
+    else if(winner==='agentBlanc'){ banner='Victoire de l\'Agent Blanc !'; detail='L\'Agent Blanc a démasqué les Civils !'; sounds.win(); }
+    else if(winner==='traitre'){ banner='Victoire du Traître !'; detail='Le Traître a éliminé tous les autres.'; sounds.win(); }
+    else { banner='Victoire des Undercover !'; detail='Ils ont atteint la parité ou sont les derniers en lice.'; sounds.lose(); }
+    
+    dom.winnerBanner.innerHTML = banner;
+    const civils = state.players.filter(p=>p.role==='civil').map(p=>p.name).join(', ');
+    const undercovers = state.players.filter(p=>p.role==='undercover').map(p=>p.name).join(', ');
+    const innocent = state.players.find(p=>p.role==='innocent');
+    const jester = state.players.find(p=>p.role==='jester');
+    const agentBlanc = state.players.find(p=>p.role==='agentBlanc');
+    const traitre = state.players.find(p=>p.role==='traitre');
+    const doubleAgent = state.players.find(p=>p.role==='doubleAgent');
+    
+    let summaryHtml = `${detail}<br><br><b>Civils (${state.wordPair.a})</b>: ${civils || 'aucun'}<br><b>Undercover (${state.wordPair.b})</b>: ${undercovers || 'aucun'}`;
+    if (innocent) summaryHtml += `<br><b>Innocent</b>: ${innocent.name}`;
+    if (jester) summaryHtml += `<br><b>Jester</b>: ${jester.name}`;
+    if (agentBlanc) summaryHtml += `<br><b>Agent Blanc</b>: ${agentBlanc.name}`;
+    if (traitre) summaryHtml += `<br><b>Traître</b>: ${traitre.name}`;
+    if (doubleAgent) summaryHtml += `<br><b>Espion Double</b>: ${doubleAgent.name}`;
+
+    dom.summary.innerHTML = summaryHtml;
+    
+    if (Object.keys(state.lastVotes).length > 0) {
+        dom.voteRevealContainer.style.display = 'block';
+        dom.voteRevealDetails.innerHTML = '';
+        Object.keys(state.lastVotes).forEach((voterId, i) => {
+            const voter = byId(parseInt(voterId));
+            const target = byId(state.lastVotes[voterId]);
+            if(voter && target) {
+                const isSuspect = state.lastSuspect === parseInt(voterId);
+                const gridItem = document.createElement('div');
+                gridItem.className = 'vote-reveal-grid';
+                gridItem.style.animation = `fadeInUp .4s ${i * 75}ms both`;
+                gridItem.innerHTML = `
+                        <div class="vote-reveal-item"><div class="avatar">${avatarHTML(voter)}</div><div class="name">${voter.name}</div></div>
+                        <div class="vote-arrow ${isSuspect ? 'suspect' : ''}">→</div>
+                        <div class="vote-reveal-item"><div class="avatar">${avatarHTML(target)}</div><div class="name">${target.name}</div></div>
+                    `;
+                dom.voteRevealDetails.appendChild(gridItem);
+            }
+        });
+    } else {
+        dom.voteRevealContainer.style.display = 'none';
+    }
+
+    show('end');
+  }
+  
+  // ---------- ACTION BAR & NAVIGATION ----------
+  const actions = {
+    pass: [{ text: 'Agent suivant →', action: nextPlayerReveal }],
+    event: [{ text: 'Compris !', action: () => state._gameController.continueFromEvent() }],
+    reveal: [{ text: 'Continuer', action: () => { 
+        if(state._activeScreen === 'reveal') {
+            handlePostElimination();
+        } else {
+            if(state._activeScreen !== 'end') { 
+                state.round++; 
+                if(state._gameController) state._gameController.startRound(); 
+            }
+        }
+    }}],
+    end: [{ text: 'Menu principal', class: 'ghost', flex: 1, action: () => { initSetup(); show('home', 'backward'); } }, { text: 'Rejouer', class: '', flex: 2, action: () => { startGame(true); }}]
+  };
+
+  function updateActionBar(screenId) {
+      const bar = dom.actionBar;
+      bar.innerHTML = '';
+      
+      if (screenId === 'setup') {
+          bar.classList.add('visible');
+          let i = 0;
+          if (state.setupStep > 1) {
+              const backBtn = document.createElement('button');
+              backBtn.className = 'btn ghost';
+              backBtn.textContent = '← Précédent';
+              backBtn.onclick = () => { sounds.click(); showSetupStep(state.setupStep - 1, 'backward'); };
+              backBtn.style.animation = `fadeInUp .4s ${i * 60}ms both`;
+              i++;
+              bar.appendChild(backBtn);
+          }
+          const nextBtn = document.createElement('button');
+          nextBtn.className = 'btn';
+          if (state.setupStep < 7) {
+              nextBtn.textContent = 'Suivant →';
+              nextBtn.onclick = () => { sounds.click(); showSetupStep(state.setupStep + 1, 'forward'); };
+          } else {
+              nextBtn.textContent = 'Lancer la mission';
+              nextBtn.onclick = () => startGame(false);
+          }
+          nextBtn.style.animation = `fadeInUp .4s ${i * 60}ms both`;
+          bar.appendChild(nextBtn);
+          return;
+      }
+
+      const screenActions = actions[screenId];
+      if (screenActions) {
+          screenActions.forEach((config, i) => {
+              const button = document.createElement('button');
+              button.className = `btn ${config.class || ''}`;
+              button.textContent = config.text;
+              if (config.flex) button.style.flex = config.flex;
+              button.onclick = config.action;
+              button.style.animation = `fadeInUp .4s ${i * 60}ms both`;
+              bar.appendChild(button);
+          });
+          bar.classList.add('visible');
+      } else { bar.classList.remove('visible'); }
+  }
+  
+  // ---------- RANDOM EVENTS ----------
+  const randomEvents = [
+    {
+      id: 'doubleVote', title: 'Vote Double', icon: '🗳️🗳️',
+      description: (p) => `<b>${p.name}</b>, votre vote comptera double lors de la prochaine élimination !`,
+      effect: (p) => { p.doubleVote = true; }
+    },
+    {
+      id: 'silence', title: 'Silence Radio', icon: '🤫',
+      description: (p) => `<b>${p.name}</b>, vous n'avez pas le droit de parler jusqu'au prochain tour. Donnez votre indice en mimant !`,
+      effect: (p) => { p.silenced = true; }
+    },
+    {
+      id: 'oracle', title: 'L\'Oracle', icon: '🔮',
+      description: (p1, p2) => `<b>${p1.name}</b>, vous avez une vision ! Vous savez maintenant que <b>${p2.name}</b> est <b>${p2.role}</b>.`,
+      effect: (p1, p2) => { /* Purely informational for p1 */ }
+    },
+    {
+      id: 'amnesia', title: 'Amnésie', icon: '😵',
+      description: (p) => `<b>${p.name}</b>, vous oubliez votre mot pour ce tour ! Vous devrez le deviner grâce aux autres.`,
+      effect: (p) => { p.amnesia = true; }
+    },
+    {
+      id: 'paranoia', title: 'Paranoïa', icon: '👀',
+      description: () => `Attention ! Tous les votes de ce tour seront révélés publiquement à la fin !`,
+      effect: () => { state.paranoia = true; }
+    },
+    {
+      id: 'revolution', title: 'Révolution !', icon: '💥',
+      description: () => `REVOLUTION ! Tous les Civils deviennent Undercover, et vice-versa ! Vos mots sont échangés !`,
+      effect: () => {
+        state.players.forEach(p => {
+          if (p.role === 'civil') { p.role = 'undercover'; p.word = state.wordPair.b; }
+          else if (p.role === 'undercover') { p.role = 'civil'; p.word = state.wordPair.a; }
+        });
+      },
+      modes: ['revolution']
+    },
+    {
+      id: 'interrogation', title: 'Interrogatoire', icon: '🔍',
+      description: (p1, p2) => `<b>${p1.name}</b> a mené un interrogatoire secret sur <b>${p2.name}</b>... L'information est cruciale.`,
+      effect: (p1, p2) => {
+        if (!p1.isBot) {
+          const wordToShow = p2.role === 'innocent' || p2.role === 'jester' || p2.role === 'agentBlanc'
+            ? "Cet agent n'a pas de mot."
+            : p2.word;
+          setTimeout(() => showModal({
+            title: "Rapport d'Interrogatoire",
+            message: `Le mot de <b>${p2.name}</b> est : <div class="word-big" style="margin-top:0.5rem;">${wordToShow}</div>`,
+            buttons: [{text: "Compris"}]
+          }), 500);
+        }
+      }
+    },
+    {
+      id: 'motTabou', title: 'Mot Tabou', icon: '🚫',
+      description: (word) => `Le mot "<b>${word}</b>" est TABOU ce tour. L'utiliser comme indice annulera votre vote !`,
+      effect: (word) => {
+        state.tabooWord = word.toLowerCase();
+      }
+    }
+  ];
+
+  function triggerRandomEvent() {
+    const mode = state.settings.gameMode;
+    if (mode === 'classic') {
+        state._gameController.continueFromEvent();
+        return;
+    }
+
+    // For other modes, determine probability of an event.
+    // dynamic, fast, mystery = 40% | revolution = 70% | folie = 100%
+    const eventProbability = (mode === 'revolution') ? 0.7 : ((mode === 'folie') ? 1.0 : 0.4);
+    if (Math.random() > eventProbability) {
+        state._gameController.continueFromEvent();
+        return;
+    }
+
+    const availableEvents = randomEvents.filter(e => (!e.modes || e.modes.includes(mode)) && (e.id !== 'interrogation' || alive().length >= 2));
+    if (availableEvents.length === 0) {
+        state._gameController.continueFromEvent();
+        return;
+    }
+
+    const event = availableEvents[rand(availableEvents.length)];
+    state._currentEvent = event;
+    const players = shuffle(alive());
+    
+    dom.eventIcon.textContent = event.icon;
+    dom.eventTitle.textContent = event.title;
+    
+    // Single-player events
+    const singlePlayerEvents = ['doubleVote', 'silence', 'amnesia'];
+    // Two-player events
+    const twoPlayerEvents = ['oracle', 'interrogation'];
+
+    if (singlePlayerEvents.includes(event.id)) {
+        const p1 = players[0];
+        event.effect(p1);
+        dom.eventDescription.innerHTML = event.description(p1);
+    } else if (twoPlayerEvents.includes(event.id)) {
+        const p1 = players[0];
+        const p2 = players[1];
+        event.effect(p1, p2);
+        dom.eventDescription.innerHTML = event.description(p1, p2);
+    } else if (event.id === 'motTabou') {
+        const allHints = [...(state.wordPair.hintsA || []), ...(state.wordPair.hintsB || [])];
+        const tabooWord = allHints.length > 0 ? allHints[rand(allHints.length)] : "mot";
+        event.effect(tabooWord);
+        dom.eventDescription.innerHTML = event.description(tabooWord);
+    } else { // Global events like 'paranoia', 'revolution'
+        event.effect();
+        dom.eventDescription.innerHTML = event.description();
+    }
+    
+    sounds.event();
+    show('event');
+  }
+
+  // ---------- INTRO SEQUENCE ----------
+  let introTimeout;
+  function startIntroSequence() {
+    show('intro');
+
+    const phrases = [
+        "Dans ce jeu, il y a deux équipes...",
+        "Les <b>CIVILS</b>, qui sont la majorité.",
+        "Et les <b>UNDERCOVER</b>, des infiltrés.",
+        "Chaque équipe reçoit un mot secret, légèrement différent.",
+        "Votre objectif : démasquer l'équipe adverse.",
+        "À tour de rôle, donnez un indice d'un seul mot.",
+        "Soyez malins. Ne vous faites pas démasquer.",
+        "Après les indices, vous voterez pour éliminer un agent.",
+        "Prêts ? La mission commence."
+    ];
+
+    let phraseIndex = 0;
+    const introTextEl = dom.introText;
+    const introButtonsEl = dom.introButtons;
+
+    // Reset buttons to initial state
+    dom.introContinueBtn.textContent = 'J\'ai compris';
+    dom.introSkipBtn.style.display = 'block';
+
+    function nextPhrase() {
+        if (phraseIndex >= phrases.length) {
+            introTextEl.innerHTML = "Bonne chance, agent.";
+            introTextEl.classList.remove('intro-text-animation');
+            introButtonsEl.style.opacity = '1';
+            dom.introContinueBtn.textContent = 'Commencer la configuration';
+            dom.introSkipBtn.style.display = 'none';
+            return;
+        }
+
+        introTextEl.innerHTML = phrases[phraseIndex];
+        introTextEl.classList.remove('intro-text-animation');
+        void introTextEl.offsetWidth;
+        introTextEl.classList.add('intro-text-animation');
+
+        phraseIndex++;
+
+        introTimeout = setTimeout(nextPhrase, 2800);
+    }
+
+    setTimeout(() => {
+        introButtonsEl.style.opacity = '1';
+    }, 500);
+
+    // Start the sequence after the initial title has been shown
+    introTimeout = setTimeout(nextPhrase, 2000);
+  }
+
+  // ---------- GAME CONTROLLER CLASS ----------
+  class GameController {
+    constructor() {
+        this.turnOrder = [];
+        this.turnIndex = 0;
+        this.phase = 'hint';
+        this.timerId = null;
+        this.timeLeft = 0;
+        this.votes = {};
+        this.turnTimerDuration = (state.settings.gameMode === 'fast' || state.settings.gameMode === 'folie') ? 10 : 20; // seconds
+        this.voteTimerDuration = (state.settings.gameMode === 'fast' || state.settings.gameMode === 'folie') ? 15 : 30; // seconds
+    }
+
+    cleanup() {
+        if (this.timerId) clearInterval(this.timerId);
+        this.timerId = null;
+        audioManager.stopLoop();
+        dom.actionBar.innerHTML = '';
+        dom.actionBar.classList.remove('visible');
+    }
+
+    startRound() {
+        this.cleanup();
+        state.players.forEach(p => { p.votes = 0; p.hintGiven = false; p.doubleVote = false; p.silenced = false; p.amnesia = false; p.voteDisabled = false; p.roundHints = []; });
+        state.paranoia = false;
+        state.tabooWord = null;
+        this.votes = {};
+        this.turnOrder = shuffle(alive());
+        this.turnIndex = 0;
+        
+        triggerRandomEvent();
+    }
+    
+    continueFromEvent() {
+        this.phase = 'hint';
+        show('game');
+        this.nextTurn();
+    }
+    
+    nextTurn() {
+        if (this.timerId) clearInterval(this.timerId);
+        
+        const hintsGiven = this.turnOrder.filter(p => p.hintGiven).length;
+        if (hintsGiven >= this.turnOrder.length) {
+            this.startVotePhase();
+            return;
+        }
+        
+        let currentPlayer = this.turnOrder[this.turnIndex];
+        while(currentPlayer.hintGiven) {
+            this.turnIndex = (this.turnIndex + 1) % this.turnOrder.length;
+            currentPlayer = this.turnOrder[this.turnIndex];
+        }
+
+        this.renderTurnDisplay(currentPlayer);
+        dom.gameContentArea.innerHTML = `<div class="center"><p class="hint">Donnez un indice sur votre mot...</p></div>`;
+        
+        const mode = state.settings.gameMode;
+        this.timeLeft = this.turnTimerDuration;
+        this.timerId = setInterval(() => this.updateTurnTimer(currentPlayer), 1000);
+        this.updateTurnTimer(currentPlayer);
+
+        const actionBar = dom.actionBar;
+        actionBar.innerHTML = '';
+        
+        if (currentPlayer.isBot) {
+            setTimeout(() => {
+                let hint = "Hmm...";
+                const myHints = currentPlayer.role === 'civil' ? (state.wordPair.hintsA || []) : (state.wordPair.hintsB || []);
+                const allGivenHints = state.players.flatMap(p => p.roundHints || []);
+
+                let availableHints = myHints.filter(h => !allGivenHints.includes(h));
+                if (availableHints.length === 0 && myHints.length > 0) {
+                    // If all unique hints are used, just pick a random one from the original list
+                    availableHints = myHints;
+                }
+
+                if (availableHints.length > 0) {
+                    hint = availableHints[rand(availableHints.length)];
+                } else {
+                    // Fallback if no hints are defined
+                    hint = currentPlayer.role === 'civil' ? "Piste" : "Indice";
+                }
+
+                if (state.settings.communicationMode === 'oral') {
+                    this.processHint(currentPlayer, "(Le bot a donné son indice)");
+                } else {
+                    this.processHint(currentPlayer, hint);
+                }
+            }, rand(2000) + 1000);
+        } else {
+            const hintBtn = document.createElement('button');
+            hintBtn.className = 'btn';
+            
+            if (state.settings.communicationMode === 'oral') {
+                hintBtn.textContent = "Indice Donné (oral)";
+                hintBtn.onclick = () => this.processHint(currentPlayer, "(oral)");
+            } else { // ecrit
+                hintBtn.textContent = "Donner l'indice";
+                if (currentPlayer.silenced) hintBtn.textContent = "Mimer l'indice";
+                hintBtn.onclick = () => {
+                    showModal({
+                        title: `Indice de ${currentPlayer.name}`, message: "Entrez votre indice (un seul mot).",
+                        input: { placeholder: "Votre indice..." },
+                        buttons: [
+                            { text: "Annuler", class: "ghost" },
+                            { text: "Valider", onClick: (hint) => { if (hint?.trim()) this.processHint(currentPlayer, hint.trim()); }}
+                        ]
+                    });
+                };
+            }
+            actionBar.appendChild(hintBtn);
+            actionBar.classList.add('visible');
+        }
+    }
+
+    renderTurnDisplay(player) {
+        dom.turnDisplay.style.display = 'flex';
+        const timerHTML = `<div class="turn-player-avatar">${avatarHTML(player)}<svg class="turn-timer-ring" viewBox="0 0 36 36"><circle class="turn-timer-circle" cx="18" cy="18" r="15.9155" stroke-dasharray="100, 100" stroke-dashoffset="100"></circle></svg></div>`;
+        dom.turnDisplay.innerHTML = `
+            ${timerHTML}
+            <div class="turn-player-name">Tour ${state.round} : Au tour de <b>${player.name}</b></div>
+        `;
+    }
+
+    updateTurnTimer(player) {
+        if (this.timeLeft <= 0) {
+            clearInterval(this.timerId);
+            this.processHint(player, "..."); // Player ran out of time
+            return;
+        }
+
+        const progress = (this.timeLeft / this.turnTimerDuration) * 100;
+        const circle = dom.turnDisplay.querySelector('.turn-timer-circle');
+        if (circle) {
+            circle.style.strokeDashoffset = 100 - progress;
+            if (this.timeLeft <= 5) {
+                circle.style.stroke = 'var(--danger)';
+            } else {
+                circle.style.stroke = 'var(--accent)';
+            }
+        }
+        
+        this.timeLeft--;
+    }
+    
+    processHint(player, hint) {
+        if (this.timerId) clearInterval(this.timerId);
+        player.hintGiven = true;
+        player.roundHints.push(hint);
+
+        if (state.tabooWord && hint.toLowerCase().includes(state.tabooWord)) {
+            showModal({title: "Mot Tabou !", message: `<b>${player.name}</b> a utilisé le mot tabou ! En pénélité, son vote sera annulé ce tour.`});
+            player.voteDisabled = true;
+        }
+
+        dom.gameContentArea.innerHTML = `<p class="hint">${player.name} a donné l'indice :</p><div class="hint-text">"${hint}"</div>`;
+        dom.actionBar.innerHTML = '';
+        dom.actionBar.classList.remove('visible');
+        
+        this.turnIndex = (this.turnIndex + 1) % this.turnOrder.length;
+        
+        setTimeout(() => {
+            this.nextTurn();
+        }, 3000);
+    }
+
+    startVotePhase() {
+        this.cleanup();
+        this.phase = 'vote';
+        show('game');
+        dom.turnDisplay.style.display = 'none';
+        
+        this.timeLeft = this.voteTimerDuration;
+        const timerDisplayHTML = `<div class="vote-timer-display">${this.timeLeft}</div>`;
+        dom.gameContentArea.innerHTML = `
+            <div style="text-align:center;">
+                <h2>Vote Final !</h2>
+                <p class="hint">Discutez et votez pour l'Undercover !</p>
+                ${timerDisplayHTML}
+            </div>
+            <div class="player-grid-vote"></div>
+        `;
+        this.renderVoteGrid();
+        this.timerId = setInterval(() => this.updateVoteTimer(), 1000);
+        
+        const actionBar = dom.actionBar;
+        actionBar.innerHTML = '';
+        const tallyBtn = document.createElement('button');
+        tallyBtn.className = 'btn';
+        tallyBtn.textContent = 'Terminer le vote';
+        tallyBtn.onclick = () => this.tallyVotes();
+        actionBar.appendChild(tallyBtn);
+        actionBar.classList.add('visible');
+    }
+
+    updateVoteTimer() {
+        if (this.timeLeft <= 0) {
+            clearInterval(this.timerId);
+            this.tallyVotes();
+            return;
+        }
+        this.timeLeft--;
+        const timerEl = dom.gameContentArea.querySelector('.vote-timer-display');
+        if (timerEl) timerEl.textContent = this.timeLeft;
+        sounds.tick(this.timeLeft <= 5);
+    }
+    
+    renderVoteGrid() {
+        const grid = dom.gameContentArea.querySelector('.player-grid-vote');
+        if (!grid) return;
+        grid.innerHTML = '';
+        alive().forEach((player, i) => {
+            const card = document.createElement('div');
+            card.className = 'player-vote-card';
+            card.dataset.playerId = player.id;
+            card.style.animation = `fadeInUp .4s ${i * 50}ms both`;
+            
+            const voterIDs = Object.keys(this.votes).map(id => parseInt(id));
+            const humanVoters = alive().filter(p => !p.isBot).map(p => p.id);
+            const allHumansVoted = humanVoters.every(id => voterIDs.includes(id));
+
+            if (allHumansVoted) {
+                 card.classList.add('disabled');
+            } else {
+                 card.onclick = (e) => this.castVote(player, e.currentTarget);
+            }
+            
+            let voteCount = 0;
+            let votersList = [];
+            Object.entries(this.votes).forEach(([voterId, voteData]) => {
+                if (voteData.targetId === player.id) {
+                    const voter = byId(parseInt(voterId));
+                    if (voter) {
+                        voteCount += voteData.isDouble ? 2 : 1;
+                        votersList.push(voter.name + (voteData.isDouble ? ' (x2)' : ''));
+                    }
+                }
+            });
+
+            const voteDisplay = state.paranoia ? `<div class="votes-count" style="font-size:0.7rem; color: var(--muted);">${votersList.join(', ')}</div>` : '';
+            card.innerHTML = `${avatarHTML(player)}<div class="name">${player.name}</div><div class="votes-count" style="font-weight:bold;">${'🗳️'.repeat(voteCount)}</div>${voteDisplay}`;
+            grid.appendChild(card);
+        });
+    }
+
+    castVote(target, cardElement) {
+        sounds.vote();
+        const potentialVoters = alive().filter(p => !p.isBot && !this.votes[p.id] && !p.voteDisabled);
+        if (potentialVoters.length === 0) {
+            showModal({title:"Vote", message:"Tous les joueurs humains pouvant voter ont voté."});
+            return;
+        }
+
+        let voterSelectionHTML = '';
+        potentialVoters.forEach(v => {
+            voterSelectionHTML += `<button class="btn ghost" data-voter-id="${v.id}" style="width:auto; flex-grow: 1;">${v.name}</button>`;
+        });
+
+        showModal({
+            title: `Qui vote pour ${target.name} ?`,
+            message: `<div class="row" style="justify-content: center; flex-wrap: wrap; gap: 0.5rem;">${voterSelectionHTML}</div>`,
+            buttons: []
+        });
+
+        document.querySelectorAll('[data-voter-id]').forEach(button => {
+            button.onclick = () => {
+                const voterId = parseInt(button.dataset.voterId, 10);
+                const voter = byId(voterId);
+                if (voter && !this.votes[voter.id]) {
+                    sounds.click();
+                    this.votes[voter.id] = { targetId: target.id, isDouble: !!voter.doubleVote };
+                    dom.modalTemplate.close();
+                    this.renderVoteGrid();
+                }
+            }
+        });
+    }
+
+    tallyVotes() {
+        if(this.timerId) clearInterval(this.timerId);
+        this.timerId = null;
+
+        /* alive().filter(p => p.isBot).forEach(bot => {
+            if(!this.votes[bot.id]) {
+                const targetId = this.getBotVote(bot);
+                if (targetId) {
+                    this.votes[bot.id] = { targetId: targetId, isDouble: !!bot.doubleVote };
+                } else {
+                    // Fallback just in case getBotVote returns null
+                    const targets = alive().filter(p => p.id !== bot.id);
+                    if (targets.length > 0) this.votes[bot.id] = { targetId: targets[rand(targets.length)].id, isDouble: !!bot.doubleVote };
+                }
+            }
+        }); */
+        
+        state.lastVotes = {};
+        Object.entries(this.votes).forEach(([voterId, voteData]) => {
+            state.lastVotes[voterId] = voteData.targetId;
+        });
+
+        const voteCounts = {};
+        alive().forEach(p => voteCounts[p.id] = 0);
+        Object.entries(this.votes).forEach(([voterId, voteData]) => {
+            if (voteCounts[voteData.targetId] !== undefined) {
+                 const voter = byId(parseInt(voterId));
+                 voteCounts[voteData.targetId] += (voter && voter.doubleVote) ? 2 : 1;
+            }
+        });
+
+        let maxVotes = -1;
+        Object.values(voteCounts).forEach(c => { if(c > maxVotes) maxVotes = c; });
+
+        if (maxVotes <= 0) {
+            showModal({ title: "Aucun vote", message: "Personne n'est éliminé ce tour.", buttons: [{ text: "Tour suivant", onClick: checkVictory }] });
+            return;
+        }
+
+        const mostVotedIds = Object.keys(voteCounts).filter(id => voteCounts[id] === maxVotes);
+
+        if (mostVotedIds.length !== 1) {
+            showModal({ title: "Égalité !", message: "Plusieurs joueurs ont reçu le même nombre de votes. Personne n'est éliminé.", buttons: [{ text: "Tour suivant", onClick: checkVictory }] });
+        } else {
+            const playerToEliminate = byId(parseInt(mostVotedIds[0], 10));
+            eliminate(playerToEliminate);
+        }
+    }
+  }
+
+  GameController.prototype.getBotVote = function(bot) {
+    const targets = alive().filter(p => p.id !== bot.id);
+    if (targets.length === 0) return null;
+
+    const civilHints = state.wordPair.hintsA || [];
+    const undercoverHints = state.wordPair.hintsB || [];
+
+    let suspects = [];
+    let allies = []; // Players who seem to be on the same team
+
+    if (bot.role === 'civil') {
+        // Civil bot logic
+        targets.forEach(p => {
+            const p_hints = p.roundHints || [];
+            if (p_hints.some(h => undercoverHints.includes(h))) {
+                suspects.push(p); // This player gave a hint for the undercover word
+            } else if (p_hints.some(h => civilHints.includes(h))) {
+                allies.push(p); // This player gave a hint for the civil word
+            }
+        });
+
+        if (suspects.length > 0) {
+            // Vote for a suspect
+            return suspects[rand(suspects.length)].id;
+        }
+        // No clear suspects, vote for someone who is not a clear ally
+        const nonAllies = targets.filter(t => !allies.map(a => a.id).includes(t.id));
+        if (nonAllies.length > 0) {
+            return nonAllies[rand(nonAllies.length)].id;
+        }
+
+    } else if (bot.role === 'undercover') {
+        // Undercover bot logic
+        targets.forEach(p => {
+            const p_hints = p.roundHints || [];
+            if (p_hints.some(h => civilHints.includes(h))) {
+                suspects.push(p); // This player gave a hint for the civil word, so they are a target
+            } else if (p_hints.some(h => undercoverHints.includes(h))) {
+                allies.push(p); // This player gave a hint for the undercover word
+            }
+        });
+
+        if (suspects.length > 0) {
+            // Vote for a "suspect" (a civil)
+            return suspects[rand(suspects.length)].id;
+        }
+        // No clear civils to vote for, vote for someone who is not a clear ally
+        const nonAllies = targets.filter(t => !allies.map(a => a.id).includes(t.id));
+        if (nonAllies.length > 0) {
+            return nonAllies[rand(nonAllies.length)].id;
+        }
+    }
+
+    // Fallback for all cases: vote for a random player
+    return targets[rand(targets.length)].id;
+  };
+
+  // ---------- INITIALIZATION ----------
+  function init() {
+    getDOMElements();
+    initSetup();
+    show('home');
+
+    // --- ZOOM PREVENTION ---
+    document.addEventListener('touchmove', function(e) {
+      if (e.touches.length > 1) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', function(e) {
+      const now = (new Date()).getTime();
+      if (now - lastTouchEnd <= 300) {
+        e.preventDefault();
+      }
+      lastTouchEnd = now;
+    }, false);
+    // --------------------
+
+    function createFloatingWord() {
+      const titleContainer = document.querySelector('.title-container');
+      if (!titleContainer) return;
+
+      const words = ["Secret", "Agent", "Vote", "Civil", "Undercover", "Bluff", "Indice", "Mission", "Révolution", "Traître", "Innocent", "Jester", "Mystère", "Alliance", "Trahison"];
+      const word = words[Math.floor(Math.random() * words.length)];
+
+      const span = document.createElement('span');
+      span.className = 'floating-word';
+      span.textContent = word;
+
+      const containerRect = titleContainer.getBoundingClientRect();
+      // Clamp the coordinates to be within the container's bounds
+      const x = Math.random() * containerRect.width;
+      const y = Math.random() * containerRect.height;
+
+      span.style.left = `${x}px`;
+      span.style.top = `${y}px`;
+      span.style.animationDelay = `${Math.random() * 2}s`;
+
+      titleContainer.appendChild(span);
+
+      setTimeout(() => {
+          span.remove();
+      }, 5000);
+    }
+    
+    // Start floating words effect if on home screen
+    if (dom.screenHome.classList.contains('active')) {
+        setInterval(createFloatingWord, 1200);
+    }
+
+    dom.startGameBtn.onclick = (e) => {
+        sounds.click();
+
+        // Confetti burst effect
+        const btn = e.currentTarget;
+        const rect = btn.getBoundingClientRect();
+        const x = rect.left + rect.width / 2;
+        const y = rect.top + rect.height / 2;
+
+        for (let i = 0; i < 40; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'confetti-particle';
+            document.body.appendChild(particle);
+
+            const angle = Math.random() * Math.PI * 2;
+            const distance = Math.random() * 120 + 50;
+            const targetX = Math.cos(angle) * distance;
+            const targetY = Math.sin(angle) * distance;
+
+            particle.style.left = `${x}px`;
+            particle.style.top = `${y}px`;
+            const randomColor = `hsl(${Math.random() * 360}, 90%, 65%)`;
+            particle.style.backgroundColor = randomColor;
+            particle.style.setProperty('--x', `${targetX}px`);
+            particle.style.setProperty('--y', `${targetY}px`);
+
+            setTimeout(() => particle.remove(), 900);
+        }
+
+        // Delay screen transition to let the effect play
+        setTimeout(() => {
+            startIntroSequence();
+        }, 150);
+    };
+
+    dom.introContinueBtn.onclick = () => {
+        sounds.click();
+        clearTimeout(introTimeout);
+        show('setup');
+    };
+    dom.introSkipBtn.onclick = () => {
+        sounds.click();
+        clearTimeout(introTimeout);
+        show('setup');
+    };
+
+    if (dom.tipsBtn) {
+        dom.tipsBtn.onclick = () => {
+            sounds.click();
+            const randomTip = TIPS[rand(TIPS.length)];
+            showModal({
+                title: "💡 Astuce du Jeu",
+                message: randomTip,
+                buttons: [{text: "Super !"}]
+            });
+        };
+    }
+
+    dom.btnReset.onclick = () => showModal({ title: "Nouvelle partie ?", message: "Toute la progression sera perdue. Voulez-vous vraiment recommencer ?", buttons: [{ text: "Annuler", class: "ghost" }, { text: "Oui, recommencer", class: "danger", onClick: () => { initSetup(); show('home'); } }] });
+    dom.btnHelp.onclick = () => showModal({ title: "Règles du jeu", message: `<p>La majorité (<b>Civils</b>) reçoit le mot A, la minorité (<b>Undercover</b>) le mot B. Personne ne connaît son rôle au début. Donnez des indices, puis votez pour éliminer un joueur.</p><p><b>Modes de jeu :</b><br><b>- Classique:</b> Jeu oral, sans timer ni événements.<br><b>- Dynamique:</b> Avec timer et événements aléatoires.<br><b>- Révolution:</b> Événements plus fréquents et intenses.</p><p><b>L'Innocent</b> : Ce joueur n'a aucun mot. S'il est éliminé, il doit deviner le mot des Civils pour gagner seul.</p><p><b>Victoire</b> : Les Civils gagnent quand il n’y a plus d’Undercover. Les Undercover gagnent quand ils sont aussi nombreux ou plus que les autres.</p>`, buttons: [{ text: "Compris !", class: "" }] });
+    dom.btnNewWord.onclick = () => showModal({ title: "Nouveau mot ?", message: "Voulez-vous vraiment relancer une manche avec un nouveau mot et les mêmes joueurs ?", buttons: [{ text: "Annuler", class: "ghost" }, { text: "Oui, relancer", class: "warn", onClick: () => startGame(true) }] });
+
+    dom.homeSoundToggle.onclick = () => {
+        state.settings.sound = !state.settings.sound;
+        if (state.settings.sound) {
+            initAudio();
+        }
+        sounds.click();
+        dom.homeSoundToggle.textContent = state.settings.sound ? '🔊' : '🔇';
+        // also update the setup screen button to stay in sync
+        const soundOptionCard = dom.optionSound;
+        if(soundOptionCard) {
+          soundOptionCard.classList.toggle('active', state.settings.sound);
+          soundOptionCard.querySelector('.value').textContent = state.settings.sound ? 'Activé' : 'Désactivé';
+        }
+        toggleBackgroundMusic();
+    };
+
+    dom.btnShowMyCard.onclick = () => {
+        let currentPlayer, context = '';
+        const gc = state._gameController;
+        if (state._activeScreen === 'pass') {
+            currentPlayer = state.players.filter(p => !p.isBot)[state.distributionIndex];
+            context = 'de recevoir votre carte';
+        } else if (gc && gc.phase === 'hint' && gc.turnOrder[gc.turnIndex]) {
+            const turnPlayer = gc.turnOrder[gc.turnIndex];
+            if (!turnPlayer.isBot) {
+                currentPlayer = turnPlayer;
+                context = 'de donner un indice';
+            }
+        }
+
+        if (currentPlayer) {
+            const wordToShow = currentPlayer.amnesia ? "?? (Amnésie)" : (currentPlayer.role === 'innocent' ? 'Vous êtes l\'Innocent' : currentPlayer.word);
+            showModal({
+                title: "Confirmation",
+                message: `<b>${currentPlayer.name}</b>, est-ce bien votre tour ${context} ?`,
+                buttons: [
+                    { text: "Non", class: "ghost" },
+                    { text: "Oui, montrer ma carte", class: "", onClick: () => {
+                        showModal({
+                            title: `Votre carte, ${currentPlayer.name}`,
+                            message: `<div style="text-align:center;"><div class="word-big">${wordToShow}</div><p style="margin-top:1rem;">Rôle: <b>${currentPlayer.role}</b></p></div>`,
+                            buttons: [{text: "Cacher"}]
+                        })
+                    }}
+                ]
+            });
+        } else {
+             showModal({ title: "Action impossible", message: "Vous ne pouvez voir une carte que pendant le tour d'un joueur humain.", buttons: [{text: "OK"}] });
+        }
+    };
+    
+    dom.revealCard.onclick = () => {
+        dom.revealCard.classList.toggle('flipped');
+        sounds.flip();
+    };
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
+
+  // Particle effect initialization
+  if (window.tsParticles) {
+    tsParticles.load("tsparticles", {
+      fpsLimit: 60,
+      interactivity: {
+        events: {
+          onHover: {
+            enable: true,
+            mode: "repulse"
+          },
+          resize: true
+        },
+        modes: {
+          repulse: {
+            distance: 100,
+            duration: 0.4
+          }
+        }
+      },
+      particles: {
+        color: {
+          value: "#ffffff"
+        },
+        links: {
+          color: "#ffffff",
+          distance: 150,
+          enable: true,
+          opacity: 0.1,
+          width: 1
+        },
+        move: {
+          direction: "none",
+          enable: true,
+          outModes: {
+            default: "out"
+          },
+          random: false,
+          speed: 1,
+          straight: false
+        },
+        number: {
+          density: {
+            enable: true,
+            area: 800
+          },
+          value: 80
+        },
+        opacity: {
+          value: 0.1
+        },
+        shape: {
+          type: "circle"
+        },
+        size: {
+          value: { min: 1, max: 3 }
+        }
+      },
+      detectRetina: true
+    });
+  }
+})();
+</script>
+</body>
+</html>
